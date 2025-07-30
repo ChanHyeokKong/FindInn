@@ -1,9 +1,9 @@
 package com.inn.service;
 
-import com.example.data.MemberDaoInter;
-import com.example.data.MemberDto;
-import com.example.data.RoleDaoInter;
-import com.example.data.RoleDto;
+import com.inn.data.member.MemberDaoInter;
+import com.inn.data.member.MemberDto;
+import com.inn.data.member.RoleDaoInter;
+import com.inn.data.member.RoleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
