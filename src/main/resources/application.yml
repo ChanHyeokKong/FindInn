@@ -3,9 +3,9 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   datasource:
-    url: jdbc:mysql://localhost:3306/tripful?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: kch0101
-    password: a1234
+    url: jdbc:mysql://findinn.crs668a662e8.ap-northeast-2.rds.amazonaws.com:3306/FindInn?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: admin
+    password: "!findinn"
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
