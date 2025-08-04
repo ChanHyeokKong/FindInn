@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+
+
+	<div>
+		<div class="input-group" th:style="'max-width: 800px;'">
+			<input type="text" th:name="search" class="form-control" />
+			<button type="button" class="btn btn-success" name="btnSearch">검색</button>
+		</div>
+	</div>
+
+
+
+
+
+	<table>
+
+		<tr th:each="hotel : ${hotels}">
+
+			<!--파일저장 후 받아오기.  -->
+			<!-- <td>
+          <img th:src="@{${hotel.images}}" alt="호텔 사진" width="200" />
+        </td> -->
+
+			<td th:text="${hotel.h_name}">호텔명</td>
+		</tr>
+
+
+	</table>
+
+</th:block>
+</html>
