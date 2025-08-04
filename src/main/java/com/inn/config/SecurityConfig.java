@@ -11,10 +11,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Bean
+    public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
+        return new CustomAuthenticationSuccessHandler();
+    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,7 +55,8 @@ public class SecurityConfig {
                                 "/signup2",
                                 "/css/**",
                                 "/JavaScript/**",
-                                "/image/**"
+                                "/image/**",
+                                "/isMember" // /isMember도 permitAll에 추가하는 것이 좋습니다.
                         ).permitAll() // 이 경로들은 인증 없이 접근 허용
                         .anyRequest().permitAll() // 그 외 모든 요청은 인증 필요
                 )

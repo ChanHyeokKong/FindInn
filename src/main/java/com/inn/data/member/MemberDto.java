@@ -6,6 +6,8 @@ import lombok.Data;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.EqualsAndHashCode; // 이 import 추가
+
 @Entity
 @Data
 @Table(name="member")
@@ -19,15 +21,16 @@ public class MemberDto {
     private String m_email;
 
     @Column
-    private String m_name, m_password;
+    private String m_name, m_password, m_phone;
 
-    @ManyToMany(fetch = FetchType.EAGER) // EAGER 로딩으로 설정 (필요에 따라 LAZY로 변경 가능)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-        name = "member_roles", // 중간 테이블 이름
-        joinColumns = @JoinColumn(name = "member_idx"), // MemberDto의 PK
-        inverseJoinColumns = @JoinColumn(name = "role_name") // RoleDto의 PK (m_role)
+        name = "member_roles",
+        joinColumns = @JoinColumn(name = "member_idx"),
+        inverseJoinColumns = @JoinColumn(name = "role_name")
     )
-    private Set<RoleDto> roles = new HashSet<>(); // 초기화
+    @EqualsAndHashCode.Exclude // 이 어노테이션 추가
+    private Set<RoleDto> roles = new HashSet<>();
 
 }
 

@@ -1,5 +1,69 @@
 <header th:fragment="header" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-    <div>
-        <h1>header</h1>
+    <div class="header-menubar">
+        <div class="header-logo">
+            <a th:href="@{/}"><img th:src="@{/image/logo_garo_white.png}"></a>
+        </div>
+        <div class="header-menu">
+            <div class="menu">
+                <div class="menu_item_hotel">
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/member/list}">Hotel</a>
+                </div>
+            </div>
+        </div>
+        <div class="header-login">
+            <button sec:authorize="isAnonymous()" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</button>
+            <button sec:authorize="isAuthenticated()" class="btn btn-danger">로그아웃</button>
+        </div>
     </div>
+    <div class="modal fade" id="loginModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <img src="/image/logo_garo.png">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <section class="login-selector">
+                        <button class="email-login">Email로 로그인</button>
+                        <button class="google-login">Google로 로그인</button>
+                        <button class="naver-login">Naver로 로그인</button>
+                        <button class="kakao-login">Kakao로 로그인</button>
+                    </section>
+                    <section class="login-form d-none">
+                        <form action="/login" method="post" id="sign-form">
+                            <ul class="form-group">
+                                <caption>Email</caption>
+                                <li><input type="email" class="form-control" name="m_email"></li>
+
+                                <section class="after-click d-none">
+                                    <caption>비밀번호</caption>
+                                    <li><input type="password" class="form-control" name="m_password" id="password"></li>
+                                    <section class="signin-form d-none">
+                                        <caption>비밀번호 재입력</caption>
+                                        <li><input type="password" id="password-repeat" class="form-control"></li>
+                                        <caption>이름입력</caption>
+                                        <li><input type="text" name="m_name" class="form-control"></li>
+                                        <caption>전화번호 입력</caption>
+                                        <li><input type="text" name="m_phone" class="form-control"></li>
+                                    </section>
+                                </section>
+                                <button class="btn btn-success" id="login-btn" type="button">로그인</button><br>
+
+                            </ul>
+                        </form>
+                    </section>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 </header>

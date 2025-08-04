@@ -7,13 +7,19 @@ import com.inn.data.member.RoleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class MemberService {
+public class MemberService implements UserDetailsService {
 
     @Autowired
     MemberDaoInter memberDao;
@@ -33,16 +39,8 @@ public class MemberService {
         if (userRoleOptional.isPresent()) {
             memberDto.getRoles().add(userRoleOptional.get());
         } else {
-            // ROLE_USER 역할이 데이터베이스에 없는 경우 처리 (예: 예외 발생 또는 기본 역할 생성)
-            // 프로토타입 단계에서는 간단히 로그를 남기거나, 미리 데이터베이스에 ROLE_USER를 추가해야 합니다.
-            System.err.println("Error: ROLE_USER not found in database. Please ensure it exists.");
-            // 또는 RoleDto를 생성하여 저장하는 로직 추가
-            // RoleDto userRole = new RoleDto();
-            // userRole.setM_role("ROLE_USER");
-            // roleDao.save(userRole);
-            // memberDto.getRoles().add(userRole);
+            System.out.println("error");
         }
-
         memberDao.save(memberDto);
     }
 
@@ -75,5 +73,20 @@ public class MemberService {
         return list;
     }
 
+    public MemberDto getMemberByEmail(String email) {
+        return memberDao.findByEmail(email);
+    }
 
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        MemberDto member = memberDao.findByEmail(username);
+        if (member == null) {
+            throw new UsernameNotFoundException("User not found with email: " + username);
+        }
+        return new User(member.getM_email(), member.getM_password(),
+                        member.getRoles().stream()
+                              .map(role -> new SimpleGrantedAuthority(role.getM_role()))
+                              .collect(Collectors.toList()));
+    }
 }
