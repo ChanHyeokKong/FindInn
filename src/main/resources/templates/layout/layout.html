@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="https://www.ultraq.net.nz/thymeleaf/layout">
 <head>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
     <link
             href="https://fonts.googleapis.com/css2?family=Dongle&family=Gaegu&family=Hi+Melody&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap"
             rel="stylesheet">
@@ -12,6 +13,12 @@
     <title>Insert title here</title>
 </head>
 <body>
+<div th:replace="fragments/header :: header"></div>
+
+<th:block layout:fragment="content"></th:block>
+
+<div th:replace="fragments/footer :: footer"></div>
+<script th:src="@{/javascript/common.js}"></script>
 
 </body>
 </html>

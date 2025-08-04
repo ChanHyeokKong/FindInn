@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>여행 성향 결과</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 30px; }
+        .card { max-width: 700px; margin: 0 auto; background: #fff8f0; border-radius: 15px; padding: 30px; box-shadow: 0 0 12px rgba(0,0,0,0.1); }
+        .bar-container { width: 80%; background: #eee; height: 20px; border-radius: 10px; margin: 10px auto; }
+        .bar { height: 100%; border-radius: 10px; }
+        .bar.activity { background-color: #ff8c00; }
+        .bar.healing { background-color: #228b22; }
+        .bar.challenge { background-color: #cc3366; }
+        .bar.emotion { background-color: #3399ff; }
+        img { border-radius: 10px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>🎉 당신의 여행 부캐는?</h2>
+    <h1 th:text="${character.name} + ' (' + ${character.code} + ')'">감성 탐험가 (E02)</h1>
+
+    <img th:src="${character.imageUrl}" alt="캐릭터 이미지" width="200"/>
+
+    <p th:text="${character.description}">
+        도심 속 카페, 인스타 감성에 진심인 여행자!
+    </p>
+
+    <h3>📊 능력치</h3>
+    <div>
+        <p>Activity</p>
+        <div class="bar-container"><div class="bar activity" th:style="'width:' + ${character.activityLevel * 20} + '%'"></div></div>
+
+        <p>Healing</p>
+        <div class="bar-container"><div class="bar healing" th:style="'width:' + ${character.healingLevel * 20} + '%'"></div></div>
+
+        <p>Challenge</p>
+        <div class="bar-container"><div class="bar challenge" th:style="'width:' + ${character.challengeLevel * 20} + '%'"></div></div>
+
+        <p>Emotion</p>
+        <div class="bar-container"><div class="bar emotion" th:style="'width:' + ${character.emotionLevel * 20} + '%'"></div></div>
+    </div>
+
+    <h3>🏨 추천 숙소</h3>
+    <ul>
+        <li th:each="item : ${character.recommendedAccommodations}" th:text="${item}">도심 부티크 호텔</li>
+    </ul>
+
+    <!-- (선택) 쿠폰 발급 -->
+    <form th:action="@{/api/coupon/issue}" method="post">
+        <input type="hidden" name="characterCode" th:value="${character.code}" />
+        <button type="submit">🎁 쿠폰 받기</button>
+    </form>
+</div>
+
+</body>
+</html>
