@@ -1,5 +1,6 @@
 package com.inn.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,9 @@ public class HotelService {
 	
 	public List<HotelEntity> getHotelData(String name){
 		
-		return hotelRepository.findAllByHName(name);
+		//return hotelRepository.findAllByH_name(name);
+		List<HotelEntity> hotelEntities = new ArrayList<>();
+		return hotelEntities;
 	}
 	
 	
