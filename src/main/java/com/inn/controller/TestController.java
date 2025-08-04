@@ -13,21 +13,21 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/test")
 public class TestController {
 
-    private final TestService testService;
-
-    @GetMapping("/questions")
-    public String showQuestions() {
-        return "templates.test.test-questions";
-    }
-
-    @PostMapping("/result")
-    public String showResult(@ModelAttribute AnswerRequest answers, Model model) {
-        CharacterType result = testService.calculateCharacterType(answers);
-        model.addAttribute("character", result);
-        return "templates.test.test-result";
-        
-        CharacterType result = testService.calculateCharacterType(answers);
-        model.addAttribute("character", result);
-        return "templates.test.test-result";
-    }
+//    private final TestService testService;
+//
+//    @GetMapping("/questions")
+//    public String showQuestions() {
+//        return "templates.test.test-questions";
+//    }
+//
+//    @PostMapping("/result")
+//    public String showResult(@ModelAttribute AnswerRequest answers, Model model) {
+//        CharacterType result = testService.calculateCharacterType(answers);
+//        model.addAttribute("character", result);
+//        return "templates.test.test-result";
+//
+//        CharacterType result = testService.calculateCharacterType(answers);
+//        model.addAttribute("character", result);
+//        return "templates.test.test-result";
+//    }
 }
