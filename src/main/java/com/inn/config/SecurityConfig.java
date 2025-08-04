@@ -50,7 +50,7 @@ public class SecurityConfig {
                                 "/JavaScript/**",
                                 "/image/**"
                         ).permitAll() // 이 경로들은 인증 없이 접근 허용
-                        .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
+                        .anyRequest().permitAll() // 그 외 모든 요청은 인증 필요
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login") // 로그인 페이지 URL
