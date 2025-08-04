@@ -1,0 +1,60 @@
+/*
+    #007BFF 로고 이미지 파란색 코드
+*/
+
+.header-menubar{
+    background-color: #007BFF;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 로고와 로그인 버튼을 양 끝으로 분산 */
+    padding: 8px 20px; /* 상하, 좌우 여백 추가 */
+    box-sizing: border-box; /* padding과 border를 너비에 포함 */
+}
+
+.header-logo img{
+    width: 150px; /* 로고 너비 고정 */
+    vertical-align: middle; /* 이미지 세로 정렬 (念のため) */
+}
+
+.header-login button{
+    /* 기존 스타일 유지 */
+    margin-right: 30px ;
+}
+
+.header-menu a{
+    text-decoration: none;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 30px;
+}
+
+/* Modal Header 스타일 */
+.modal-header {
+    justify-content: center; /* Flexbox 가로 중앙 정렬 */
+    position: relative;      /* 닫기 버튼의 기준점 */
+    border-bottom: none;     /* 헤더 밑줄 제거 (선택 사항) */
+}
+
+.modal-header .btn-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.modal-header img {
+    width: 150px; /* 로고 이미지 크기 지정 */
+}
+
+.modal-body{
+    justify-content: center;
+}
+
+.modal-body div{
+    display: flex;
+    text-align: center;
+}
+
+.modal-body .login-form li{
+    list-style: none;
+}
