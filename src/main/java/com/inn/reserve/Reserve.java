@@ -1,9 +1,8 @@
-package com.inn.reserve; // Or your actual package
+package com.inn.reserve;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.inn.rooms.RoomTypes;
+import com.inn.rooms.Rooms;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -13,12 +12,21 @@ import java.time.LocalDateTime;
 public class Reserve {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reserveId;
-    private Long reserveUserId;
-    private Long reserveHotelId;
+    private long reserveId;
+
     private LocalDate checkIn;
     private LocalDate checkOut;
-    private LocalDateTime paymentDate;
     private String method;
-    private Long price;
+    private LocalDateTime paymentDate;
+    private long price;
+    private long reserveHotelId;
+    private long reserveUserId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_type_id", referencedColumnName = "id")
+    private RoomTypes roomType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", referencedColumnName = "id")
+    private Rooms room;
 }

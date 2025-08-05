@@ -25,6 +25,7 @@ public class MemberController {
 
     @PostMapping("/isMember")
     public ResponseEntity<MemberDto> isMember(MemberDto dto){
+        System.out.printf("isMember: %s\n", dto.getMemberEmail());
         MemberDto m_dto = service.getMemberByEmail(dto.getMemberEmail());
         if (m_dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

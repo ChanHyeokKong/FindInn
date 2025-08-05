@@ -11,10 +11,10 @@ import lombok.Data;
 public class RoomTypes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long room_type_id;
-    String type_name;
+    long id;
+    String typeName;
     String description;
     long price;
     long capacity;
-    long hotel_id;
+    long hotelId;
 }
