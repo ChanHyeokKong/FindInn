@@ -4,55 +4,83 @@
       layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
-    <div>
+
+    <div class="container">
+
+        <br>
         <h1>호텔 예약 확인 및 결제</h1>
         <br>
 
-        <h2>객실 정보</h2>
-        <hr>
-        <ul>
-            <li>호텔명: <span th:text="${h_name}">호텔명</span></li>
-            <li>객실명: <span th:text="${r_name}">객실명</span></li>
-            <li>객실 번호(r_idx): <span th:text="${r_idx}">r_idx</span></li>
-            <li>체크인: <span th:text="${#temporals.format(b_checkin, 'yyyy-MM-dd HH:mm')}">체크인</span></li>
-            <li>체크아웃: <span th:text="${#temporals.format(b_checkout, 'yyyy-MM-dd HH:mm')}">체크아웃</span></li>
-        </ul>
+        <!-- ✅ 객실 정보 -->
+        <section>
+            <h2>객실 정보</h2>
+            <hr>
+            <ul>
+                <li>호텔명: <span th:text="${h_name}">호텔명</span></li>
+                <li>객실명: <span th:text="${r_name}">객실명</span></li>
+                <li>객실 번호: <span th:text="${r_idx}">r_idx</span></li>
+                <li>체크인: <span th:text="${#temporals.format(b_checkin, 'yyyy-MM-dd HH:mm')}">체크인</span></li>
+                <li>체크아웃: <span th:text="${#temporals.format(b_checkout, 'yyyy-MM-dd HH:mm')}">체크아웃</span></li>
+            </ul>
+        </section>
         <br>
 
-        <h2>예약자 정보</h2>
-        <hr>
-        <div>
-            <label>
-                <b></b>
+        <!-- ✅ 예약자 정보 -->
+        <section>
+            <h2>예약자 정보</h2>
+            <hr>
+
+            <!-- 이름 -->
+            <div>
                 <input type="text" name="guestName" placeholder="이름">
-            </label><br>
-            <label>
-                <input type="tel" name="guestPhone" placeholder="전화번호">
-            </label>
-            <button type="button">인증번호 받기</button>
-        </div>
+            </div>
 
+            <!-- 전화번호 + 인증 버튼 -->
+            <div>
+                <input type="tel" id="guestPhone" name="guestPhone" placeholder="전화번호">
+                <button type="button" id="sendAuthBtn">인증번호 받기</button>
+            </div>
+
+            <!-- ✅ 인증번호 입력 필드 (초기엔 숨김 처리) -->
+            <div id="authSection" style="display: none;">
+                <input type="text" id="authInput" placeholder="인증번호 입력">
+                <input type="hidden" id="serverAuthCode" value="">
+                <button type="button" id="checkAuthBtn">확인</button>
+                <p id="timerText" style="color: gray;"></p>
+            </div>
+
+            <!-- 인증 결과 메시지 -->
+            <p id="authResultMsg"></p>
+        </section>
         <br>
 
-        <h2>결제 정보</h2>
-        <hr>
+        <!-- ✅ 결제 정보 -->
+        <section>
+            <h2>결제 정보</h2>
+            <hr>
 
-        <!-- 객실 가격 -->
-        <p>
-            객실 가격 (<span th:text="${nights}"></span>박):
-            <span th:text="${#numbers.formatInteger(total_price,3,  'COMMA')} + '원'"></span>
-        </p>
+            <!-- 객실 가격 -->
+            <p>
+                객실 가격 (<span th:text="${nights}">0</span>박):
+                <span th:text="${#numbers.formatInteger(total_price, 0, 'COMMA')} + '원'">0원</span>
+            </p>
 
-        <!-- 총 결제 금액 -->
-        <p>
-            <strong>총 결제 금액:</strong>
-            <strong th:text="${#numbers.formatInteger(total_price,3, 'COMMA')} + '원'"></strong>
-        </p>
+            <!-- 총 결제 금액 -->
+            <p>
+                <strong>총 결제 금액:</strong>
+                <strong th:text="${#numbers.formatInteger(total_price, 0, 'COMMA')} + '원'">0원</strong>
+            </p>
 
-        <!-- 결제 버튼 -->
-        <p>
-            <button id="payBtn">결제하기</button>
-        </p>
+            <!-- 결제 버튼 -->
+            <p>
+                <button id="payBtn">결제하기</button>
+            </p>
+        </section>
+
+        <!-- ✅ JS 파일은 body 맨 아래에 -->
+        <script th:src="@{/javascript/smsAuth.js}"></script>
+
     </div>
+
 </th:block>
 </html>
