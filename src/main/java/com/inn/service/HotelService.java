@@ -1,7 +1,9 @@
 package com.inn.service;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,11 +27,23 @@ public class HotelService {
 		return hotelRepository.findAll();		
 	}
 	
-	public List<HotelEntity> getHotelData(String name){
+	public List<HotelDto> getHotelData(String keyword){
+
+		List<HotelEntity> hotels = hotelRepository.findByhotelNameContaining(keyword);
+
+		//List<String> list=new ArrayList<>(Array.asList(hotels));
 		
-		//return hotelRepository.findAllByH_name(name);
-		List<HotelEntity> hotelEntities = new ArrayList<>();
-		return hotelEntities;
+		
+	    // Entity → DTO 변환
+		return hotels.stream()
+			    .map(hotel -> new HotelDto(
+			        hotel.getHotelIdx(),
+			        hotel.getHotelName(),
+			        hotel.getHotelEmpty(),
+			        hotel.getHotelImages(),  // List<String>
+			        hotel.getMemberIdx()
+			    ))
+			    .collect(Collectors.toList());
 	}
 	
 	

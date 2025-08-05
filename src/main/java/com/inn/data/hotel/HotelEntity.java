@@ -1,10 +1,15 @@
 package com.inn.data.hotel;
 
+import java.util.List;
+
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import jakarta.persistence.JoinColumn;
 
 @Data
 @Entity
@@ -13,13 +18,17 @@ public class HotelEntity {
 	
 	
 	@Id
-	private Integer h_idx;
+	private Integer hotelIdx;
 	
 	@Column(nullable = false)
-	private Integer m_idx;
-	@Column(nullable = false, name = "h_name")
-	private String hName;
-	private Integer h_empty;
-	private String h_images;
+	private Integer memberIdx;
+	@Column(nullable = false)
+	private String hotelName;
+	private Integer hotelEmpty;
+	
+	@ElementCollection
+	@CollectionTable(name = "hotelImages", joinColumns = @JoinColumn(name = "hotelIdx"))
+	@Column(name = "hotelImages")
+	private List<String> hotelImages;
 
 }
