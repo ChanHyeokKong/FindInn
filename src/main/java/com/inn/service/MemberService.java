@@ -7,6 +7,7 @@ import com.inn.data.member.RoleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.inn.config.CustomUserDetails;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,6 +43,7 @@ public class MemberService implements UserDetailsService {
             System.out.println("error");
         }
         memberDao.save(memberDto);
+        System.out.println("1234");
     }
 
     public void giveManagerRole(Long memberIdx) {
@@ -84,14 +86,11 @@ public class MemberService implements UserDetailsService {
         if (member == null) {
             throw new UsernameNotFoundException("User not found with email: " + username);
         }
-        return new User(member.getMemberEmail(), member.getMemberPassword(),
-                        member.getRoles().stream()
-                              .map(role -> new SimpleGrantedAuthority(role.getMemberRole()))
-                              .collect(Collectors.toList()));
+        return new CustomUserDetails(member);
     }
 
     public List<MemberDto> getAllMember(){
-        List<MemberDto> list = memberDao.findAll();
+        List<MemberDto> list = memberDao.findAllUser();
         return list;
     }
 

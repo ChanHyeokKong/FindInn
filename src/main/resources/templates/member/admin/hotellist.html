@@ -5,15 +5,15 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
+            <th>잔여객실</th>
+            <th>관리자</th>
 
         </tr>
-        <tr th:each="member : ${members}">
-            <td th:text="${member.MemberIdx}"></td>
-            <td th:text="${member.MemberName}"></td>
-            <td th:text="${member.MemberEmail}"></td>
-            <td th:text="${member.MemberPhone}"></td>
+        <tr th:each="hotel : ${hotels}">
+            <td th:text="${hotel.hotelEntity.hotelIdx}"></td>
+            <td th:text="${hotel.hotelEntity.hotelName}"></td>
+            <td th:text="${hotel.hotelEntity.hotelEmpty}"></td>
+            <td th:text="${hotel.memberName}"></td>
 
         </tr>
     </table>

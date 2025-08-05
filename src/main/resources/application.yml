@@ -13,6 +13,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+server:
+  servlet:
+    session:
+      timeout: 60m
 logging:
   level:
     # This logs the SQL query itself

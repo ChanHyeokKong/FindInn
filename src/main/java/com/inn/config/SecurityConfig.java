@@ -11,11 +11,18 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import com.inn.service.MemberService;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final MemberService memberService;
+
+    public SecurityConfig(MemberService memberService) {
+        this.memberService = memberService;
+    }
 
     @Bean
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
@@ -45,6 +52,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationSuccessHandler customAuthenticationSuccessHandler) throws Exception {
         http
+                .userDetailsService(memberService)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/admin/**"
@@ -52,8 +60,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/login",
-                                "/signup",
-                                "/signup2",
+                                "/signin",
                                 "/css/**",
                                 "/javascript/**",
                                 "/image/**",
@@ -72,7 +79,13 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/") // 로그아웃 성공 시 리다이렉트할 URL
                         .invalidateHttpSession(true) // HTTP 세션 무효화
-                        .deleteCookies("JSESSIONID") // 쿠키 삭제
+                        .deleteCookies("JSESSIONID", "remember-me") // remember-me 쿠키도 삭제
+                )
+                .rememberMe(rememberMe -> rememberMe
+                        .rememberMeParameter("remember-me")
+                        .tokenValiditySeconds(86400 * 14) // 14일간 유효
+                        .alwaysRemember(false) // 체크박스를 선택해야만 활성화
+                        .userDetailsService(memberService)
                 )
                 .csrf(csrf -> csrf.disable()); // 개발 편의상 CSRF 비활성화 (운영 시 활성화 권장)
         return http.build();
