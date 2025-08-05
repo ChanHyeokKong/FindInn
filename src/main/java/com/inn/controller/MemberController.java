@@ -22,7 +22,7 @@ public class MemberController {
 
     @PostMapping("/isMember")
     public ResponseEntity<MemberDto> isMember(MemberDto dto){
-        MemberDto m_dto = service.getMemberByEmail(dto.getM_email());
+        MemberDto m_dto = service.getMemberByEmail(dto.getMemberEmail());
         if (m_dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -38,6 +38,11 @@ public class MemberController {
     @GetMapping("/member/list")
     public String memberList(){
         return "member/admin/memberList";
+    }
+
+    @GetMapping("/login")
+    public String login(){
+        return "login/login";
     }
 
 }

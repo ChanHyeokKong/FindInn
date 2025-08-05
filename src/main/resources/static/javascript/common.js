@@ -20,12 +20,12 @@ $(".email-login").on("click", function() {
 })
 
 $("#login-btn").on("click", function () {
-    let email = $("input[name='m_email']").val();
+    let email = $("input[name='memberEmail']").val();
     $.ajax({
         url: "/isMember",
         method: "POST",
         data: {
-            "m_email": email
+            "memberEmail": email
         },
         dataType: "json",
         success: function (result) {

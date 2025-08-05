@@ -15,13 +15,13 @@ public class MemberDto {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Long m_idx;
+    private Long memberIdx;
 
     @Column(unique = true)
-    private String m_email;
+    private String memberEmail;
 
     @Column
-    private String m_name, m_password, m_phone;
+    private String memberName, memberPassword, memberPhone;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

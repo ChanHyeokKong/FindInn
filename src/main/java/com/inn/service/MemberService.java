@@ -32,7 +32,7 @@ public class MemberService implements UserDetailsService {
     private MemberDaoInter memberDaoInter;
 
     public void signup(MemberDto memberDto) {
-        memberDto.setM_password(pe.encode(memberDto.getM_password()));
+        memberDto.setMemberPassword(pe.encode(memberDto.getMemberPassword()));
 
         // 기본 역할 (ROLE_USER)을 데이터베이스에서 조회하여 추가
         Optional<RoleDto> userRoleOptional = roleDao.findById("ROLE_USER");
@@ -74,19 +74,25 @@ public class MemberService implements UserDetailsService {
     }
 
     public MemberDto getMemberByEmail(String email) {
-        return memberDao.findByEmail(email);
+        return memberDao.findByMemberEmail(email);
     }
 
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        MemberDto member = memberDao.findByEmail(username);
+        MemberDto member = memberDao.findByMemberEmail(username);
         if (member == null) {
             throw new UsernameNotFoundException("User not found with email: " + username);
         }
-        return new User(member.getM_email(), member.getM_password(),
+        return new User(member.getMemberEmail(), member.getMemberPassword(),
                         member.getRoles().stream()
-                              .map(role -> new SimpleGrantedAuthority(role.getM_role()))
+                              .map(role -> new SimpleGrantedAuthority(role.getMemberRole()))
                               .collect(Collectors.toList()));
     }
+
+    public List<MemberDto> getAllMember(){
+        List<MemberDto> list = memberDao.findAll();
+        return list;
+    }
+
 }

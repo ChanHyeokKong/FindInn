@@ -11,6 +11,6 @@ import lombok.Data;
 public class RoleDto {
 
     @Id
-    private String m_role;
+    private String MemberRole;
 
 }

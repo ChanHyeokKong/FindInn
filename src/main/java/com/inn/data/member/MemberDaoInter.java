@@ -7,8 +7,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface MemberDaoInter extends JpaRepository<MemberDto, Long> {
-    @Query("SELECT m FROM MemberDto m WHERE m.m_email = :email")
-    MemberDto findByEmail(@Param("email") String email);
+//    @Query("SELECT m FROM MemberDto m WHERE m.m_email = :email")
+    MemberDto findByMemberEmail(@Param("email") String email);
 
-    
+
 }
