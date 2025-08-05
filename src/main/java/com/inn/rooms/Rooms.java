@@ -1,19 +1,21 @@
 package com.inn.rooms;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
+
 
 @Data
 @Entity
 public class Rooms {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long room_number;
-    private long room_type_id;
     private long id;
 
+    private long roomNumber;
 
+    private long hotelId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_type_id", referencedColumnName = "id")
+    private RoomTypes roomType;
 }
