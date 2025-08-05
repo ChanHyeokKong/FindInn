@@ -38,6 +38,7 @@ public class SecurityConfig {
     public RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
         roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_USER");
+        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER");
         return roleHierarchy;
     }
 
@@ -54,18 +55,18 @@ public class SecurityConfig {
                                 "/signup",
                                 "/signup2",
                                 "/css/**",
-                                "/JavaScript/**",
+                                "/javascript/**",
                                 "/image/**",
-                                "/isMember" // /isMember도 permitAll에 추가하는 것이 좋습니다.
+                                "/isMember"
                         ).permitAll() // 이 경로들은 인증 없이 접근 허용
-                        .anyRequest().permitAll() // 그 외 모든 요청은 인증 필요
+                        .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login") // 로그인 페이지 URL
                         .defaultSuccessUrl("/", true) // 로그인 성공 시 리다이렉트할 URL
                         .failureUrl("/login?error=true") // 로그인 실패 시 리다이렉트할 URL
-                        .usernameParameter("m_email") // 로그인 폼에서 사용자 이름으로 사용할 파라미터 이름
-                        .passwordParameter("m_password") // 로그인 폼에서 비밀번호로 사용할 파라미터 이름
+                        .usernameParameter("memberEmail") // 로그인 폼에서 사용자 이름으로 사용할 파라미터 이름
+                        .passwordParameter("memberPassword") // 로그인 폼에서 비밀번호로 사용할 파라미터 이름
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
