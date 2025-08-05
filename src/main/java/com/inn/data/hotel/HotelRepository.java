@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Repository
 public interface HotelRepository extends JpaRepository<HotelEntity, Integer> {
 
-	//List<HotelEntity> findAllByhName(String name);
+	 List<HotelEntity> findByhotelNameContaining(String keyword);
 
 }
