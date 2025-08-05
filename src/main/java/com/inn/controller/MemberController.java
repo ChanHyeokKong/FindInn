@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
 
 @Controller
 public class MemberController {
@@ -35,14 +38,14 @@ public class MemberController {
         return "redirect:/";
     }
 
-    @GetMapping("/member/list")
-    public String memberList(){
-        return "member/admin/memberList";
-    }
-
     @GetMapping("/login")
     public String login(){
         return "login/login";
+    }
+
+    @GetMapping("/manage/hotel")
+    public String manageHotel(){
+        return "member/manager/hotelmanage";
     }
 
 }

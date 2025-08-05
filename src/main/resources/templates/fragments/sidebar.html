@@ -1,14 +1,15 @@
-<aside th:fragment="admin-sidebar" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<aside th:fragment="admin-sidebar">
     <div class="sidebar">
         <img class="sidebar-logo" src="/image/logo_nemo_white.png">
         <br>
         <ul>
-            <li>고객 관리</li>
-            <li>호텔 관리</li>
-            <li>매니저 관리</li>
-            <li>고객 문의</li>
-            <li>승인 심사</li>
-            <li>이벤트</li>
+            <li><a href="/member/list">고객 관리</a></li>
+            <li><a href="/hotel/list">호텔 관리</a></li>
+            <li><a>매니저 관리</a></li>
+            <li><a>고객 문의</a></li>
+            <li><a>승인 심사</a></li>
+            <li><a>이벤트</a></li>
         </ul>
     </div>
 </aside>
@@ -16,7 +17,12 @@
 <aside th:fragment="manager-sidebar">
 
     <div class="sidebar">
-
+        <img class="sidebar-logo" src="/image/logo_nemo_white.png">
+        <br>
+        <span>이&nbsp;&nbsp;&nbsp;름 :  </span>
+        <span th:text="${#authentication.principal.memberName}"></span>
+        <br>
+        <span>이메일 :   </span><span sec:authentication="name"></span>
         <ul>
             <li>호텔 관리</li>
             <li>예약 관리</li>
@@ -26,3 +32,4 @@
         </ul>
     </div>
 </aside>
+</html>
