@@ -43,7 +43,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationSuccessHandler customAuthenticationSuccessHandler) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
@@ -63,7 +63,7 @@ public class SecurityConfig {
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login") // 로그인 페이지 URL
-                        .defaultSuccessUrl("/", true) // 로그인 성공 시 리다이렉트할 URL
+                        .successHandler(customAuthenticationSuccessHandler) // 로그인 성공 시 리다이렉트할 URL
                         .failureUrl("/login?error=true") // 로그인 실패 시 리다이렉트할 URL
                         .usernameParameter("memberEmail") // 로그인 폼에서 사용자 이름으로 사용할 파라미터 이름
                         .passwordParameter("memberPassword") // 로그인 폼에서 비밀번호로 사용할 파라미터 이름

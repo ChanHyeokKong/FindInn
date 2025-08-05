@@ -10,9 +10,9 @@
                 </div>
             </div>
         </div>
-        <div class="header-login">
-            <button sec:authorize="isAnonymous()" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</button>
-            <button sec:authorize="isAuthenticated()" class="btn btn-danger">로그아웃</button>
+        <div class="header-login" th:switch="${#authorization.expression('isAuthenticated()')}">
+            <button th:case="false" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</button>
+            <button th:case="true" class="btn btn-danger">로그아웃</button>
         </div>
     </div>
     <div class="modal fade" id="loginModal">
