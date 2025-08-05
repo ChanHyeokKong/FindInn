@@ -29,6 +29,28 @@
     font-size: 30px;
 }
 
+.sidebar {
+    background: #007BFF;
+    float: left;
+    margin-top: 70px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.sidebar ul{
+
+    line-height: 80px;
+    font-size: 27px;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+.sidebar-logo{
+    width: 180px;
+    display: block;
+    margin: 30px 0
+}
+
 /* Modal Header 스타일 */
 .modal-header {
     justify-content: center; /* Flexbox 가로 중앙 정렬 */
