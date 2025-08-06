@@ -18,9 +18,9 @@
             <ul>
                 <li>호텔명: <span th:text="${h_name}">호텔명</span></li>
                 <li>객실명: <span th:text="${r_name}">객실명</span></li>
-                <li>객실 번호: <span th:text="${r_idx}">r_idx</span></li>
-                <li>체크인: <span th:text="${#temporals.format(b_checkin, 'yyyy-MM-dd HH:mm')}">체크인</span></li>
-                <li>체크아웃: <span th:text="${#temporals.format(b_checkout, 'yyyy-MM-dd HH:mm')}">체크아웃</span></li>
+                <li>객실 번호: <span th:text="${room_id}">r_idx</span></li>
+                <li>체크인: <span th:text="${checkin}">체크인</span></li>
+                <li>체크아웃: <span th:text="${checkout}">체크아웃</span></li>
             </ul>
         </section>
         <br>
@@ -32,7 +32,7 @@
 
             <!-- 이름 -->
             <div>
-                <input type="text" name="guestName" placeholder="이름">
+                <input type="text" id="guestName" name="guestName" placeholder="이름">
             </div>
 
             <!-- 전화번호 + 인증 버튼 -->
@@ -61,14 +61,14 @@
 
             <!-- 객실 가격 -->
             <p>
-                객실 가격 (<span th:text="${nights}">0</span>박):
-                <span th:text="${#numbers.formatInteger(total_price, 0, 'COMMA')} + '원'">0원</span>
+                객실 가격(<span th:text="${nights}">0</span>박):
+                <span th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')} + '원'">0원</span>
             </p>
 
             <!-- 총 결제 금액 -->
             <p>
                 <strong>총 결제 금액:</strong>
-                <strong th:text="${#numbers.formatInteger(total_price, 0, 'COMMA')} + '원'">0원</strong>
+                <strong th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')} + '원'">0원</strong>
             </p>
 
             <!-- 결제 버튼 -->
@@ -77,8 +77,28 @@
             </p>
         </section>
 
-        <!-- ✅ JS 파일은 body 맨 아래에 -->
+        <!-- ✅ payment JS 전달용 -->
+
+        <!-- 포트원 채널키 전달 -->
+        <input type="hidden" id="channelKey" th:value="${channelKey}">
+
+        <!-- 예약 관련 정보 전달 -->
+        <input type="hidden" id="roomId" th:value="${room_id}">
+        <input type="hidden" id="checkin" th:value="${checkin}">
+        <input type="hidden" id="checkout" th:value="${checkout}">
+        <input type="hidden" id="totalPrice" th:value="${totalPrice}">
+
+        <!-- 초기 로그인 등 인증 체크 -->
+        <script th:src="@{/javascript/bookingPage.js}"></script>
+
+        <!-- 문자 인증 로직 JS -->
         <script th:src="@{/javascript/smsAuth.js}"></script>
+
+        <!-- 내부 결제 로직 JS -->
+        <script th:src="@{/javascript/payment.js}"></script>
+
+        <!-- (포트원 라이브러리) -->
+        <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 
     </div>
 

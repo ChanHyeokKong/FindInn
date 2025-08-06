@@ -60,6 +60,19 @@ document.getElementById('checkAuthBtn').addEventListener('click', function () {
 
     if (inputCode === serverCode) {
         clearInterval(timer);
+
+        // ✅ 인증 관련 요소 비활성화 및 숨김
+        authInput.value = '';
+        msgBox.textContent = '';
+        timerText.textContent = '';
+        authInput.disabled = true;
+        checkAuthBtn.disabled = true;
+        authSection.style.display = "none";
+        document.getElementById('sendAuthBtn').style.display = "none";  // 인증번호 받기 버튼 숨김
+
+        // ✅ 인증 상태 전역 변수 설정
+        isPhoneVerified = true;
+
         msgBox.textContent = "휴대폰 인증이 완료되었습니다.";
         msgBox.style.color = "green";
     } else {
