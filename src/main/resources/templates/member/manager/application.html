@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<div layout:fragment="content">
+    <div class="container mt-3">
+        <form action="/manage/apply" method="post">
+            <div class="form-group">
+                <caption>이메일</caption>
+                <input type="email" th:value="${currentUser.getUsername()}" disabled><br>
+                <caption>전화번호</caption>
+                <input type="text" name="hotelTel"><br>
+                <caption>호텔 이름</caption>
+                <input type="text" name="hotelName"><br>
+                <caption>호텔 주소</caption>
+                <input type="text" name="hotelAddress"><br>
+                <button type="submit">호텔 추가</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+</html>
