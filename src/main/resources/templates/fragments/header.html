@@ -6,7 +6,7 @@
         <div class="header-menu">
             <div class="menu">
                 <div class="menu_item_hotel">
-                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/member/list}">Hotel</a>
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/memberlist}">Hotel</a>
                 </div>
                 <div class="menu_item_manager" th:switch="${#authorization.expression('hasRole(''MANAGER'')')}">
                     <a th:case="true" sec:authorize="!hasRole('ADMIN')" th:href="@{/manage/hotel}">Manage</a>

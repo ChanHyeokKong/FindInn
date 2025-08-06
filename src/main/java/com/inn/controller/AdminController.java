@@ -19,7 +19,7 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @GetMapping("/member/list")
+    @GetMapping("/admin/memberlist")
     public ModelAndView memberList(){
         ModelAndView mv = new ModelAndView("member/admin/memberList");
         List<MemberDto> list = memberService.getAllMember();
@@ -28,7 +28,7 @@ public class AdminController {
         return mv;
     }
 
-    @GetMapping("/hotel/list")
+    @GetMapping("/admin/hotellist")
     public ModelAndView hotelList(){
         ModelAndView mv = new ModelAndView("member/admin/hotelList");
         List<HotelWithManagerDto> list = adminService.getHotelList();
