@@ -27,7 +27,7 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
         for (GrantedAuthority grantedAuthority : authorities) {
             if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
                 // 관리자는 항상 관리자 대시보드로 이동
-                getRedirectStrategy().sendRedirect(request, response, "/member/list");
+                getRedirectStrategy().sendRedirect(request, response, "/admin/memberlist");
                 return; // 리다이렉션 후 즉시 종료
             }
             else if (grantedAuthority.getAuthority().equals("ROLE_MANAGER")) {

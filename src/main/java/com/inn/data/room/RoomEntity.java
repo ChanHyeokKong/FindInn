@@ -14,15 +14,15 @@ public class RoomEntity {
 	
 	
 	@Id
-	private Integer r_idx;
+	private Integer roomIdx;
 	
 	@Column(nullable = false)
-	private Integer h_idx;
+	private Integer hotelIdx;
 	
 	@Column(nullable = false)
-	private Integer r_price;
+	private Integer roomPrice;
 	
-	private Integer r_min;
-	private Integer r_max;
+	private Integer roomMin;
+	private Integer roomMax;
 
 }
