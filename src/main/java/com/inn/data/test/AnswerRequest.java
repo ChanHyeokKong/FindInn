@@ -1,4 +1,6 @@
-package com.inn.data.member;
+package com.inn.data.test;
+
+import java.util.List;
 
 import lombok.Data;
 
@@ -10,4 +12,8 @@ public class AnswerRequest {
     private String q4;
     private String q5;
     private String q6;
+    
+    public List<String> getAllAnswers() {
+        return List.of(q1, q2, q3, q4, q5, q6);
+    }
 }
