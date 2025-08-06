@@ -38,12 +38,12 @@ public class HotelEntity {
 	
 	
 	@Column(nullable = false)
-	private String hotelAdress;
+	private String hotelAddress;
 	
 	@Column(nullable = false)
 	private String hotelTel;
 	
-	@Column(nullable = false)
+	@Column(nullable = true) //추후 수정
 	private String hotelCategory;
 	
 	@ElementCollection
