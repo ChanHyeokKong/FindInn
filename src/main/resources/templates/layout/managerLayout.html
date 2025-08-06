@@ -14,8 +14,9 @@
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
+<div th:replace="fragments/sidebar :: manager-sidebar"></div>
 
-    <th:block class="main-content" layout:fragment="content"></th:block>
+<th:block class="main-content" layout:fragment="content"></th:block>
 
 <div th:replace="fragments/footer :: footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

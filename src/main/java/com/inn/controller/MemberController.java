@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
 
 @Controller
 public class MemberController {
@@ -22,6 +25,7 @@ public class MemberController {
 
     @PostMapping("/isMember")
     public ResponseEntity<MemberDto> isMember(MemberDto dto){
+        System.out.printf("isMember: %s\n", dto.getMemberEmail());
         MemberDto m_dto = service.getMemberByEmail(dto.getMemberEmail());
         if (m_dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -33,11 +37,6 @@ public class MemberController {
     public String signin(MemberDto dto){
         service.signup(dto);
         return "redirect:/";
-    }
-
-    @GetMapping("/member/list")
-    public String memberList(){
-        return "member/admin/memberList";
     }
 
     @GetMapping("/login")

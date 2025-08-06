@@ -20,39 +20,45 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                             Authentication authentication) throws IOException, ServletException {
 
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         HttpSession session = request.getSession();
-        String lastPageUrl = (String) session.getAttribute(LAST_PAGE_URL_SESSION_KEY);
 
-        // 1. LastPageInterceptor에 의해 저장된 URL이 있다면 그곳으로 리다이렉트
+        // 1. 역할 기반 리다이렉션 (관리자 우선)
+        for (GrantedAuthority grantedAuthority : authorities) {
+            if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
+                // 관리자는 항상 관리자 대시보드로 이동
+                getRedirectStrategy().sendRedirect(request, response, "/admin/memberlist");
+                return; // 리다이렉션 후 즉시 종료
+            }
+            else if (grantedAuthority.getAuthority().equals("ROLE_MANAGER")) {
+                // 관리자는 항상 관리자 대시보드로 이동
+                getRedirectStrategy().sendRedirect(request, response, "/manage/hotel");
+                return; // 리다이렉션 후 즉시 종료
+            }
+        }
+
+        // 2. LastPageInterceptor에 의해 저장된 URL 확인
+        String lastPageUrl = (String) session.getAttribute(LAST_PAGE_URL_SESSION_KEY);
         if (lastPageUrl != null && !lastPageUrl.isEmpty()) {
             session.removeAttribute(LAST_PAGE_URL_SESSION_KEY); // 사용 후 세션에서 제거
             getRedirectStrategy().sendRedirect(request, response, lastPageUrl);
             return;
         }
 
-        // 2. SavedRequestAwareAuthenticationSuccessHandler에 의해 저장된 요청이 있다면 그곳으로 리다이렉트
-        // (보호된 리소스에 직접 접근하려다 로그인 페이지로 리다이렉트된 경우)
+        // 3. SavedRequestAwareAuthenticationSuccessHandler의 기본 동작 (보호된 페이지 접근 시)
         if (request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST") != null) {
             super.onAuthenticationSuccess(request, response, authentication);
             return;
         }
 
-        // 3. 위 두 가지 경우가 아니라면 역할 기반 리다이렉트 로직 수행
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-
+        // 4. 위 모든 경우에 해당하지 않을 때 기본 URL로 리다이렉트
         String redirectUrl = "/"; // 기본 리다이렉트 URL
-
-        for (GrantedAuthority grantedAuthority : authorities) {
-            if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
-                redirectUrl = "/admin/dashboard"; // 관리자 역할이면 관리자 대시보드로
-                break;
-            } else if (grantedAuthority.getAuthority().equals("ROLE_USER")) {
-                redirectUrl = "/user/mypage"; // 사용자 역할이면 마이페이지로
+         for (GrantedAuthority grantedAuthority : authorities) {
+            if (grantedAuthority.getAuthority().equals("ROLE_USER")) {
+                redirectUrl = "/"; // 일반 사용자는 메인 페이지로
                 break;
             }
-            // 다른 역할에 대한 리다이렉트 로직 추가 가능
         }
-
-        response.sendRedirect(redirectUrl);
+        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 }

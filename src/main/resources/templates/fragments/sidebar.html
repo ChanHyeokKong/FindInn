@@ -1,0 +1,35 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<aside th:fragment="admin-sidebar">
+    <div class="sidebar">
+        <img class="sidebar-logo" src="/image/logo_nemo_white.png">
+        <br>
+        <ul>
+            <li><a href="/admin/memberlist">고객 관리</a></li>
+            <li><a href="/admin/hotellist">호텔 관리</a></li>
+            <li><a href="/admin/managerlist">매니저 관리</a></li>
+            <li><a>고객 문의</a></li>
+            <li><a>승인 심사</a></li>
+            <li><a>이벤트</a></li>
+        </ul>
+    </div>
+</aside>
+
+<aside th:fragment="manager-sidebar">
+
+    <div class="sidebar">
+        <img class="sidebar-logo" src="/image/logo_nemo_white.png">
+        <br>
+        <span>이&nbsp;&nbsp;&nbsp;름 :  </span>
+        <span th:text="${#authentication.principal.memberName}"></span>
+        <br>
+        <span>이메일 :   </span><span sec:authentication="name"></span>
+        <ul>
+            <li><a th:href="@{/manage/hotel}">호텔 관리</a></li>
+            <li><a href="#">예약 관리</a></li>
+            <li><a th:href="@{/manage/room}">방 관리</a></li>
+            <li><a>리뷰 확인</a></li>
+            <li><a>이벤트</a></li>
+        </ul>
+    </div>
+</aside>
+</html>

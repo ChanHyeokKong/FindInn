@@ -18,29 +18,32 @@
         <input type="number" id="userId" th:field="*{userId}" required />
     </div>
     <input type="hidden" id="hotelId" th:field="*{hotelId}" value="1" />
+
     <div>
         <label for="roomType">Room Type:</label>
-        <!-- The dropdown now iterates over RoomTypes objects -->
-        <!-- Note the th:attr attribute which adds a custom data-price attribute -->
-        <select id="roomType" th:field="*{roomType}" required>
+        <select id="roomType" th:field="*{roomTypeId}" required>
             <option value="">-- Select a Room --</option>
             <option th:each="room : ${roomTypes}"
-                    th:value="${room.type_name}"
-                    th:text="${room.type_name + ' - $' + room.price}"
+                    th:value="${room.id}"
+                    th:text="${room.typeName + ' - $' + room.price}"
                     th:attr="data-price=${room.price}"></option>
         </select>
     </div>
-    <br/>
+    <br/>   
 
     <div>
         <label for="checkIn">Check-in Date:</label>
-        <input type="date" id="checkIn" th:field="*{checkIn}" required />
+        <!-- Use conditional th:value when th:field doesn't work -->
+        <input type="date" id="checkIn" name="checkIn"
+               th:value="${reservation.checkIn != null ? #temporals.format(reservation.checkIn, 'yyyy-MM-dd') : ''}" required />
     </div>
     <br/>
 
     <div>
         <label for="checkOut">Check-out Date:</label>
-        <input type="date" id="checkOut" th:field="*{checkOut}" required />
+        <!-- Use conditional th:value when th:field doesn't work -->
+        <input type="date" id="checkOut" name="checkOut"
+               th:value="${reservation.checkOut != null ? #temporals.format(reservation.checkOut, 'yyyy-MM-dd') : ''}" required />
     </div>
     <br/>
 
@@ -57,7 +60,6 @@
 
     <div>
         <label for="price">Price per Night:</label>
-        <!-- Price field is now readonly as it's set by JavaScript -->
         <input type="number" step="0.01" id="price" th:field="*{price}" readonly />
     </div>
     <br/>
@@ -67,26 +69,22 @@
     </div>
 </form>
 
-<!-- JavaScript to dynamically update the price -->
 <script>
-    // Wait for the document to be fully loaded
     document.addEventListener('DOMContentLoaded', function() {
         const roomTypeSelect = document.getElementById('roomType');
         const priceInput = document.getElementById('price');
 
-        // Listen for changes on the room type dropdown
-        roomTypeSelect.addEventListener('change', function() {
-            // Get the selected option element
-            const selectedOption = this.options[this.selectedIndex];
+        // Debug: Log the initial values
+        console.log('Check-in field value:', document.getElementById('checkIn').value);
+        console.log('Check-out field value:', document.getElementById('checkOut').value);
 
-            // Get the price from the 'data-price' attribute
+        roomTypeSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
             const price = selectedOption.getAttribute('data-price');
 
-            // Update the price input field's value
             if (price) {
                 priceInput.value = price;
             } else {
-                // Clear the price if the default option is selected
                 priceInput.value = '';
             }
         });

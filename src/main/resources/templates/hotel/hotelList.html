@@ -2,34 +2,92 @@
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout/layout}">
-<th:block layout:fragment="content">
+
+<div layout:fragment="content">
 
 
+
+
+
+	<br>
 	<div>
-		<div class="input-group" th:style="'max-width: 800px;'">
-			<input type="text" th:name="search" class="form-control" />
-			<button type="button" class="btn btn-success" name="btnSearch">검색</button>
+		<div class="input-group" th:style="'max-width: 1200px;'">
+			<input type="text" th:name="search" class="form-control" /> 
+			<input type="date" id="start" onChange="setendmin(this.value), startDate(this.value)"> 
+			<input type="date" id="end" onChange="endDate(this.value)"> 
+			<input type="number" placeholder="인원수" min="1" max="30" id="countPeople" />
+			<button type="button" class="btn btn-success" id="btnSearch">검색</button>
+		</div>
+		<br>
+		<button class="btn btn-warning" id="showMap" data-bs-toggle="modal"
+			data-bs-target="#mapModal">지도보기</button>
+	</div>
+	<br>
+
+	<table class="table table-bordered" id="hotelTable">
+		<tbody id="hotelTbody">
+			<tr th:each="hotel : ${hotels}">
+				<td>
+					<div class="card"
+						style="display: flex; flex-direction: row; max-height: 200px;">
+
+						<!-- 왼쪽 이미지 영역 -->
+						<div
+							style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+							<!--             <img th:src="@{${hotel.images}}" alt="호텔 이미지" style="width: 100%; height: auto;" />
+ -->
+						</div>
+
+						<!-- 오른쪽 정보 영역 -->
+						<div class="card-body" style="flex: 1;">
+							<h5 class="card-title" th:text="${hotel.hotelName}">호텔명</h5>
+							<p class="card-text">
+								<strong>hotel_idx:</strong> <span th:text="${hotel.hotelIdx}"></span><br>
+								<strong>empty:</strong> <span th:text="${hotel.hotelEmpty}"></span><br>
+								<strong>member_idx:</strong> <span th:text="${hotel.memberIdx}"></span>
+
+							</p>
+						</div>
+
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+
+
+
+	<div class="modal fade" id="mapModal" tabindex="-1" data-bs-backdrop="static">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">지도</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div id="map" style="width: 100%; height: 650px;"></div>
+
+				</div>
+				<script type="text/javascript"
+					src="//dapi.kakao.com/v2/maps/sdk.js?appkey=5ac2ea2e11f7b380cdf52afbcc384b44"></script>
+			</div>
 		</div>
 	</div>
 
 
+<script src="/javascript/hotelSearch.js"></script>
+</div>
 
 
-
-	<table>
-
-		<tr th:each="hotel : ${hotels}">
-
-			<!--파일저장 후 받아오기.  -->
-			<!-- <td>
-          <img th:src="@{${hotel.images}}" alt="호텔 사진" width="200" />
-        </td> -->
-
-			<td th:text="${hotel.h_name}">호텔명</td>
-		</tr>
+	
 
 
-	</table>
-
-</th:block>
 </html>
+
+
+
+
+
+

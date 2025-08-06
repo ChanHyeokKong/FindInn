@@ -41,6 +41,7 @@ $("#login-btn").on("click", function () {
                 $("#sign-form").attr("action", "/signin").on("submit", errCheck);
                 $("#login-btn").attr("type", "submit").text("회원가입");
 
+
             } else {
                 console.error("AJAX Error: ", status, error);
                 alert("로그인 중 오류가 발생했습니다.");

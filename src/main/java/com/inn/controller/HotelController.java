@@ -7,8 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inn.data.hotel.HotelDto;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.service.HotelService;
 
@@ -27,11 +29,10 @@ public class HotelController {
 	}
 	
 	@GetMapping("/h_search")
-	public String hotelSearch(@RequestParam String name) {
-		
-		hotelService.getHotelData(name);
-		
-		return "/hotel/hotelList";
+	@ResponseBody
+	public List<HotelDto> getHotelData(@RequestParam("keyword") String keyword) {
+			
+		return hotelService.getHotelData(keyword);
 	}
 
 	
