@@ -1,12 +1,10 @@
-package com.inn.service;
+package com.inn.data.test;
 
 
 
 import com.inn.data.member.MemberDto;
-import com.inn.data.test.AnswerRequest;
-import com.inn.data.test.CharacterType;
-import com.inn.data.test.CharacterTypeRepository;
 
+import com.inn.service.TestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +13,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class TestServiceImpl implements TestService {
+public class TestServiceImpl2 implements TestService {
 
     private final CharacterTypeRepository characterTypeRepository;
 
