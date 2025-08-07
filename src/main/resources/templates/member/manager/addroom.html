@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/managerLayout}">
+<div layout:fragment="content">
+    <div class="container mt-3">
+        <h2>객실 추가</h2>
+        <form action="/manage/addroom/action" method="post">
+            <div class="form-group">
+                <!-- 1. 호텔 선택 드롭다운 -->
+                <label for="hotelName">호텔 선택</label>
+                <select name="hotelId" id="hotelName" class="form-control">
+                    <option value="">호텔을 선택하세요</option>
+                    <option th:each="hotel : ${hotels}" th:value="${hotel.hotelIdx}" th:text="${hotel.hotelName}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <!-- 2. 방 종류 선택 드롭다운 -->
+                <label for="roomTypeName">방 종류 선택</label>
+                <select name="roomTypeId" id="roomTypeName" class="form-control">
+                    <option value="">호텔을 먼저 선택하세요</option>
+                    <th:block th:each="roomType : ${roomTypes}">
+                        <option th:value="${roomType.id}"
+                                th:text="${roomType.typeName}"
+                                th:attr="data-hotel-id=${roomType.hotelId}"
+                                style="display: none;"></option>
+                    </th:block>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <!-- 3. 객실 번호 입력 -->
+                <label for="roomNumber">객실 번호</label>
+                <input type="number" name="roomNumber" id="roomNumber" class="form-control" placeholder="예: 101">
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">객실 추가</button>
+        </form>
+    </div>
+
+    <!-- JavaScript 로드 (hoteladd.js를 재사용) -->
+    <script src="/javascript/hoteladd.js"></script>
+</div>
+</html>

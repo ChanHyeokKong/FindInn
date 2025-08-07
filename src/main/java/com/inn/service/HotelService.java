@@ -13,7 +13,7 @@ import com.inn.data.hotel.HotelRepository;
 import com.inn.data.member.manager.HotelWithManagerDto;
 
 @Service
-public class HotelService {
+public class 	HotelService {
 
 	@Autowired
 	private HotelRepository hotelRepository;

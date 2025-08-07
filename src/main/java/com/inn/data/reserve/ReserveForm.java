@@ -1,4 +1,4 @@
-package com.inn.reserve;
+package com.inn.data.reserve;
 
 import lombok.Data;
 
