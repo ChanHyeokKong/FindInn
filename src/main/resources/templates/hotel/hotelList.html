@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout/layout}">
+	layout:decorate="~{layout/searchLayout}">
 
 <div layout:fragment="content">
 
@@ -15,7 +15,7 @@
 			<input type="text" th:name="search" class="form-control" /> 
 			<input type="date" id="start" onChange="setendmin(this.value), startDate(this.value)"> 
 			<input type="date" id="end" onChange="endDate(this.value)"> 
-			<input type="number" placeholder="인원수" min="1" max="30" id="countPeople" />
+			<input type="number" placeholder="인원수" min="1" max="30" id="capacity" />
 			<button type="button" class="btn btn-success" id="btnSearch">검색</button>
 		</div>
 		<br>
@@ -26,16 +26,18 @@
 
 	<table class="table table-bordered" id="hotelTable">
 		<tbody id="hotelTbody">
-			<tr th:each="hotel : ${hotels}">
+			<tr th:each="hotel : ${hotels}" >
 				<td>
-					<div class="card"
+					<div class="card hotel-card"  th:attr="data-hotel-id=${hotel.hotelIdx}"
 						style="display: flex; flex-direction: row; max-height: 200px;">
 
 						<!-- 왼쪽 이미지 영역 -->
 						<div
 							style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-							<!--             <img th:src="@{${hotel.images}}" alt="호텔 이미지" style="width: 100%; height: auto;" />
- -->
+							     
+							<img th:if="${hotel.hotelImages != null and !#lists.isEmpty(hotel.hotelImages)}" 
+     						th:src="@{'/hotelImage/' + ${hotel.hotelImages[0]}}" alt="호텔 이미지" />
+								    
 						</div>
 
 						<!-- 오른쪽 정보 영역 -->
@@ -54,7 +56,6 @@
 			</tr>
 		</tbody>
 	</table>
-
 
 
 

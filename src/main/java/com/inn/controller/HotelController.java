@@ -34,6 +34,8 @@ public class HotelController {
 			
 		return hotelService.getHotelData(keyword);
 	}
+	
+	
 
 	
 	

@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.inn.data.hotel.HotelDto;
 import com.inn.data.hotel.HotelEntity;
@@ -41,6 +42,11 @@ public class HotelService {
 			    ))
 			    .collect(Collectors.toList());
 	}
+	
+	
+	 /* public List<HotelEntity> getHotelDataByCategory(@RequestParam String
+	  category){ }*/
+	 
 
 	
 	

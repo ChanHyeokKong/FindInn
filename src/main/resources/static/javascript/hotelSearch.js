@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
+	//검색출력
 	const btnSearch = document.getElementById("btnSearch");
 
 	btnSearch.addEventListener("click", function() {
@@ -54,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	});
 
-
+	//오늘 이전 날짜 선택 금지
 	var today = new Date();
 	var dd = today.getDate();
 	var mm = today.getMonth() + 1;
@@ -88,6 +89,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	}
 
+	
 	window.endDate = function(e) {
 
 		
@@ -107,6 +109,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		console.log(end)
 	}
 
+	//맵 모달
 	const mapModal = document.getElementById('mapModal');
 
 	if (mapModal) {
@@ -131,6 +134,51 @@ document.addEventListener("DOMContentLoaded", function() {
 			}
 		});
 	}
+	
+	//사이드바 옵션 radio
+	const radios = document.querySelectorAll('input[name="category"]');
+		
+		  radios.forEach(radio => {
+		    radio.addEventListener('change', () => {
+		      const selectedValue = radio.value;
+		      // URL에 value를 쿼리로 붙여서 페이지 이동
+		      const encodedValue = encodeURIComponent(selectedValue);
+		      window.location.href = `/h_list?category=${encodedValue}`;
+		    });
+		  });
+		const params = new URLSearchParams(window.location.search);
+		      const category = params.get('category');
+
+		      if (category) {
+		        const decoded = decodeURIComponent(category);
+		        const targetRadio = document.querySelector(`input[name="category"][value="${decoded}"]`);
+		        if (targetRadio) {
+		          targetRadio.checked = true;
+		        }
+		      }
+			  
+			  
+			  
+		//선택시 url보내기
+		document.querySelectorAll('.hotel-card').forEach(card => {
+			card.addEventListener('click', () =>{
+				const hotelId = card.getAttribute('data-hotel-id');
+				
+				const checkIn = document.getElementById('start').value;
+				const checkOut = document.getElementById('end').value;
+				const personal = document.getElementById('capacity').value;
+				
+				if (!checkIn || !checkOut || !personal) {
+				    alert("날짜, 인원수를 모두 입력해주세요.");
+				    return;
+				  }
+				
+					  
+					  const url= `domestic-accomodations?id=${hotelId}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}&personal=${encodeURIComponent(personal)}`;
+					location.href=url;
+			})
+		})	  
+		
 
 
 });
