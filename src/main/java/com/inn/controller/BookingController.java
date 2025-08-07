@@ -11,11 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Map;
+
 
 @Controller
 public class BookingController {
@@ -27,6 +29,7 @@ public class BookingController {
     private BookingService bookingService;
 
     @GetMapping("/booking")
+
     public String bookingPage(
             @RequestParam("checkIn") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkin,
             @RequestParam("checkOut") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkout,
@@ -52,6 +55,7 @@ public class BookingController {
         // 몇 박인지 계산
         long nights = Duration.between(checkin.atStartOfDay(), checkout.atStartOfDay()).toDays();
         int totalPrice = price * (int)nights;
+
 
         // 객실정보
         model.addAttribute("room_id", 101);
