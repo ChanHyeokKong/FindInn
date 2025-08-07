@@ -13,7 +13,7 @@ public class HotelDto {
 	private String hotelName;
 	private Integer hotelEmpty;
 	private List<String> hotelImages;
-	private String hotelAdress;
+	private String hotelAddress;
 	private String hotelTel;
 	private String hotelCategory;
 	private List<String> hotelTag;
