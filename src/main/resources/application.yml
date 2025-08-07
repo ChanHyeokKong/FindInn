@@ -13,6 +13,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  sql:
+    init:
+      mode: always
 server:
   servlet:
     session:

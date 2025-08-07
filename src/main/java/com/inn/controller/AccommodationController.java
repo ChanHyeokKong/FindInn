@@ -28,7 +28,7 @@ public class AccommodationController {
         AccommodationDto accommodation = new AccommodationDto();
 
         accommodation.setCheckInDate(checkIn);
-        accommodation.setCheckOutDate(checkOut);
+        accommodation.setCheckOutDate(checkOut); 
         accommodation.setPersonal(personal);
 
         

@@ -21,6 +21,5 @@ public class BookingDto {
     private Integer price;
     private String status;
     private LocalDateTime canceledAt;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
 }

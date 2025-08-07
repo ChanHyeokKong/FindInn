@@ -3,6 +3,33 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 
+<head>
+    <title>호텔 예약 확인 및 결제</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <th:block layout:fragment="head"></th:block>
+    <style>
+        .payMethodBtn {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            background-color: white;
+            cursor: pointer;
+            margin-right: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .payMethodBtn.selected {
+            background-color: #007bff;  /* 파란 배경 */
+            color: white;
+            border-color: #0056b3;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+
+<body>
 <th:block layout:fragment="content">
 
     <div class="container">
@@ -38,14 +65,12 @@
             <!-- 전화번호 + 인증 버튼 -->
             <div>
                 <input type="tel" id="guestPhone" name="guestPhone" placeholder="전화번호">
-                <!-- 로그인 시 버튼 자체를 안보이게 -->
-                <button type="button" id="sendAuthBtn"
-                        th:style="${!isLogined} ? 'display:block;' : 'display:none;'">
+                <button type="button" id="sendAuthBtn" th:if="${!isLogined}">
                     인증번호 받기
                 </button>
             </div>
 
-            <!-- ✅ 인증번호 입력 필드 (초기엔 숨김 처리) -->
+            <!-- 인증번호 입력 필드 (초기엔 숨김 처리) -->
             <div id="authSection" style="display: none;">
                 <input type="text" id="authInput" placeholder="인증번호 입력">
                 <input type="hidden" id="serverAuthCode" value="">
@@ -58,24 +83,37 @@
         </section>
         <br>
 
+        <!-- ✅ 결제 수단 -->
+        <section>
+            <h2>결제 수단</h2>
+            <hr>
+
+            <div id="payMethodSection">
+                <button type="button" class="payMethodBtn selected" data-method="tosspay">토스페이</button>
+                <button type="button" class="payMethodBtn" data-method="kakaopay">카카오페이</button>
+                <button type="button" class="payMethodBtn" data-method="card">신용/체크카드</button>
+            </div>
+
+            <!-- 선택된 결제 수단을 저장할 hidden input -->
+            <input type="hidden" id="payMethod" name="payMethod" value="tosspay">
+        </section>
+        <br>
+
         <!-- ✅ 결제 정보 -->
         <section>
             <h2>결제 정보</h2>
             <hr>
 
-            <!-- 객실 가격 -->
             <p>
                 객실 가격(<span th:text="${nights}">0</span>박):
                 <span th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')} + '원'">0원</span>
             </p>
 
-            <!-- 총 결제 금액 -->
             <p>
                 <strong>총 결제 금액:</strong>
                 <strong th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')} + '원'">0원</strong>
             </p>
 
-            <!-- 결제 버튼 -->
             <p>
                 <button id="payBtn">결제하기</button>
             </p>
@@ -86,30 +124,22 @@
         <input type="hidden" id="memberId" th:value="${memberId}" />
         <input type="hidden" id="memberEmail" th:value="${memberEmail}" />
 
-        <!-- ✅ payment JS 전달용 -->
-
-        <!-- 포트원 채널키 전달 -->
+        <!-- ✅ 결제 관련 JS 전달용 -->
         <input type="hidden" id="channelKey" th:value="${channelKey}">
-
-        <!-- 예약 관련 정보 전달 -->
         <input type="hidden" id="roomId" th:value="${room_id}">
         <input type="hidden" id="checkin" th:value="${checkin}">
         <input type="hidden" id="checkout" th:value="${checkout}">
         <input type="hidden" id="totalPrice" th:value="${totalPrice}">
 
-        <!-- 초기 로그인 등 인증 체크 -->
-        <script th:src="@{/javascript/bookingAuthState.js}"></script>
-
-        <!-- 문자 인증 로직 JS -->
+        <!-- 스크립트 -->
+        <script th:src="@{/javascript/bookingHandler.js}"></script>
         <script th:src="@{/javascript/smsAuth.js}"></script>
-
-        <!-- 내부 결제 로직 JS -->
         <script th:src="@{/javascript/payment.js}"></script>
-
-        <!-- (포트원 라이브러리) -->
         <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 
     </div>
 
 </th:block>
+</body>
+
 </html>
