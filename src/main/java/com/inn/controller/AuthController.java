@@ -1,6 +1,5 @@
 package com.inn.controller;
 
-import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
@@ -19,13 +18,11 @@ public class AuthController {
     private final DefaultMessageService messageService;
     private final String smsFrom;
 
-    // 생성자 주입 방식
-    public AuthController(
-            @Value("${coolsms.api-key}") String apiKey,
-            @Value("${coolsms.api-secret}") String apiSecret,
-            @Value("${sms.from}") String smsFrom) {
+    // 빈 주입
+    public AuthController(DefaultMessageService messageService,
+                          @Value("${sms.from}") String smsFrom) {
+        this.messageService = messageService;
         this.smsFrom = smsFrom;
-        this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecret, "https://api.coolsms.co.kr");
     }
 
     @GetMapping("/send-one")

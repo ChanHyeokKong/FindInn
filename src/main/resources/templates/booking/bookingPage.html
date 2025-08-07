@@ -38,9 +38,8 @@
             <!-- 전화번호 + 인증 버튼 -->
             <div>
                 <input type="tel" id="guestPhone" name="guestPhone" placeholder="전화번호">
-                <!-- 로그인 시 버튼 자체를 안보이게 -->
-                <button type="button" id="sendAuthBtn"
-                        th:style="${!isLogined} ? 'display:block;' : 'display:none;'">
+                <!-- 로그인 안 되어 있을 때만 인증버튼 렌더링 -->
+                <button type="button" id="sendAuthBtn" th:if="${!isLogined}">
                     인증번호 받기
                 </button>
             </div>

@@ -21,29 +21,29 @@ public class PaymentEntity {
     @Column(name = "booking_id")
     private Integer bookingId;
 
-    @Column(name = "imp_uid")
+    @Column(name = "imp_uid", nullable = false)
     private String impUid;
 
     @Column(name = "merchant_uid", nullable = false, unique = true)
     private String merchantUid;
 
-    @Column(name = "pay_method")
+    @Column(name = "pay_method", nullable = false)
     private String payMethod;
 
-    @Column(name = "paid_amount")
+    @Column(name = "paid_amount", nullable = false)
     private Integer paidAmount;
 
-    @Column(name = "buyer_name")
+    @Column(name = "buyer_name", nullable = false)
     private String buyerName;
 
-    @Column(name = "buyer_email")
+    @Column(name = "buyer_email", nullable = false)
     private String buyerEmail;
 
-    @Column(name = "buyer_tel")
+    @Column(name = "buyer_tel", nullable = false)
     private String buyerTel;
 
     @Builder.Default
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private String status = "PAID";
 
     @Column(name = "created_at", insertable = false, updatable = false)

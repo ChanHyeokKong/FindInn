@@ -1,5 +1,6 @@
 package com.inn.data.payment;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Data
 public class PaymentDto {
 
     private Integer id;
@@ -19,6 +21,5 @@ public class PaymentDto {
     private String buyerEmail;
     private String buyerTel;
     private String status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
 }

@@ -10,8 +10,6 @@ import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,19 +22,17 @@ import java.util.Optional;
 @RequestMapping("/payment")
 public class PaymentController {
 
-    @Autowired
-    private BookingRepository bookingRepository;
-
-    @Autowired
-    private PaymentService paymentService;
-
+    private final BookingRepository bookingRepository;
+    private final PaymentService paymentService;
     private final IamportClient iamportClient;
 
-    public PaymentController(
-            @Value("${portone.api-key}") String apiKey,
-            @Value("${portone.api-secret}") String apiSecret
-    ) {
-        this.iamportClient = new IamportClient(apiKey, apiSecret);
+    // IamportClient를 Bean 으로 주입
+    public PaymentController(BookingRepository bookingRepository,
+                             PaymentService paymentService,
+                             IamportClient iamportClient) {
+        this.bookingRepository = bookingRepository;
+        this.paymentService = paymentService;
+        this.iamportClient = iamportClient;
     }
 
     /**
@@ -102,9 +98,21 @@ public class PaymentController {
             PaymentEntity payment = paymentService.insert(dto);
             return ResponseEntity.ok(Map.of("result", "success", "id", payment.getId()));
         } catch (Exception e) {
+            // 예외 발생 시 결제 취소 시도
+            boolean isCanceled = false;
+            if (dto.getImpUid() != null && !dto.getImpUid().isEmpty()) {
+                isCanceled = paymentService.cancelPaymentByImpUid(dto.getImpUid());
+            }
+
+            String failMsg = "결제 정보 저장 실패";
+            if (isCanceled) {
+                failMsg += "로 인해 결제를 취소했습니다.";
+            } else {
+                failMsg += " 및 결제 취소 실패.";
+            }
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("result", "fail", "message", e.getMessage()));
+                    .body(Map.of("result", "fail", "message", failMsg, "detail", e.getMessage()));
         }
     }
-
 }

@@ -103,6 +103,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                                     buyerEmail: rsp.buyer_email
                                                 }),
                                                 success: function () {
+                                                    // 7. 결제 완료 후 예약 확인 페이지
                                                     alert("🎉 결제가 완료되었습니다!");
                                                     window.location.href = "/booking/complete";
                                                 },
@@ -110,6 +111,22 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                                     const res = xhr.responseJSON;
                                                     const message = res?.message || "결제 정보 저장 중 오류가 발생했습니다.";
                                                     alert("❌ 결제 저장 실패: " + message);
+
+                                                    // 예약 상태 취소로 업데이트
+                                                    $.ajax({
+                                                        url: "/booking/update/cancel/" + bookingId,  // 실제 API 경로 맞게 조정
+                                                        type: 'PUT',
+                                                        success: function() {
+                                                            alert("❌ 예약이 취소되었습니다");
+                                                            return;
+                                                        },
+                                                        error: function(xhr) {
+                                                            const res = xhr.responseJSON;
+                                                            const message = res?.message || '예약 취소 중 오류가 발생했습니다.';
+                                                            alert('❌ 예약 취소 실패: ' + message);
+                                                        }
+                                                    });
+                                                    return;
                                                 }
                                             });
                                         },
@@ -117,10 +134,42 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                             const res = xhr.responseJSON;
                                             const message = res?.message || "결제 검증 중 오류가 발생했습니다.";
                                             alert("❌ 결제 검증 실패: " + message);
+
+                                            // 예약 상태 취소로 업데이트
+                                            $.ajax({
+                                                url: "/booking/update/cancel/" + bookingId,  // 실제 API 경로 맞게 조정
+                                                type: 'PUT',
+                                                success: function() {
+                                                    alert("❌ 예약이 취소되었습니다");
+                                                    return;
+                                                },
+                                                error: function(xhr) {
+                                                    const res = xhr.responseJSON;
+                                                    const message = res?.message || '예약 취소 중 오류가 발생했습니다.';
+                                                    alert('❌ 예약 취소 실패: ' + message);
+                                                }
+                                            });
+                                            return;
                                         }
                                     });
                                 } else {
                                     alert("❌ 결제 실패: " + rsp.error_msg);
+
+                                    // 예약 상태 취소로 업데이트
+                                    $.ajax({
+                                        url: "/booking/update/cancel/" + bookingId,  // 실제 API 경로 맞게 조정
+                                        type: 'PUT',
+                                        success: function() {
+                                            alert("❌ 예약이 취소되었습니다");
+                                            return;
+                                        },
+                                        error: function(xhr) {
+                                            const res = xhr.responseJSON;
+                                            const message = res?.message || '예약 취소 중 오류가 발생했습니다.';
+                                            alert('❌ 예약 취소 실패: ' + message);
+                                        }
+                                    });
+                                    return;
                                 }
                             });
                         },
@@ -128,16 +177,19 @@ document.getElementById('payBtn').addEventListener('click', function () {
                             const res = xhr.responseJSON;
                             const message = res?.message || "예약 저장 중 오류가 발생했습니다.";
                             alert("❌ 예약 저장 실패: " + message);
+                            return;
                         }
                     });
                 },
                 error: function () {
                     alert("❌ 예약 중복 확인 실패");
+                    return;
                 }
             });
         },
         error: function () {
             alert("❌ 고유 주문번호 발급 실패");
+            return;
         }
     });
 });
