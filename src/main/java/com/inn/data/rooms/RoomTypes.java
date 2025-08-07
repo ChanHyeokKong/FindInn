@@ -1,4 +1,4 @@
-package com.inn.rooms;
+package com.inn.data.rooms;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,4 +17,5 @@ public class RoomTypes {
     long price;
     long capacity;
     long hotelId;
+    String imageUrl;
 }

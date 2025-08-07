@@ -1,8 +1,9 @@
-package com.inn.rooms;
+package com.inn.data.rooms;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,6 +23,7 @@ public interface RoomsRepository extends JpaRepository<Rooms, Long> {
         AND res.checkOut > :checkInDate
     )
 """)
+    @Transactional(readOnly = true)
     List<Rooms> findAvailableRoomNo(
             @Param("roomTypeId") Long roomTypeId,
             @Param("checkInDate") LocalDate checkInDate,

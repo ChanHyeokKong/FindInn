@@ -1,4 +1,4 @@
-package com.inn.reserve;
+package com.inn.data.reserve;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
