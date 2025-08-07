@@ -8,4 +8,5 @@ import com.inn.data.member.MemberDto;
 
 public interface TestResultRepository extends JpaRepository<TestResult, Long> {
     Optional<TestResult> findByMember(MemberDto member);
+    boolean existsByMember(MemberDto member);
 }

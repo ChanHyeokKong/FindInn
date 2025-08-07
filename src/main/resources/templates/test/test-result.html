@@ -17,7 +17,11 @@
 </head>
 <body>
 
-<div class="card">
+<div th:if="${errorMessage != null}">
+    <p th:text="${errorMessage}" style="color:red; font-weight: bold;"></p>
+</div>
+
+<div class="card" th:if="${character != null}">
     <h2>🎉 당신의 여행 부캐는?</h2>
     <h1 th:text="${character.name} + ' (' + ${character.code} + ')'">감성 탐험가 (E02)</h1>
 
