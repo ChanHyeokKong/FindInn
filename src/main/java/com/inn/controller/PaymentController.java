@@ -10,6 +10,7 @@ import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,20 +21,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/payment")
+@RequiredArgsConstructor
 public class PaymentController {
 
     private final BookingRepository bookingRepository;
     private final PaymentService paymentService;
     private final IamportClient iamportClient;
-
-    // IamportClient를 Bean 으로 주입
-    public PaymentController(BookingRepository bookingRepository,
-                             PaymentService paymentService,
-                             IamportClient iamportClient) {
-        this.bookingRepository = bookingRepository;
-        this.paymentService = paymentService;
-        this.iamportClient = iamportClient;
-    }
 
     /**
      * 프론트에서 결제 완료 후 imp_uid를 전달받아 결제 정보를 검증합니다.

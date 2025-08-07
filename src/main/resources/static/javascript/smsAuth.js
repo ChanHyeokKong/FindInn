@@ -17,7 +17,7 @@ if (sendAuthBtn) {
         }
 
         $.ajax({
-            url: '/send-one',
+            url: '/sms/auth',
             method: 'GET',
             data: { pNum: phone },
             success: function (data) {
