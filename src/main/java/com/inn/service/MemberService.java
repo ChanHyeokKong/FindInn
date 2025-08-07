@@ -43,7 +43,7 @@ public class MemberService implements UserDetailsService {
             System.out.println("error");
         }
         memberDao.save(memberDto);
-        System.out.println("1234");
+
     }
 
     public void giveManagerRole(Long memberIdx) {
@@ -54,6 +54,7 @@ public class MemberService implements UserDetailsService {
 
             Optional<RoleDto> managerRoleOptional = roleDao.findById("ROLE_MANAGER");
             if (managerRoleOptional.isPresent()) {
+                memberDto.getRoles().clear();
                 memberDto.getRoles().add(managerRoleOptional.get());
                 memberDao.save(memberDto);
                 System.out.println("Member " + memberIdx + " has been granted ROLE_MANAGER.");
