@@ -1,7 +1,7 @@
-package com.inn.reserve;
+package com.inn.data.reserve;
 
-import com.inn.rooms.RoomTypes;
-import com.inn.rooms.Rooms;
+import com.inn.data.rooms.RoomTypes;
+import com.inn.data.rooms.Rooms;
 import jakarta.persistence.*;
 import lombok.Data;
 

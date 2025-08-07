@@ -1,8 +1,8 @@
 package com.inn.data.member.manager;
 
 import com.inn.data.hotel.HotelEntity;
-import com.inn.rooms.RoomTypes;
-import com.inn.rooms.Rooms;
+import com.inn.data.rooms.RoomTypes;
+import com.inn.data.rooms.Rooms;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
