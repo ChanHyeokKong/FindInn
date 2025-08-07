@@ -1,8 +1,10 @@
 package com.inn.service;
 
+import com.inn.data.hotel.HotelEntity;
 import com.inn.data.member.manager.HotelRoomTypeSummaryDto;
 import com.inn.data.member.manager.HotelWithManagerDto;
 import com.inn.data.member.manager.ManageRepository;
+import com.inn.rooms.RoomTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,13 @@ public class ManagerService {
         return manageRepository.findHotelRoomTypesByMemberIdx(memberIdx);
     }
 
+    // 관리자 IDX를 관리할 수 있는 모든 호텔 IDX 추출
+    public List<HotelEntity> GetAllMyHotel(Long memberIdx){
+        return manageRepository.findHotelByMemberIdx(memberIdx);
+    }
 
+    public List<RoomTypes> getRoomTypesByHotelIds(List<Integer> hotelIds) {
+        return manageRepository.findRoomTypesByHotelIdIn(hotelIds);
+    }
 
 }

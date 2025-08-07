@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<div layout:fragment="content">
+    <div class="container mt-3">
+        <form action="/manage/addhotel/action" method="post">
+            <div class="form-group">
+                <caption>호텔 이름</caption><br>
+                <select name="hotelId">
+                    <option th:each="hotel : ${hotels}" th:value="${hotel.HotelIdx}">
+                        [[${hotel.hotelName}]]
+                    </option>
+                </select><br>
+                <caption>방 이름</caption><br>
+                <input type="text" name="description"><br>
+                <caption>방 타입</caption><br>
+                <input type="text" name="typeName"><br>
+                <caption>방 가격</caption><br>
+                <input type="text" name="price"><br>
+                <caption>최대 인원수</caption><br>
+                <input type="number" name="capacity"><br>
+                <button type="submit">호텔 추가</button>
+            </div>
+        </form>
+    </div>
+</div>
+</html>

@@ -1,21 +1,31 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/managerLayout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/managerLayout}">
 <div layout:fragment="content">
-    <table id="example" class="table table-striped table-bordered" style="width:100%">
-        <tr>
-            <th>호 실</th>
-            <th>방이름</th>
-            <th>방타입</th>
-            <th>방가격</th>
-            <th>상세보기</th>
-        </tr>
-        <tr th:each="hotelRoomInfo : ${hotelRoomInfos}">
-            <td th:text="${hotelRoomInfo.rooms.roomNumber}"></td>
-            <td th:text="${hotelRoomInfo.roomTypes.description}"></td>
-            <td th:text="${hotelRoomInfo.roomTypes.typeName}"></td>
-            <td th:text="${hotelRoomInfo.roomTypes.price}"></td>
-            <td><button th:onclick="'location.href=\'/manage/room/detail?idx=' + ${hotelRoomInfo.rooms.id} + '\''">상세보기</button></td>
-        </tr>
-    </table>
+    <div class="manager-content">
+        <a href="/manage/addroom"><i class="fa-solid fa-plus"> 방 추가</i></a>
+        <table id="example" class="table table-striped table-bordered" style="width:100%">
+            <tr>
+                <th>호텔명</th>
+                <th>호 실</th>
+                <th>방이름</th>
+                <th>방타입</th>
+                <th>방가격</th>
+                <th>상세보기</th>
+            </tr>
+            <tr th:each="hotelRoomInfo : ${hotelRoomInfos}">
+                <td th:text="${hotelRoomInfo.hotelEntity.hotelName}"></td>
+                <td th:text="${hotelRoomInfo.rooms.roomNumber}"></td>
+                <td th:text="${hotelRoomInfo.roomTypes.description}"></td>
+                <td th:text="${hotelRoomInfo.roomTypes.typeName}"></td>
+                <td th:text="${hotelRoomInfo.roomTypes.price}"></td>
+                <td>
+                    <button th:onclick="'location.href=\'/manage/room/detail?idx=' + ${hotelRoomInfo.rooms.id} + '\''">
+                        상세보기
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>
 </html>
