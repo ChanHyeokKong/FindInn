@@ -14,7 +14,7 @@ public class HotelRoomTypeSummaryDto {
     private String memberName;
     private String roomTypeName;
     private String roomTypeDescription;
-    private long roomTypeCapacity;
+    private Long roomTypeCapacity;
     private Long roomCount;
 
 

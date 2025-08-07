@@ -1,6 +1,7 @@
 package com.inn.data.member.manager;
 
 import com.inn.data.hotel.HotelEntity;
+import com.inn.rooms.RoomTypes;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,10 +27,15 @@ public interface ManageRepository extends JpaRepository<HotelEntity, Integer> {
             "h.hotelIdx, h.hotelName, m.memberName, rt.typeName, rt.description, rt.capacity, COUNT(r.id)) " +
             "from HotelEntity h " +
             "JOIN MemberDto m on h.memberIdx = m.memberIdx " +
-            "join Rooms r on h.hotelIdx = r.hotelId " +
-            "join RoomTypes rt on r.roomType.id = rt.id " +
+            "JOIN RoomTypes rt on h.hotelIdx = rt.hotelId " +   // RoomType은 반드시 있어야 함 (INNER JOIN)
+            "LEFT JOIN Rooms r on rt.id = r.roomType.id " +      // Rooms는 없을 수도 있음 (LEFT JOIN)
             "where m.memberIdx = :memberIdx " +
-            "GROUP BY h.hotelIdx, h.hotelName, m.memberName, rt.typeName, rt.description, rt.capacity")
+            "GROUP BY h.hotelIdx, h.hotelName, m.memberName, rt.typeName, rt.description, rt.capacity, rt.id")
     List<HotelRoomTypeSummaryDto> findHotelRoomTypesByMemberIdx(@Param("memberIdx") Long memberIdx);
 
+    @Query("select h from HotelEntity h where h.memberIdx = :memberIdx")
+    List<HotelEntity> findHotelByMemberIdx(@Param("memberIdx") Long memberIdx);
+
+    @Query("select rt from RoomTypes rt where rt.hotelId in :hotelIds")
+    List<RoomTypes> findRoomTypesByHotelIdIn(@Param("hotelIds") List<Integer> hotelIds);
 }

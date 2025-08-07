@@ -110,3 +110,9 @@
 .modal-body .login-form li{
     list-style: none;
 }
+
+.manager-content a{
+    text-decoration: none;
+    float: right;
+    margin-right: 20px;
+}
