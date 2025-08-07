@@ -1,6 +1,6 @@
 package com.inn.controller;
 
-import com.inn.data.hotel.HotelWithManagerDto;
+import com.inn.data.member.manager.HotelWithManagerDto;
 import com.inn.data.member.MemberDto;
 import com.inn.service.AdminService;
 import com.inn.service.MemberService;
@@ -23,6 +23,15 @@ public class AdminController {
     public ModelAndView memberList(){
         ModelAndView mv = new ModelAndView("member/admin/memberList");
         List<MemberDto> list = memberService.getAllMember();
+        mv.addObject("members",list);
+
+        return mv;
+    }
+
+    @GetMapping("/admin/managerlist")
+    public ModelAndView managerList(){
+        ModelAndView mv = new ModelAndView("member/admin/managerList");
+        List<MemberDto> list = memberService.getAllManager();
         mv.addObject("members",list);
 
         return mv;

@@ -13,4 +13,7 @@ public interface MemberDaoInter extends JpaRepository<MemberDto, Long> {
     @Query("SELECT m FROM MemberDto m JOIN m.roles r WHERE r.MemberRole = 'ROLE_USER'")
     List<MemberDto> findAllUser();
 
+    @Query("SELECT m FROM MemberDto m JOIN m.roles r WHERE r.MemberRole = 'ROLE_MANAGER'")
+    List<MemberDto> findAllManager();
+
 }

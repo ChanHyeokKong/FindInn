@@ -1,4 +1,4 @@
-package com.inn.rooms;
+package com.inn.data.rooms;
 
 import jakarta.persistence.*;
 import lombok.Data;

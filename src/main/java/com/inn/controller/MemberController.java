@@ -44,9 +44,4 @@ public class MemberController {
         return "login/login";
     }
 
-    @GetMapping("/manage/hotel")
-    public String manageHotel(){
-        return "member/manager/hotelmanage";
-    }
-
 }

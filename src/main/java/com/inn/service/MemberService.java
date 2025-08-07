@@ -94,4 +94,9 @@ public class MemberService implements UserDetailsService {
         return list;
     }
 
+    public List<MemberDto> getAllManager(){
+        List<MemberDto> list = memberDao.findAllManager();
+        return list;
+    }
+
 }

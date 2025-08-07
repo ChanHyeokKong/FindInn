@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/adminLayout}">
+<div layout:fragment="content">
+  <table id="example" class="table table-striped table-bordered" style="width:100%">
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+
+    </tr>
+    <tr th:each="member : ${members}">
+      <td th:text="${member.MemberIdx}"></td>
+      <td th:text="${member.MemberName}"></td>
+      <td th:text="${member.MemberEmail}"></td>
+      <td th:text="${member.MemberPhone}"></td>
+
+    </tr>
+  </table>
+</div>
+</html>

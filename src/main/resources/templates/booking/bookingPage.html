@@ -3,6 +3,33 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 
+<head>
+    <title>호텔 예약 확인 및 결제</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <th:block layout:fragment="head"></th:block>
+    <style>
+        .payMethodBtn {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            background-color: white;
+            cursor: pointer;
+            margin-right: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .payMethodBtn.selected {
+            background-color: #007bff;  /* 파란 배경 */
+            color: white;
+            border-color: #0056b3;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+
+<body>
 <th:block layout:fragment="content">
 
     <div class="container">
@@ -18,9 +45,9 @@
             <ul>
                 <li>호텔명: <span th:text="${h_name}">호텔명</span></li>
                 <li>객실명: <span th:text="${r_name}">객실명</span></li>
-                <li>객실 번호: <span th:text="${r_idx}">r_idx</span></li>
-                <li>체크인: <span th:text="${#temporals.format(b_checkin, 'yyyy-MM-dd HH:mm')}">체크인</span></li>
-                <li>체크아웃: <span th:text="${#temporals.format(b_checkout, 'yyyy-MM-dd HH:mm')}">체크아웃</span></li>
+                <li>객실 번호: <span th:text="${room_id}">r_idx</span></li>
+                <li>체크인: <span th:text="${checkin}">체크인</span></li>
+                <li>체크아웃: <span th:text="${checkout}">체크아웃</span></li>
             </ul>
         </section>
         <br>
@@ -32,16 +59,18 @@
 
             <!-- 이름 -->
             <div>
-                <input type="text" name="guestName" placeholder="이름">
+                <input type="text" id="guestName" name="guestName" placeholder="이름">
             </div>
 
             <!-- 전화번호 + 인증 버튼 -->
             <div>
                 <input type="tel" id="guestPhone" name="guestPhone" placeholder="전화번호">
-                <button type="button" id="sendAuthBtn">인증번호 받기</button>
+                <button type="button" id="sendAuthBtn" th:if="${!isLogined}">
+                    인증번호 받기
+                </button>
             </div>
 
-            <!-- ✅ 인증번호 입력 필드 (초기엔 숨김 처리) -->
+            <!-- 인증번호 입력 필드 (초기엔 숨김 처리) -->
             <div id="authSection" style="display: none;">
                 <input type="text" id="authInput" placeholder="인증번호 입력">
                 <input type="hidden" id="serverAuthCode" value="">
@@ -54,33 +83,63 @@
         </section>
         <br>
 
+        <!-- ✅ 결제 수단 -->
+        <section>
+            <h2>결제 수단</h2>
+            <hr>
+
+            <div id="payMethodSection">
+                <button type="button" class="payMethodBtn selected" data-method="tosspay">토스페이</button>
+                <button type="button" class="payMethodBtn" data-method="kakaopay">카카오페이</button>
+                <button type="button" class="payMethodBtn" data-method="card">신용/체크카드</button>
+            </div>
+
+            <!-- 선택된 결제 수단을 저장할 hidden input -->
+            <input type="hidden" id="payMethod" name="payMethod" value="tosspay">
+        </section>
+        <br>
+
         <!-- ✅ 결제 정보 -->
         <section>
             <h2>결제 정보</h2>
             <hr>
 
-            <!-- 객실 가격 -->
             <p>
-                객실 가격 (<span th:text="${nights}">0</span>박):
-                <span th:text="${#numbers.formatInteger(total_price, 0, 'COMMA')} + '원'">0원</span>
+                객실 가격(<span th:text="${nights}">0</span>박):
+                <span th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')} + '원'">0원</span>
             </p>
 
-            <!-- 총 결제 금액 -->
             <p>
                 <strong>총 결제 금액:</strong>
-                <strong th:text="${#numbers.formatInteger(total_price, 0, 'COMMA')} + '원'">0원</strong>
+                <strong th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')} + '원'">0원</strong>
             </p>
 
-            <!-- 결제 버튼 -->
             <p>
                 <button id="payBtn">결제하기</button>
             </p>
         </section>
 
-        <!-- ✅ JS 파일은 body 맨 아래에 -->
+        <!-- 로그인 정보 전달 -->
+        <input type="hidden" id="isLogined" th:value="${isLogined}" />
+        <input type="hidden" id="memberId" th:value="${memberId}" />
+        <input type="hidden" id="memberEmail" th:value="${memberEmail}" />
+
+        <!-- ✅ 결제 관련 JS 전달용 -->
+        <input type="hidden" id="channelKey" th:value="${channelKey}">
+        <input type="hidden" id="roomId" th:value="${room_id}">
+        <input type="hidden" id="checkin" th:value="${checkin}">
+        <input type="hidden" id="checkout" th:value="${checkout}">
+        <input type="hidden" id="totalPrice" th:value="${totalPrice}">
+
+        <!-- 스크립트 -->
+        <script th:src="@{/javascript/bookingHandler.js}"></script>
         <script th:src="@{/javascript/smsAuth.js}"></script>
+        <script th:src="@{/javascript/payment.js}"></script>
+        <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 
     </div>
 
 </th:block>
+</body>
+
 </html>

@@ -13,6 +13,10 @@ public class HotelDto {
 	private String hotelName;
 	private Integer hotelEmpty;
 	private List<String> hotelImages;
+	private String hotelAddress;
+	private String hotelTel;
+	private String hotelCategory;
+	private List<String> hotelTag;
 
 	 public HotelDto(Integer hotelIdx, String hotelName, Integer hotelEmpty,
 			 List<String> hotelImages,Integer memberIdx) {
