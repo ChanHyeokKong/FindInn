@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.inn.data.hotel.HotelDto;
 import com.inn.data.hotel.HotelEntity;
@@ -23,11 +24,20 @@ public class 	HotelService {
 		return hotelRepository.findAll();		
 	}
 	
-	public List<HotelDto> getHotelData(String keyword){
+	public List<HotelDto> getHotelDataByKeywordAndCategory(String keyword, String category){
 
-		List<HotelEntity> hotels = hotelRepository.findByhotelNameContaining(keyword);
+		List<HotelEntity> hotels;
+		if("all".equals(category)) {
+			hotels = hotelRepository.findByHotelNameContaining(keyword);
+		}else
+		{	hotels = hotelRepository.findByHotelNameContainingAndHotelCategory(keyword, category);
+
+		
+		}
+		
 
 		//List<String> list=new ArrayList<>(Array.asList(hotels));
+		
 		
 		
 	    // Entity → DTO 변환
@@ -41,6 +51,13 @@ public class 	HotelService {
 			    ))
 			    .collect(Collectors.toList());
 	}
+	
+	}
+	
+	
+
+	  
+	 
 
 	
 	
@@ -50,4 +67,4 @@ public class 	HotelService {
 	
 	
 	
-}
+

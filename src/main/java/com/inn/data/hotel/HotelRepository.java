@@ -9,6 +9,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HotelRepository extends JpaRepository<HotelEntity, Integer> {
 
-	 List<HotelEntity> findByhotelNameContaining(String keyword);
+	List<HotelEntity> findByHotelNameContainingAndHotelCategory(String keyword, String category);	 
+	List<HotelEntity> findByHotelNameContaining(String keyword);
+	 
+	 
+	 
+	 
 
 }
