@@ -34,7 +34,7 @@ public class BookingEntity {
     @Column(name = "checkout", nullable = false)
     private LocalDate checkout;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private Integer price;
 
     @Builder.Default

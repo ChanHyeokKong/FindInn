@@ -38,7 +38,11 @@
             <!-- 전화번호 + 인증 버튼 -->
             <div>
                 <input type="tel" id="guestPhone" name="guestPhone" placeholder="전화번호">
-                <button type="button" id="sendAuthBtn">인증번호 받기</button>
+                <!-- 로그인 시 버튼 자체를 안보이게 -->
+                <button type="button" id="sendAuthBtn"
+                        th:style="${!isLogined} ? 'display:block;' : 'display:none;'">
+                    인증번호 받기
+                </button>
             </div>
 
             <!-- ✅ 인증번호 입력 필드 (초기엔 숨김 처리) -->
@@ -77,6 +81,11 @@
             </p>
         </section>
 
+        <!-- 로그인 정보 전달 -->
+        <input type="hidden" id="isLogined" th:value="${isLogined}" />
+        <input type="hidden" id="memberId" th:value="${memberId}" />
+        <input type="hidden" id="memberEmail" th:value="${memberEmail}" />
+
         <!-- ✅ payment JS 전달용 -->
 
         <!-- 포트원 채널키 전달 -->
@@ -89,7 +98,7 @@
         <input type="hidden" id="totalPrice" th:value="${totalPrice}">
 
         <!-- 초기 로그인 등 인증 체크 -->
-        <script th:src="@{/javascript/bookingPage.js}"></script>
+        <script th:src="@{/javascript/bookingAuthState.js}"></script>
 
         <!-- 문자 인증 로직 JS -->
         <script th:src="@{/javascript/smsAuth.js}"></script>

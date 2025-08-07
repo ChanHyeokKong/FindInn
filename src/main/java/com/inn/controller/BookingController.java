@@ -1,5 +1,6 @@
 package com.inn.controller;
 
+import com.inn.config.CustomUserDetails;
 import com.inn.data.booking.BookingDto;
 import com.inn.data.booking.BookingEntity;
 import com.inn.service.BookingService;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +30,21 @@ public class BookingController {
     public String bookingPage(
             @RequestParam("checkIn") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkin,
             @RequestParam("checkOut") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkout,
+            @AuthenticationPrincipal CustomUserDetails currentUser,
             Model model) {
+
+        // 로그인 유저 정보가 있을 경우
+        if (currentUser != null) {
+
+            Long currentMemberIdx = currentUser.getMemeberIdx();
+            String email = currentUser.getUsername();          // 예시
+            model.addAttribute("memberId", currentMemberIdx);
+            model.addAttribute("memberEmail", email);
+
+            model.addAttribute("isLogined", false);
+        } else {
+            model.addAttribute("isLogined", true);
+        }
 
         // 객실가격
         int price = 150;

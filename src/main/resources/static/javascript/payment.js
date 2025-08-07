@@ -13,6 +13,10 @@ document.getElementById('payBtn').addEventListener('click', function () {
         return;
     }
 
+    // 로그인 정보
+    const memberId = isLogined ? document.getElementById('memberId')?.value : null;
+    const memberEmail = isLogined ? document.getElementById('memberEmail')?.value : "test@example.com";
+
     // 예약 정보
     const roomId = document.getElementById('roomId').value;
     const checkin = document.getElementById('checkin').value;
@@ -26,7 +30,6 @@ document.getElementById('payBtn').addEventListener('click', function () {
         type: "GET",
         success: function (merchantUid) {
             console.log("✅ UID 발급 성공:", merchantUid);
-            console.log({ roomId, checkin, checkout });
             // 2. 예약 겹침 여부 확인
             $.ajax({
                 url: "/booking/validate",
@@ -50,6 +53,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
                         data: JSON.stringify({
                             merchantUid: merchantUid,
                             roomId: roomId,
+                            memberId: memberId,
                             checkin: checkin,
                             checkout: checkout,
                             price: totalPrice
@@ -69,7 +73,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                 name: "호텔 예약 결제",
                                 amount: totalPrice,
                                 buyer_name: name,
-                                buyer_email: "test@example.com",
+                                buyer_email: memberEmail,
                                 buyer_tel: phone
                             }, function (rsp) {
                                 if (rsp.success) {
@@ -92,14 +96,14 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                                     bookingId: bookingId,
                                                     impUid: rsp.imp_uid,
                                                     merchantUid: rsp.merchant_uid,
-                                                    payMethod: rsp.pay_method,         // 포트원 응답에 맞게
+                                                    payMethod: rsp.pay_method,
                                                     paidAmount: rsp.paid_amount,
                                                     buyerName: rsp.buyer_name,
                                                     buyerTel: rsp.buyer_tel,
                                                     buyerEmail: rsp.buyer_email
                                                 }),
                                                 success: function () {
-                                                    alert("🎉 결제 완료!");
+                                                    alert("🎉 결제가 완료되었습니다!");
                                                     window.location.href = "/booking/complete";
                                                 },
                                                 error: function (xhr) {
