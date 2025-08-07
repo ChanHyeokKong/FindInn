@@ -36,14 +36,14 @@ public class MemberService implements UserDetailsService {
         memberDto.setMemberPassword(pe.encode(memberDto.getMemberPassword()));
 
         // 기본 역할 (ROLE_USER)을 데이터베이스에서 조회하여 추가
-        Optional<RoleDto> userRoleOptional = roleDao.findById("ROLE_USER");
+        Optional<RoleDto> userRoleOptional = Optional.ofNullable(roleDao.findByRoleName("ROLE_USER"));
         if (userRoleOptional.isPresent()) {
             memberDto.getRoles().add(userRoleOptional.get());
         } else {
             System.out.println("error");
         }
         memberDao.save(memberDto);
-        System.out.println("1234");
+
     }
 
     public void giveManagerRole(Long memberIdx) {
@@ -52,8 +52,9 @@ public class MemberService implements UserDetailsService {
         if (memberOptional.isPresent()) {
             MemberDto memberDto = memberOptional.get();
 
-            Optional<RoleDto> managerRoleOptional = roleDao.findById("ROLE_MANAGER");
+            Optional<RoleDto> managerRoleOptional = Optional.ofNullable(roleDao.findByRoleName("ROLE_MANAGER"));
             if (managerRoleOptional.isPresent()) {
+                memberDto.getRoles().clear();
                 memberDto.getRoles().add(managerRoleOptional.get());
                 memberDao.save(memberDto);
                 System.out.println("Member " + memberIdx + " has been granted ROLE_MANAGER.");

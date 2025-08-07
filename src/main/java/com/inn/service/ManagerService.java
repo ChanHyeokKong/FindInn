@@ -36,7 +36,7 @@ public class ManagerService {
         return manageRepository.findHotelByMemberIdx(memberIdx);
     }
 
-    public List<RoomTypes> getRoomTypesByHotelIds(List<Integer> hotelIds) {
+    public List<RoomTypes> getRoomTypesByHotelIds(List<Long> hotelIds) {
         return manageRepository.findRoomTypesByHotelIdIn(hotelIds);
     }
 

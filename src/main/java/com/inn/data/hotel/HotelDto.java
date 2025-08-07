@@ -8,23 +8,22 @@ import lombok.Data;
 @Data
 public class HotelDto {
 	
-	private Integer hotelIdx;
-	private Integer memberIdx;
+	private Long idx;
+	private Long memberIdx;
 	private String hotelName;
-	private Integer hotelEmpty;
+	
 	private List<String> hotelImages;
 	private String hotelAddress;
 	private String hotelTel;
 	private String hotelCategory;
 	private List<String> hotelTag;
 
-	 public HotelDto(Integer hotelIdx, String hotelName, Integer hotelEmpty,
-			 List<String> hotelImages,Integer memberIdx) {
-	        this.hotelIdx = hotelIdx;
-	        this.hotelName = hotelName;
-	        this.hotelEmpty = hotelEmpty;
-	        this.hotelImages = hotelImages;
-	        this.memberIdx= memberIdx;
-	    }	
+	 public HotelDto(Long idx, String hotelName,
+                    List<String> hotelImages, Long memberIdx) {
+        this.idx = idx;
+        this.hotelName = hotelName;
+        this.hotelImages = hotelImages;
+        this.memberIdx = memberIdx;
+    }	
 
 }

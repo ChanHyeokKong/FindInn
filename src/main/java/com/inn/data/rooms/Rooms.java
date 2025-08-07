@@ -9,13 +9,13 @@ import lombok.Data;
 public class Rooms {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long idx;
 
-    private long roomNumber;
+    private Long roomNumber;
 
-    private long hotelId;
+    private Long hotelId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_type_id", referencedColumnName = "id")
+    @JoinColumn(name = "room_type_id", referencedColumnName = "idx")
     private RoomTypes roomType;
 }

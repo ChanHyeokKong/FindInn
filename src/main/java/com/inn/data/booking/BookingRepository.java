@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BookingRepository extends JpaRepository<BookingEntity, Integer> {
+public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
 
     Optional<BookingEntity> findByMerchantUid(String merchantUid);
 
@@ -20,7 +20,7 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Integer>
             "AND b.checkout > :checkin " +
             "AND b.checkin < :checkout")
     List<BookingEntity> findOverlappingBookings(
-            @Param("roomId") int roomId,
+            @Param("roomId") Long roomId,
             @Param("checkin") LocalDate checkin,
             @Param("checkout") LocalDate checkout);
 }

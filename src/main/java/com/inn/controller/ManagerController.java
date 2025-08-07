@@ -50,7 +50,7 @@ public class ManagerController {
         if(currentUser==null){
             return "redirect:/?login=false";
         }
-        Long currentMemberIdx = currentUser.getMemeberIdx();
+        Long currentMemberIdx = currentUser.getIdx();
         List<HotelRoomTypeSummaryDto> list = service.GetAllRoomGroupByDescription(currentMemberIdx);
         model.addAttribute("hotelRoomInfos", list);
 
@@ -62,7 +62,7 @@ public class ManagerController {
         if(currentUser==null){
             return "redirect:/?login=false";
         }
-        Long currentMemberIdx = currentUser.getMemeberIdx();
+        Long currentMemberIdx = currentUser.getIdx();
         List<HotelWithManagerDto> list = service.getAllMyHotel(currentMemberIdx);
         model.addAttribute("hotelRoomInfos", list);
 
@@ -78,22 +78,22 @@ public class ManagerController {
 
     @PostMapping("manage/apply")
     public String apply(@AuthenticationPrincipal CustomUserDetails currentUser, HotelEntity entity){
-        Integer memberIdx = currentUser.getMemeberIdx().intValue();
+        Long memberIdx = currentUser.getIdx();
         entity.setMemberIdx(memberIdx);
         System.out.println(entity.toString());
 
         hotelRepository.save(entity);
-        memberService.giveManagerRole(currentUser.getMemeberIdx());
+        memberService.giveManagerRole(currentUser.getIdx());
 
         return "redirect:/?login=true";
     }
 
     @GetMapping("manage/addhotel")
     public String addHotel(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
-        List<HotelEntity> hotels = service.GetAllMyHotel(currentUser.getMemeberIdx());
+        List<HotelEntity> hotels = service.GetAllMyHotel(currentUser.getIdx());
         model.addAttribute("hotels", hotels);
 
-        List<Integer> hotelIds = hotels.stream().map(HotelEntity::getHotelIdx).collect(Collectors.toList());
+        List<Long> hotelIds = hotels.stream().map(HotelEntity::getIdx).collect(Collectors.toList());
 
         if(!hotelIds.isEmpty()) {
             List<RoomTypes> roomTypes = service.getRoomTypesByHotelIds(hotelIds);
@@ -123,10 +123,10 @@ public class ManagerController {
 
     @GetMapping("manage/addroom")
     public String addRoom(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
-        List<HotelEntity> hotels = service.GetAllMyHotel(currentUser.getMemeberIdx());
+        List<HotelEntity> hotels = service.GetAllMyHotel(currentUser.getIdx());
         model.addAttribute("hotels", hotels);
 
-        List<Integer> hotelIds = hotels.stream().map(HotelEntity::getHotelIdx).collect(Collectors.toList());
+        List<Long> hotelIds = hotels.stream().map(HotelEntity::getIdx).collect(Collectors.toList());
 
         if(!hotelIds.isEmpty()) {
             List<RoomTypes> roomTypes = service.getRoomTypesByHotelIds(hotelIds);
@@ -138,7 +138,7 @@ public class ManagerController {
 
     @PostMapping("manage/addroom/action")
     public String addRoomAction(@RequestParam Long hotelId,
-                                @RequestParam Long roomTypeId,
+                                @RequestParam Long roomTypeIdx,
                                 @RequestParam long roomNumber) {
 
         Rooms newRoom = new Rooms();
@@ -146,7 +146,7 @@ public class ManagerController {
         newRoom.setRoomNumber(roomNumber);
 
         RoomTypes roomTypeProxy = new RoomTypes();
-        roomTypeProxy.setId(roomTypeId);
+        roomTypeProxy.setIdx(roomTypeIdx);
         newRoom.setRoomType(roomTypeProxy);
 
         roomsRepository.save(newRoom);

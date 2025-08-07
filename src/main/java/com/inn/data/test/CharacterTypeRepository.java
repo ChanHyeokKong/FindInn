@@ -6,6 +6,6 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CharacterTypeRepository extends JpaRepository<CharacterType, Long> {
-    Optional<CharacterType> findFirstByTraitOrderByIdAsc(String trait);
+    Optional<CharacterType> findFirstByTraitOrderByIdxAsc(String trait);
     Optional<CharacterType> findByTrait(String trait);
 }

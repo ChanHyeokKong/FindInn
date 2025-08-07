@@ -16,7 +16,7 @@ public class RoomTypeAvailDto {
     boolean available;
 
     public RoomTypeAvailDto(RoomTypes roomType, boolean isAvailable) {
-        this.id = roomType.getId();
+        this.id = roomType.getIdx();
         this.typeName = roomType.getTypeName();
         this.description = roomType.getDescription();
         this.capacity = roomType.getCapacity();

@@ -12,21 +12,21 @@ import java.time.LocalDateTime;
 public class Reserve {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long reserveId;
+    private Long idx;
 
     private LocalDate checkIn;
     private LocalDate checkOut;
     private String method;
     private LocalDateTime paymentDate;
-    private long price;
-    private long reserveHotelId;
-    private long reserveUserId;
+    private Long price;
+    private Long reserveHotelId;
+    private Long reserveUserId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_type_id", referencedColumnName = "id")
+    @JoinColumn(name = "room_type_id", referencedColumnName = "idx")
     private RoomTypes roomType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id", referencedColumnName = "id")
+    @JoinColumn(name = "room_id", referencedColumnName = "idx")
     private Rooms room;
 }

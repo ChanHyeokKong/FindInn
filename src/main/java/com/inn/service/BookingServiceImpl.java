@@ -41,7 +41,7 @@ public class BookingServiceImpl implements BookingService {
      * 같은 객실의 동일한 기간에 예약이 이미 존재하는지 확인
      */
     @Override
-    public boolean isOverlappingBookingExists(int roomId, LocalDate checkin, LocalDate checkout) {
+    public boolean isOverlappingBookingExists(Long roomId, LocalDate checkin, LocalDate checkout) {
         List<BookingEntity> overlapping = bookingRepository.findOverlappingBookings(roomId, checkin, checkout);
         return overlapping.isEmpty();
     }
@@ -68,7 +68,7 @@ public class BookingServiceImpl implements BookingService {
      */
     @Override
     @Transactional
-    public BookingEntity updateStatusToCanceled(int id) {
+    public BookingEntity updateStatusToCanceled(Long id) {
         BookingEntity booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found with id: " + id));
         booking.setStatus("CANCELED");

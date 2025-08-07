@@ -14,11 +14,11 @@ public interface RoomsRepository extends JpaRepository<Rooms, Long> {
     @Query("""
     SELECT r
     FROM Rooms r
-    WHERE r.roomType.id = :roomTypeId
+    WHERE r.roomType.idx = :roomTypeId
     AND NOT EXISTS (
         SELECT 1
         FROM Reserve res
-        WHERE res.room.id = r.id
+        WHERE res.room.idx = r.idx
         AND res.checkIn < :checkOutDate
         AND res.checkOut > :checkInDate
     )

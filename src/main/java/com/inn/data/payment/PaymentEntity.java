@@ -16,10 +16,10 @@ public class PaymentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long idx;
 
     @Column(name = "booking_id")
-    private Integer bookingId;
+    private Long bookingId;
 
     @Column(name = "imp_uid", nullable = false)
     private String impUid;
@@ -31,7 +31,7 @@ public class PaymentEntity {
     private String payMethod;
 
     @Column(name = "paid_amount", nullable = false)
-    private Integer paidAmount;
+    private Long paidAmount;
 
     @Column(name = "buyer_name", nullable = false)
     private String buyerName;

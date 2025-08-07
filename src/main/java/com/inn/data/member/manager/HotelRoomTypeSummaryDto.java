@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HotelRoomTypeSummaryDto {
 
-    private Integer hotelId;
+    private Long hotelId;
     private String hotelName;
     private String memberName;
     private String roomTypeName;

@@ -17,16 +17,16 @@ public class BookingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long idx;
 
     @Column(name = "merchant_uid", nullable = false, unique = true)
     private String merchantUid;
 
     @Column(name = "room_id", nullable = false)
-    private Integer roomId;
+    private Long roomId;
 
     @Column(name = "member_id")
-    private Integer memberId;
+    private Long memberId;
 
     @Column(name = "checkin", nullable = false)
     private LocalDate checkin;
@@ -35,7 +35,7 @@ public class BookingEntity {
     private LocalDate checkout;
 
     @Column(name = "price", nullable = false)
-    private Integer price;
+    private Long price;
 
     @Builder.Default
     @Column(name = "status", nullable = false)

@@ -12,13 +12,13 @@ import java.time.LocalDateTime;
 @Data
 public class BookingDto {
 
-    private Integer id;
+    private Long idx;
     private String merchantUid;
-    private Integer roomId;
-    private Integer memberId;
+    private Long roomId;
+    private Long memberId;
     private LocalDate checkin;
     private LocalDate checkout;
-    private Integer price;
+    private Long price;
     private String status;
     private LocalDateTime canceledAt;
 
