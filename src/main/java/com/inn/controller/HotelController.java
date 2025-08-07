@@ -22,18 +22,30 @@ public class HotelController {
 	
 	
 	@GetMapping("/h_list")
-	public String hotelList(Model model) {
-		List<HotelEntity> hotelList=hotelService.getAllHotelData();
-		model.addAttribute("hotels", hotelList);	
+	public String hotelList (Model model) {
+		List<HotelEntity> hotels;
+		
+			hotels = hotelService.getAllHotelData();
+			
+		
+		
+		model.addAttribute("hotels", hotels);	
 		return "/hotel/hotelList";
 	}
 	
 	@GetMapping("/h_search")
 	@ResponseBody
-	public List<HotelDto> getHotelData(@RequestParam("keyword") String keyword) {
-			
-		return hotelService.getHotelData(keyword);
+	public List<HotelDto> getHotelData(
+			@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+			@RequestParam(defaultValue = "all", value = "category", required = false) String hotelCategory) {
+	
+		
+		return hotelService.getHotelDataByKeywordAndCategory(keyword,hotelCategory);
 	}
+	
+	
+	
+	
 	
 	
 
