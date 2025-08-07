@@ -1,4 +1,4 @@
-let timer = null;
+let timer = null; // 타이머
 let remaining = 180; // 3분
 const authSection = document.getElementById('authSection');
 const authInput = document.getElementById('authInput');
@@ -6,42 +6,47 @@ const checkAuthBtn = document.getElementById('checkAuthBtn');
 const timerText = document.getElementById('timerText');
 const msgBox = document.getElementById('authResultMsg');
 
-document.getElementById('sendAuthBtn').addEventListener('click', function () {
-    const phone = document.getElementById('guestPhone').value;
-    if (!phone) {
-        alert("휴대폰 번호를 입력하세요.");
-        return;
-    }
-
-    $.ajax({
-        url: '/send-one',
-        method: 'GET',
-        data: { pNum: phone },
-        success: function (data) {
-            if (data !== 'bad') {
-                alert("인증번호가 전송되었습니다!");
-                document.getElementById('serverAuthCode').value = data;
-
-                // ✅ 인증 입력창 보이기 및 초기화
-                authSection.style.display = 'block';
-                authInput.disabled = false;
-                checkAuthBtn.disabled = false;
-                authInput.value = '';
-                msgBox.textContent = '';
-                timerText.textContent = '';
-
-                // ✅ 타이머 시작
-                startTimer();
-            } else {
-                alert("전송 실패. 다시 시도하세요.");
-            }
-        },
-        error: function () {
-            alert("오류가 발생했습니다.");
+// ✅ 인증번호 발송 버튼
+const sendAuthBtn = document.getElementById('sendAuthBtn');
+if (sendAuthBtn) {
+    sendAuthBtn.addEventListener('click', function () {
+        const phone = document.getElementById('guestPhone').value;
+        if (!phone) {
+            alert("휴대폰 번호를 입력하세요.");
+            return;
         }
-    });
-});
 
+        $.ajax({
+            url: '/sms/auth',
+            method: 'GET',
+            data: { pNum: phone },
+            success: function (data) {
+                if (data !== 'bad') {
+                    alert("인증번호가 전송되었습니다!");
+                    document.getElementById('serverAuthCode').value = data;
+
+                    // ✅ 인증 입력창 보이기 및 초기화
+                    authSection.style.display = 'block';
+                    authInput.disabled = false;
+                    checkAuthBtn.disabled = false;
+                    authInput.value = '';
+                    msgBox.textContent = '';
+                    timerText.textContent = '';
+
+                    // ✅ 타이머 시작
+                    startTimer();
+                } else {
+                    alert("전송 실패. 다시 시도하세요.");
+                }
+            },
+            error: function () {
+                alert("오류가 발생했습니다.");
+            }
+        });
+    });
+}
+
+// ✅ 인증번호 확인 버튼
 document.getElementById('checkAuthBtn').addEventListener('click', function () {
     const inputCode = authInput.value;
     const serverCode = document.getElementById('serverAuthCode').value;
@@ -81,7 +86,7 @@ document.getElementById('checkAuthBtn').addEventListener('click', function () {
     }
 });
 
-// ✅ 타이머 함수 수정
+// ✅ 타이머 함수
 function startTimer() {
     clearInterval(timer); // 기존 타이머 제거
     remaining = 180;
