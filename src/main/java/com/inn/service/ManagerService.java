@@ -4,7 +4,7 @@ import com.inn.data.hotel.HotelEntity;
 import com.inn.data.member.manager.HotelRoomTypeSummaryDto;
 import com.inn.data.member.manager.HotelWithManagerDto;
 import com.inn.data.member.manager.ManageRepository;
-import com.inn.rooms.RoomTypes;
+import com.inn.data.rooms.RoomTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
