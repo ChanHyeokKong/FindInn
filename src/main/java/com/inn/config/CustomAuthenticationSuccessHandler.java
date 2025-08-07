@@ -12,7 +12,14 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+// ...
+
 public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationSuccessHandler.class);
 
     private static final String LAST_PAGE_URL_SESSION_KEY = "lastPageUrl"; // 상수 추가
 
@@ -22,6 +29,10 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         HttpSession session = request.getSession();
+
+        // 디버깅 로그 추가
+        logger.info("Authentication successful for user: {}", authentication.getName());
+        logger.info("User authorities: {}", authorities);
 
         // 1. 역할 기반 리다이렉션 (관리자 우선)
         for (GrantedAuthority grantedAuthority : authorities) {

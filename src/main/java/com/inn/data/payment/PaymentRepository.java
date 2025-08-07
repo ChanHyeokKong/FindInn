@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface PaymentRepository extends JpaRepository<PaymentEntity, Integer> {
+public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
     Optional<PaymentEntity> findByMerchantUid(String merchantUid);
     Optional<PaymentEntity> findByImpUid(String impUid);
 }

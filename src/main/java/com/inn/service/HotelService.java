@@ -43,9 +43,8 @@ public class 	HotelService {
 	    // Entity → DTO 변환
 		return hotels.stream()
 			    .map(hotel -> new HotelDto(
-			        hotel.getHotelIdx(),
+			        hotel.getIdx(),
 			        hotel.getHotelName(),
-			        hotel.getHotelEmpty(),
 			        hotel.getHotelImages(),  // List<String>
 			        hotel.getMemberIdx()
 			    ))

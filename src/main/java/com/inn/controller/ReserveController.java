@@ -24,7 +24,7 @@ public class ReserveController {
 
         redirectAttributes.addAttribute("checkIn", checkIn.toString());
         redirectAttributes.addAttribute("checkOut", checkOut.toString());
-        redirectAttributes.addAttribute("r_id", room.getId());
+        redirectAttributes.addAttribute("r_id", room.getIdx());
 
 
         return "redirect:/booking";

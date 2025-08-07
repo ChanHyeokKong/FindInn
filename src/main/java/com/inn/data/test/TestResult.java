@@ -29,10 +29,10 @@ public class TestResult {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idx;
 
     @ManyToOne(fetch = FetchType.LAZY) // ✅ 꼭 있어야 함
-    @JoinColumn(name = "member_idx")   // ✅ member 테이블의 PK와 매핑
+    @JoinColumn(name = "member_idx", referencedColumnName = "idx")   // ✅ member 테이블의 PK와 매핑
     private MemberDto member;
 
     private String trait;

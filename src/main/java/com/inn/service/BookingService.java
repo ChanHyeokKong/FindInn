@@ -9,11 +9,11 @@ public interface BookingService {
 
     String generateMerchantUid();
 
-    boolean isOverlappingBookingExists(int roomId, LocalDate checkin, LocalDate checkout);
+    boolean isOverlappingBookingExists(Long roomId, LocalDate checkin, LocalDate checkout);
 
     BookingEntity insert(BookingDto dto);
 
-    BookingEntity updateStatusToCanceled(int id);
+    BookingEntity updateStatusToCanceled(Long id);
 
     // 기타 예약 관련 메서드들 선언...
 }

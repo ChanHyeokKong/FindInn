@@ -15,7 +15,7 @@ public class CharacterType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idx;
 
     private String code; // ex) E01, E02
 
@@ -25,10 +25,10 @@ public class CharacterType {
 
     private String trait; // 핵심 키워드: healing, activity, emotion, challenge
 
-    private int activityLevel;
-    private int healingLevel;
-    private int challengeLevel;
-    private int emotionLevel;
+    private Long activityLevel;
+    private Long healingLevel;
+    private Long challengeLevel;
+    private Long emotionLevel;
 
     private String imageUrl;
 

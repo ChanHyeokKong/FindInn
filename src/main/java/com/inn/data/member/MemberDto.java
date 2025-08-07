@@ -15,7 +15,7 @@ public class MemberDto {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Long memberIdx;
+    private Long idx;
 
     @Column(unique = true)
     private String memberEmail;
@@ -26,8 +26,8 @@ public class MemberDto {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "member_roles",
-        joinColumns = @JoinColumn(name = "member_idx"),
-        inverseJoinColumns = @JoinColumn(name = "role_name")
+        joinColumns = @JoinColumn(name = "member_idx", referencedColumnName = "idx"),
+        inverseJoinColumns = @JoinColumn(name = "role_idx", referencedColumnName = "idx")
     )
     @EqualsAndHashCode.Exclude // 이 어노테이션 추가
     private Set<RoleDto> roles = new HashSet<>();

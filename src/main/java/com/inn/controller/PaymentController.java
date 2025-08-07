@@ -89,7 +89,7 @@ public class PaymentController {
     public ResponseEntity<?> insertPayment(@RequestBody PaymentDto dto) {
         try {
             PaymentEntity payment = paymentService.insert(dto);
-            return ResponseEntity.ok(Map.of("result", "success", "id", payment.getId()));
+            return ResponseEntity.ok(Map.of("result", "success", "id", payment.getIdx()));
         } catch (Exception e) {
             // 예외 발생 시 결제 취소 시도
             boolean isCanceled = false;

@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 @Data
 public class PaymentDto {
 
-    private Integer id;
-    private Integer bookingId;
+    private Long idx;
+    private Long bookingId;
     private String impUid;
     private String merchantUid;
     private String payMethod;
-    private Integer paidAmount;
+    private Long paidAmount;
     private String buyerName;
     private String buyerEmail;
     private String buyerTel;

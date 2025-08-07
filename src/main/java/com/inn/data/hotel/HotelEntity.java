@@ -21,17 +21,17 @@ public class HotelEntity {
 	
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
-	private Integer hotelIdx;
+	private Long idx;
 	
 	@Column(nullable = false)
-	private Integer memberIdx;
+	private Long memberIdx;
 	@Column(nullable = false)
 	private String hotelName;
 	
-	private Integer hotelEmpty; //이게 필요한가?
+	
 	
 	@ElementCollection
-	@CollectionTable(name = "hotelImages", joinColumns = @JoinColumn(name = "hotelIdx"))
+	@CollectionTable(name = "hotelImages", joinColumns = @JoinColumn(name = "hotel_idx"))
 	@Column(name = "hotelImages")
 	private List<String> hotelImages;
 	
@@ -47,7 +47,7 @@ public class HotelEntity {
 	private String hotelCategory;
 	
 	@ElementCollection
-	@CollectionTable(name = "hotelTag", joinColumns = @JoinColumn(name = "hotelIdx"))
+	@CollectionTable(name = "hotelTag", joinColumns = @JoinColumn(name = "hotel_idx"))
 	@Column(name = "hotelTag")
 	private List<String> hotelTag;
 	

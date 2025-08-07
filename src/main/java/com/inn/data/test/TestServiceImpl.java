@@ -37,7 +37,7 @@ public class TestServiceImpl implements TestService {
         String topTrait = topTraitOptional.get();
         
         // 3. 캐릭터 조회: findFirstByTraitOrderByIdAsc()는 Optional을 반환합니다.
-        Optional<CharacterType> characterOpt = characterTypeRepository.findFirstByTraitOrderByIdAsc(topTrait);
+        Optional<CharacterType> characterOpt = characterTypeRepository.findFirstByTraitOrderByIdxAsc(topTrait);
 
         // 4. 결과 저장 (회원 1회 제한): Optional.ifPresent()를 사용하여 null-safe하게 로직을 실행합니다.
         characterOpt.ifPresent(character -> {

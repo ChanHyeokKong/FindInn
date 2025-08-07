@@ -31,16 +31,16 @@ public class BookingController {
             Model model) {
 
         if (currentUser != null) {
-            model.addAttribute("memberId", currentUser.getMemeberIdx());
+            model.addAttribute("memberId", currentUser.getIdx());
             model.addAttribute("memberEmail", currentUser.getUsername());
             model.addAttribute("isLogined", false);
         } else {
             model.addAttribute("isLogined", true);
         }
 
-        int price = 150;
+        Long price = 150L;
         long nights = Duration.between(checkin.atStartOfDay(), checkout.atStartOfDay()).toDays();
-        int totalPrice = price * (int) nights;
+        Long totalPrice = price * nights;
 
         model.addAttribute("room_id", 101);
         model.addAttribute("h_name", "서울 프리미엄 호텔");

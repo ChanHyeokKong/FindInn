@@ -23,7 +23,7 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return member.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getMemberRole()))
+                .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
                 .collect(Collectors.toList());
     }
 
@@ -41,7 +41,7 @@ public class CustomUserDetails implements UserDetails {
         return member.getMemberName();
     }
 
-    public Long getMemeberIdx(){return member.getMemberIdx();}
+    public Long getIdx(){return member.getIdx();}
 
     @Override
     public boolean isAccountNonExpired() {
