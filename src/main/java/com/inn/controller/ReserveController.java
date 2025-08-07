@@ -77,18 +77,23 @@ public class ReserveController {
 
         RoomTypes selectedRoomType = roomTypesRepository.findById(reservation.getRoomTypeId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Room Type ID: " + reservation.getRoomTypeId()));
+//        임시db
+//        reserve.setReserveHotelId(reservation.getHotelId());
+//        reserve.setReserveUserId(reservation.getUserId());
+//        reserve.setCheckIn(reservation.getCheckIn());
+//        reserve.setCheckOut(reservation.getCheckOut());
+//        reserve.setPaymentDate(LocalDateTime.now());
+//        reserve.setMethod(reservation.getMethod());
+//        reserve.setPrice(reservation.getPrice());
+//        reserve.setRoomType(selectedRoomType);
+//        reserveRepository.save(reserve);
 
-        reserve.setReserveHotelId(reservation.getHotelId());
-        reserve.setReserveUserId(reservation.getUserId());
-        reserve.setCheckIn(reservation.getCheckIn());
-        reserve.setCheckOut(reservation.getCheckOut());
-        reserve.setPaymentDate(LocalDateTime.now());
-        reserve.setMethod(reservation.getMethod());
-        reserve.setPrice(reservation.getPrice());
-        reserve.setRoomType(selectedRoomType);
-        reserveRepository.save(reserve);
+        redirectAttributes.addAttribute("checkin", reservation.getCheckIn().toString());
+        redirectAttributes.addAttribute("checkout", reservation.getCheckOut().toString());
+        redirectAttributes.addAttribute("r_price", reservation.getPrice());
+        redirectAttributes.addAttribute("r_id", reserve.getRoom().getId());
 
-        redirectAttributes.addAttribute("hotelId", reservation.getHotelId());
-        return "redirect:/reserve/{hotelId}";
+
+        return "redirect:/booking";
     }
 }

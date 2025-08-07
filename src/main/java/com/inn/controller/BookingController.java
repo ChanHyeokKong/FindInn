@@ -3,25 +3,22 @@ package com.inn.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Controller
 public class BookingController {
 
     @GetMapping("/booking")
-    public String bookingPage(Model model) {
+    public String bookingPage(Model model, @RequestParam LocalDate checkin, @RequestParam LocalDate checkout, @RequestParam int r_price) {
 
-        // 객실가격
-        int r_price = 150000;
 
-        // 체크인/체크아웃 날짜 (지금 시점 + 하루, 이틀 뒤)
-        LocalDateTime checkin = LocalDateTime.of(2025, 8, 10, 15, 0);
-        LocalDateTime checkout = LocalDateTime.of(2025, 8, 13, 11, 0); // 3박
 
         // 몇 박인지 계산하여 총 가격 산출
-        long nights = Duration.between(checkin.toLocalDate().atStartOfDay(), checkout.toLocalDate().atStartOfDay()).toDays();
+        long nights = checkin.toEpochDay() - checkout.toEpochDay();
         int total_price = r_price * (int)nights;
 
         //객실정보
