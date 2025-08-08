@@ -43,6 +43,8 @@ dependencies {
     // PORTONE
     implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    // Jsoup
+    implementation 'org.jsoup:jsoup:1.17.2'
 }
 
 tasks.named('test') {

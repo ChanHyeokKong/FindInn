@@ -2,16 +2,8 @@ package com.inn.data.hotel;
 
 import java.util.List;
 
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
-import jakarta.persistence.JoinColumn;
 
 @Data
 @Entity
@@ -28,7 +20,7 @@ public class HotelEntity {
 	@Column(nullable = false)
 	private String hotelName;
 	
-	
+
 	
 	@ElementCollection
 	@CollectionTable(name = "hotelImages", joinColumns = @JoinColumn(name = "hotel_idx"))
@@ -50,6 +42,11 @@ public class HotelEntity {
 	@CollectionTable(name = "hotelTag", joinColumns = @JoinColumn(name = "hotel_idx"))
 	@Column(name = "hotelTag")
 	private List<String> hotelTag;
+
+	private Long status;
+
+	@Lob
+	private String description;
 	
 
 }

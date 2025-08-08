@@ -39,15 +39,14 @@ public class AccommodationController {
             Model model,
             RedirectAttributes redirectAttributes,
             @RequestHeader(value = "Referer", required = false) String referer) {
+        
         AccommodationDto accommodation = new AccommodationDto();
-
-        int numberOfPeople = (personal != null) ? personal : 1; // Default to 1 person if not specified
-
+        int numberOfPeople = (personal != null) ? personal : 1;
+        // 파라메터에서 정보 가져오기
         accommodation.setCheckInDate(checkIn);
         accommodation.setCheckOutDate(checkOut); 
         accommodation.setPersonal(numberOfPeople);
 
-        
         // 호텔 db에서 불러오기
         Optional<HotelEntity> hotel = hotelService.getHotelDataById(id);
         if (!hotel.isPresent()) {
@@ -55,8 +54,12 @@ public class AccommodationController {
             String redirectUrl = (referer != null) ? referer : "/";
             return "redirect:" + redirectUrl;
         }
+        else{
+            accommodation.setHotel(hotel.get());
+        }
         accommodation.setName(hotel.get().getHotelName());
         accommodation.setAddress(hotel.get().getHotelAddress());
+        // 임시 하드코딩
         accommodation.setImageGalleries(Arrays.asList(
                 "/images/pension_main.jpg",
                 "/images/pension_room1.jpg",
@@ -64,7 +67,7 @@ public class AccommodationController {
         ));
         accommodation.setCheckInTime("15:00");
         accommodation.setCheckOutTime("11:00");
-
+        // 해당 호텔의 방 정보
         List <RoomTypeAvailDto> rooms = roomsService.getAllHotelRoomTypesWithAvailability(id,checkIn,checkOut);
         accommodation.setRoomTypes(rooms);
 

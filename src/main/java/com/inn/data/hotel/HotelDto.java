@@ -3,6 +3,7 @@ package com.inn.data.hotel;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Lob;
 import lombok.Data;
 
 @Data
@@ -18,12 +19,13 @@ public class HotelDto {
 	private String hotelCategory;
 	private List<String> hotelTag;
 
+
 	 public HotelDto(Long idx, String hotelName,
                     List<String> hotelImages, Long memberIdx) {
         this.idx = idx;
         this.hotelName = hotelName;
         this.hotelImages = hotelImages;
         this.memberIdx = memberIdx;
-    }	
+    }
 
 }

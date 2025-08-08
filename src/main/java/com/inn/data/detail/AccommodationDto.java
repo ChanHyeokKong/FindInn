@@ -1,5 +1,6 @@
 package com.inn.data.detail;
 
+import com.inn.data.hotel.HotelEntity;
 import com.inn.data.rooms.RoomTypeAvailDto;
 import lombok.Data;
 
@@ -18,5 +19,5 @@ public class AccommodationDto {
     private String checkOutTime; // 체크아웃 시간
     private int personal; // 인원
     private List<RoomTypeAvailDto> roomTypes; // 객실 정보 리스트
-
+    private HotelEntity hotel;
 }
