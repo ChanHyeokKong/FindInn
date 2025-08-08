@@ -7,6 +7,8 @@ import java.time.LocalDate;
 
 public interface BookingService {
 
+    String getKoreanShortDayOfWeek(LocalDate date);
+
     String generateMerchantUid();
 
     boolean isOverlappingBookingExists(Long roomIdx, LocalDate checkin, LocalDate checkout);
