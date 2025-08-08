@@ -23,7 +23,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentEntity insert(PaymentDto dto) {
         PaymentEntity payment = PaymentEntity.builder()
-                .bookingId(dto.getBookingId())
+                .bookingIdx(dto.getBookingIdx())
                 .impUid(dto.getImpUid())
                 .merchantUid(dto.getMerchantUid())
                 .payMethod(dto.getPayMethod())

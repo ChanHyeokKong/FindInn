@@ -14,11 +14,11 @@ document.getElementById('payBtn').addEventListener('click', function () {
     }
 
     // 로그인 정보
-    const memberId = isLogined ? document.getElementById('memberId')?.value : null;
+    const memberIdx = isLogined ? document.getElementById('memberIdx')?.value : null;
     const memberEmail = isLogined ? document.getElementById('memberEmail')?.value : "test@example.com";
 
     // 예약 정보
-    const roomId = document.getElementById('roomId').value;
+    const roomIdx = document.getElementById('roomIdx').value;
     const checkin = document.getElementById('checkin').value;
     const checkout = document.getElementById('checkout').value;
 
@@ -40,7 +40,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
                 url: "/booking/validate",
                 type: "GET",
                 data: {
-                    roomId: roomId,
+                    roomIdx: roomIdx,
                     checkin: checkin,
                     checkout: checkout
                 },
@@ -57,15 +57,15 @@ document.getElementById('payBtn').addEventListener('click', function () {
                         contentType: "application/json",
                         data: JSON.stringify({
                             merchantUid: merchantUid,
-                            roomId: roomId,
-                            memberId: memberId,
+                            roomIdx: roomIdx,
+                            memberIdx: memberIdx,
                             checkin: checkin,
                             checkout: checkout,
                             price: totalPrice
                         }),
                         success: function (response) {
                             console.log("✅ 예약 저장 완료");
-                            const bookingId = response.id;
+                            const bookingIdx = response.idx;
 
                             // 4. 포트원 결제 요청
                             const IMP = window.IMP;
@@ -98,7 +98,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                                 type: "POST",
                                                 contentType: "application/json",
                                                 data: JSON.stringify({
-                                                    bookingId: bookingId,
+                                                    bookingIdx: bookingIdx,
                                                     impUid: rsp.imp_uid,
                                                     merchantUid: rsp.merchant_uid,
                                                     payMethod: rsp.pay_method,
@@ -117,7 +117,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                                         contentType: "application/json",
                                                         data: JSON.stringify({
                                                             merchantUid: rsp.merchant_uid,
-                                                            roomId: roomId,
+                                                            roomIdx: roomIdx,
                                                             checkin: checkin,
                                                             checkout: checkout,
                                                             guestPhone: rsp.buyer_tel // 고객 전화번호도 필요
@@ -141,7 +141,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
 
                                                     // 예약 상태 취소로 업데이트
                                                     $.ajax({
-                                                        url: "/booking/update/cancel/" + bookingId,  // 실제 API 경로 맞게 조정
+                                                        url: "/booking/update/cancel/" + bookingIdx,  // 실제 API 경로 맞게 조정
                                                         type: 'PUT',
                                                         success: function() {
                                                             console.log("❌ 예약 취소 완료");
@@ -164,7 +164,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
 
                                             // 예약 상태 취소로 업데이트
                                             $.ajax({
-                                                url: "/booking/update/cancel/" + bookingId,  // 실제 API 경로 맞게 조정
+                                                url: "/booking/update/cancel/" + bookingIdx,  // 실제 API 경로 맞게 조정
                                                 type: 'PUT',
                                                 success: function() {
                                                     console.log("❌ 예약 취소 완료");
@@ -184,7 +184,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
 
                                     // 예약 상태 취소로 업데이트
                                     $.ajax({
-                                        url: "/booking/update/cancel/" + bookingId,  // 실제 API 경로 맞게 조정
+                                        url: "/booking/update/cancel/" + bookingIdx,  // 실제 API 경로 맞게 조정
                                         type: 'PUT',
                                         success: function() {
                                             console.log("❌ 예약 취소 완료");

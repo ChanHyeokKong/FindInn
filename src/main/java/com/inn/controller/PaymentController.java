@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -53,14 +54,15 @@ public class PaymentController {
                         .body(Map.of("result", "fail", "message", "결제 정보를 불러올 수 없습니다."));
             }
 
-            // 금액 비교 (Booking.price는 Integer, payment.getAmount()는 BigDecimal)
-            if (booking.getPrice() != payment.getAmount().intValue()) {
+            // 금액 비교 (Booking.price는 long, payment.getAmount()는 BigDecimal)
+            if (booking.getPrice() != payment.getAmount().longValue()) {
                 // 결제 취소 요청 (전액 환불)
                 CancelData cancelData = new CancelData(payment.getImpUid(), true);
                 iamportClient.cancelPaymentByImpUid(cancelData);
 
                 // 예약 상태 변경 및 저장
                 booking.setStatus("CANCELED");
+                booking.setCanceledAt(LocalDateTime.now());
                 bookingRepository.save(booking);
 
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)

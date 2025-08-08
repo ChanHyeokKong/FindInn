@@ -9,7 +9,7 @@ import lombok.Setter;
 @Data
 public class BookingInfo {
     private String merchantUid;
-    private String roomId;
+    private String roomIdx;
     private String checkin;
     private String checkout;
     private String guestPhone;

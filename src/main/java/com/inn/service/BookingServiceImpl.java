@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -41,8 +42,8 @@ public class BookingServiceImpl implements BookingService {
      * 같은 객실의 동일한 기간에 예약이 이미 존재하는지 확인
      */
     @Override
-    public boolean isOverlappingBookingExists(Long roomId, LocalDate checkin, LocalDate checkout) {
-        List<BookingEntity> overlapping = bookingRepository.findOverlappingBookings(roomId, checkin, checkout);
+    public boolean isOverlappingBookingExists(Long roomIdx, LocalDate checkin, LocalDate checkout) {
+        List<BookingEntity> overlapping = bookingRepository.findOverlappingBookings(roomIdx, checkin, checkout);
         return overlapping.isEmpty();
     }
 
@@ -53,12 +54,11 @@ public class BookingServiceImpl implements BookingService {
     public BookingEntity insert(BookingDto dto) {
         BookingEntity booking = BookingEntity.builder()
                 .merchantUid(dto.getMerchantUid())
-                .roomId(dto.getRoomId())
-                .memberId(dto.getMemberId())
+                .roomIdx(dto.getRoomIdx())
+                .memberIdx(dto.getMemberIdx())
                 .checkin(dto.getCheckin())
                 .checkout(dto.getCheckout())
                 .price(dto.getPrice())
-                .status("PENDING")
                 .build();
         return bookingRepository.save(booking);
     }
@@ -68,12 +68,14 @@ public class BookingServiceImpl implements BookingService {
      */
     @Override
     @Transactional
-    public BookingEntity updateStatusToCanceled(Long id) {
-        BookingEntity booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Booking not found with id: " + id));
+    public BookingEntity updateStatusToCanceled(Long idx) {
+        BookingEntity booking = bookingRepository.findById(idx)
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found with idx: " + idx));
         booking.setStatus("CANCELED");
+        booking.setCanceledAt(LocalDateTime.now());
         return bookingRepository.save(booking);
     }
 
     // 기타 예약 비즈니스 로직 구현...
+
 }

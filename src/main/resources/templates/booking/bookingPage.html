@@ -45,7 +45,7 @@
             <ul>
                 <li>호텔명: <span th:text="${h_name}">호텔명</span></li>
                 <li>객실명: <span th:text="${r_name}">객실명</span></li>
-                <li>객실 번호: <span th:text="${room_id}">r_idx</span></li>
+                <li>객실 번호: <span th:text="${roomIdx}">r_idx</span></li>
                 <li>체크인: <span th:text="${checkin}">체크인</span></li>
                 <li>체크아웃: <span th:text="${checkout}">체크아웃</span></li>
             </ul>
@@ -121,12 +121,12 @@
 
         <!-- 로그인 정보 전달 -->
         <input type="hidden" id="isLogined" th:value="${isLogined}" />
-        <input type="hidden" id="memberId" th:value="${memberId}" />
+        <input type="hidden" id="memberIdx" th:value="${memberIdx}" />
         <input type="hidden" id="memberEmail" th:value="${memberEmail}" />
 
         <!-- ✅ 결제 관련 JS 전달용 -->
         <input type="hidden" id="channelKey" th:value="${channelKey}">
-        <input type="hidden" id="roomId" th:value="${room_id}">
+        <input type="hidden" id="roomIdx" th:value="${roomIdx}">
         <input type="hidden" id="checkin" th:value="${checkin}">
         <input type="hidden" id="checkout" th:value="${checkout}">
         <input type="hidden" id="totalPrice" th:value="${totalPrice}">

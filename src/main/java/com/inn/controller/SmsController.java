@@ -16,7 +16,7 @@ public class SmsController {
 
     // ✅ 인증번호 문자 전송
     @GetMapping("/auth")
-    public ResponseEntity<?> sendAuthCode(@RequestParam("pNum") String guestPhone) {
+    public ResponseEntity<?> sendAuthCode(@RequestParam("guestPhone") String guestPhone) {
         try {
             String code = smsService.sendAuthCode(guestPhone);
             return ResponseEntity.ok(code);  // or ResponseEntity.ok("sent") if 보안 고려
