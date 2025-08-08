@@ -41,7 +41,9 @@
                         <form th:action="@{/oauth2/authorization/naver}" method="get">
                             <button type="submit" class="naver-login">Naver로 로그인</button>
                         </form>
-                        <button class="kakao-login">Kakao로 로그인</button>
+                        <form th:action="@{/oauth2/authorization/kakao}" method="get">
+                            <button type="submit" class="kakao-login">Kakao로 로그인</button>
+                        </form>
                     </section>
                     <section class="login-form d-none">
                         <form action="/login" method="post" id="sign-form">

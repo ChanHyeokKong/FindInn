@@ -32,7 +32,7 @@ public class MemberController {
     MemberDaoInter dao;
 
     @PostMapping("/isMember")
-    public ResponseEntity<MemberDto> isMember(MemberDto dto){
+    public ResponseEntity<MemberDto> isMember(MemberDto dto) {
         System.out.printf("isMember: %s\n", dto.getMemberEmail());
         MemberDto m_dto = service.getMemberByEmail(dto.getMemberEmail());
         if (m_dto == null) {
@@ -42,44 +42,21 @@ public class MemberController {
     }
 
     @PostMapping("/signin")
-    public String signin(MemberDto dto){
+    public String signin(MemberDto dto) {
         service.signup(dto);
         return "redirect:/";
     }
 
     @GetMapping("/login")
-    public String login(){
+    public String login() {
         return "login/login";
     }
 
     @GetMapping("/mypage")
-    public String mypage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
+    public String mypage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model) {
 
         List<MyPageDto> list = service.getMyReserve(currentUser.getIdx());
         model.addAttribute("reserves", list);
         return "member/myreserve";
-    }
-
-    // 네이버 소셜 로그인 콜백 처리
-    @GetMapping("/login/oauth2/code/naver")
-    public String naverLoginCallback(OAuth2AuthenticationToken authentication) {
-        OAuth2User oAuth2User = authentication.getPrincipal();
-        Map<String, Object> attributes = oAuth2User.getAttributes();
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-
-        String socialProvider = "naver";
-        String socialProviderKey = (String) response.get("id");
-        String email = (String) response.get("email");
-        String name = (String) response.get("name");
-        String mobile = (String) response.get("mobile");
-
-        UserDetails userDetails = service.processNaverLogin(socialProvider, socialProviderKey, email, name, mobile);
-
-        // SecurityContext에 인증 정보 설정
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        return "redirect:/"; // 로그인 성공 후 리다이렉트할 페이지
     }
 }

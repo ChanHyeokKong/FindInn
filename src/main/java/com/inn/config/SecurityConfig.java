@@ -13,15 +13,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import com.inn.service.MemberService;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import com.inn.config.CustomOAuth2UserService; // CustomOAuth2UserService import 추가
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     private final MemberService memberService;
+    private final CustomOAuth2UserService customOAuth2UserService; // CustomOAuth2UserService 주입
 
-    public SecurityConfig(MemberService memberService) {
+    public SecurityConfig(MemberService memberService, CustomOAuth2UserService customOAuth2UserService) {
         this.memberService = memberService;
+        this.customOAuth2UserService = customOAuth2UserService;
     }
 
     @Bean
@@ -78,6 +81,9 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2Login -> oauth2Login // OAuth2 로그인 설정 추가
                         .loginPage("/login") // OAuth2 로그인 시작 페이지
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService) // CustomOAuth2UserService 지정
+                        )
                         .defaultSuccessUrl("/") // OAuth2 로그인 성공 후 기본 리다이렉트 URL
                         .failureUrl("/login?error=true") // OAuth2 로그인 실패 시 리다이렉트 URL
                 )
