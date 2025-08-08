@@ -64,7 +64,8 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/javascript/**",
                                 "/image/**",
-                                "/isMember"
+                                "/isMember",
+                                "/login/oauth2/code/naver" // 네이버 콜백 경로 추가
                         ).permitAll() // 이 경로들은 인증 없이 접근 허용
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )
@@ -74,6 +75,11 @@ public class SecurityConfig {
                         .failureUrl("/login?error=true") // 로그인 실패 시 리다이렉트할 URL
                         .usernameParameter("memberEmail") // 로그인 폼에서 사용자 이름으로 사용할 파라미터 이름
                         .passwordParameter("memberPassword") // 로그인 폼에서 비밀번호로 사용할 파라미터 이름
+                )
+                .oauth2Login(oauth2Login -> oauth2Login // OAuth2 로그인 설정 추가
+                        .loginPage("/login") // OAuth2 로그인 시작 페이지
+                        .defaultSuccessUrl("/") // OAuth2 로그인 성공 후 기본 리다이렉트 URL
+                        .failureUrl("/login?error=true") // OAuth2 로그인 실패 시 리다이렉트 URL
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")

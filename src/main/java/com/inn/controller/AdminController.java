@@ -3,6 +3,7 @@ package com.inn.controller;
 import com.inn.data.member.manager.HotelWithManagerDto;
 import com.inn.data.member.MemberDto;
 import com.inn.service.AdminService;
+import com.inn.service.ManagerService;
 import com.inn.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,14 +16,12 @@ import java.util.List;
 public class AdminController {
 
     @Autowired
-    private MemberService memberService;
-    @Autowired
     private AdminService adminService;
 
     @GetMapping("/admin/memberlist")
     public ModelAndView memberList(){
         ModelAndView mv = new ModelAndView("member/admin/memberList");
-        List<MemberDto> list = memberService.getAllMember();
+        List<MemberDto> list = adminService.getAllMember();
         mv.addObject("members",list);
 
         return mv;
@@ -31,7 +30,7 @@ public class AdminController {
     @GetMapping("/admin/managerlist")
     public ModelAndView managerList(){
         ModelAndView mv = new ModelAndView("member/admin/managerList");
-        List<MemberDto> list = memberService.getAllManager();
+        List<MemberDto> list = adminService.getAllManager();
         mv.addObject("members",list);
 
         return mv;

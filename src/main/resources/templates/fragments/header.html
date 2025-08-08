@@ -37,7 +37,10 @@
                     <section class="login-selector">
                         <button class="email-login">Email로 로그인</button>
                         <button class="google-login">Google로 로그인</button>
-                        <button class="naver-login">Naver로 로그인</button>
+                        <!-- 네이버 로그인 버튼 수정 -->
+                        <form th:action="@{/oauth2/authorization/naver}" method="get">
+                            <button type="submit" class="naver-login">Naver로 로그인</button>
+                        </form>
                         <button class="kakao-login">Kakao로 로그인</button>
                     </section>
                     <section class="login-form d-none">
