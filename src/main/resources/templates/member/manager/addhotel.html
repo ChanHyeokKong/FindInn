@@ -6,7 +6,7 @@
             <div class="form-group">
                 <caption>호텔 이름</caption><br>
                 <select name="hotelId">
-                    <option th:each="hotel : ${hotels}" th:value="${hotel.HotelIdx}">
+                    <option th:each="hotel : ${hotels}" th:value="${hotel.idx}">
                         [[${hotel.hotelName}]]
                     </option>
                 </select><br>
