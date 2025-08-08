@@ -26,4 +26,4 @@ logging:
     org.hibernate.SQL: DEBUG
     # This logs the parameter values that are bound to the '?' in the query
     org.hibernate.type.descriptor.sql: TRACE
-    com.inn: INFO
+    com.inn: INFO		

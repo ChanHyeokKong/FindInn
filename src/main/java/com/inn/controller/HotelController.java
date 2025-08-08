@@ -14,6 +14,8 @@ import com.inn.data.hotel.HotelDto;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.service.HotelService;
 
+import lombok.Value;
+
 @Controller
 public class HotelController {
 	
@@ -21,14 +23,21 @@ public class HotelController {
     private HotelService hotelService;
 	
 	
+	
+	@org.springframework.beans.factory.annotation.Value("${kakao.map.javascript-key}")
+	private String kakaoJsKey;
+	
+	
 	@GetMapping("/h_list")
 	public String hotelList (Model model) {
 		List<HotelEntity> hotels;
 		
+		
+		
 			hotels = hotelService.getAllHotelData();
 			
 		
-		
+		model.addAttribute("kakaoJsKey",kakaoJsKey);
 		model.addAttribute("hotels", hotels);	
 		return "/hotel/hotelList";
 	}

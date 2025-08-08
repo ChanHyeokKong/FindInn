@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+	
+	registerHotelCardClicks();
 	// 검색출력
 	const btnSearch = document.getElementById("btnSearch");
 
@@ -117,16 +119,26 @@ document.addEventListener("DOMContentLoaded", function() {
 			data.forEach(hotel => {
 				const row = document.createElement("tr");
 				const cell = document.createElement("td");
+				
+				let imgTag = "";
+				            if (hotel.hotelImages && hotel.hotelImages.length > 0) {
+								imgTag = `<img src="/hotelImage/${hotel.hotelImages[0]}" alt="호텔 이미지" style="height: 200px; display: block;"  />`;
+								}
 
 				cell.innerHTML = `
-					<div class="card hotel-card" data-hotel-id="${hotel.idx}" style="display: flex; flex-direction: row; max-height: 200px;">
-						<div style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-							<img src="${hotel.images || '/images/no-image.png'}" alt="호텔 이미지" style="width: 100%; height: auto;" />
-						</div>
+
+					<div class="card hotel-card" data-hotel-id="${hotel.idx}" style="display: flex; flex-direction: row; height: 200px;">
+					<div style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+					
+					
+					${imgTag}
+					</div>
 						<div class="card-body" style="flex: 1;">
 							<h5 class="card-title">${hotel.hotelName}</h5>
 							<p class="card-text">
 								<strong>hotel_idx:</strong> ${hotel.idx}<br>
+
+
 								<strong>member_idx:</strong> ${hotel.memberIdx}
 							</p>
 						</div>
@@ -145,6 +157,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	// 호텔 카드 클릭 이벤트 등록 함수
 	function registerHotelCardClicks() {
 		const cards = document.querySelectorAll('.hotel-card');
+		
 		cards.forEach(card => {
 			card.onclick = () => {
 				const hotelId = card.getAttribute('data-hotel-id');
