@@ -177,7 +177,15 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	}
 
-	// 페이지 로드 시 최초 렌더링 혹은 초기 데이터가 있으면 렌더링 및 이벤트 등록 필요할 경우 호출
-	// 예: renderHotels(initialData);
+	//사이드바 태그 
+	let selectedTags = [];
+	
+	const checks = document.querySelectorAll('input[name="tag"]');
+		checks.forEach(check => {
+			check.addEventListener('change', () => {
+				
+				
+			} )
 
+	})
 });
