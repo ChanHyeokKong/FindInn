@@ -126,6 +126,7 @@ document.addEventListener("DOMContentLoaded", function() {
 								}
 
 				cell.innerHTML = `
+
 					<div class="card hotel-card" data-hotel-id="${hotel.idx}" style="display: flex; flex-direction: row; height: 200px;">
 					<div style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
 					
@@ -136,7 +137,8 @@ document.addEventListener("DOMContentLoaded", function() {
 							<h5 class="card-title">${hotel.hotelName}</h5>
 							<p class="card-text">
 								<strong>hotel_idx:</strong> ${hotel.idx}<br>
-								
+
+
 								<strong>member_idx:</strong> ${hotel.memberIdx}
 							</p>
 						</div>

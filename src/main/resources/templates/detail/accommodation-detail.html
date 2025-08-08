@@ -85,8 +85,19 @@
             </div>
         </div>
     </div>
+    <div>
+        <h5>위치</h5>
+        <div id="map"
+             th:data-kakao-key="${kakaoApiKey}"
+             th:data-address="${accommodation.address}"
+             style="width:100%;height:450px; margin: 0 auto; ">
+        </div>
+    </div>
 </div>
 
+
+<script th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoApiKey} + '&libraries=services'}"></script>
+<script src="/javascript/detailMap.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:if="${message}">
     alert("[[${message}]]");

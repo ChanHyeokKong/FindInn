@@ -19,7 +19,7 @@ if (sendAuthBtn) {
         $.ajax({
             url: '/sms/auth',
             method: 'GET',
-            data: { pNum: phone },
+            data: { guestPhone: phone },
             success: function (data) {
                 if (data !== 'bad') {
                     alert("인증번호가 전송되었습니다!");
