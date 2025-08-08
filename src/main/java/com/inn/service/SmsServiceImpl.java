@@ -22,12 +22,12 @@ public class SmsServiceImpl implements SmsService {
 
     // 인증번호 문자 전송
     @Override
-    public String sendAuthCode(String phoneNumber) {
+    public String sendAuthCode(String guestPhone) {
         int code = new Random().nextInt(888888) + 111111;
 
         Message message = new Message();
         message.setFrom(smsFrom);  // 발신번호 여기서 사용
-        message.setTo(phoneNumber);
+        message.setTo(guestPhone);
         message.setText("[인증번호] " + code + "를 입력해주세요.");
 
         try {
@@ -48,7 +48,7 @@ public class SmsServiceImpl implements SmsService {
     @Override
     public void sendBookingConfirmation(BookingInfo info) {
         String messageText = String.format(
-                "\n[Find Inn]\n예약완료 안내\n\n" +
+                "[Find Inn] 예약완료 안내                    \n\n" +
                         "안녕하세요\n고객님의 예약이 확정되었습니다.\n아래 예약 정보를 확인해 주세요.\n\n" +
                         "- 예약번호 : %s\n" +
                         "- 객실ID : %s\n\n" +
@@ -57,7 +57,7 @@ public class SmsServiceImpl implements SmsService {
                         "좋은 곳에서 행복한 시간 되세요.\n\n" +
                         "※ 개인정보보호를 위해 고객님의 전화번호는 안심번호로 숙소에 전달됩니다.",
                 info.getMerchantUid(),
-                info.getRoomId(),
+                info.getRoomIdx(),
                 info.getCheckin(),
                 info.getCheckout()
         );

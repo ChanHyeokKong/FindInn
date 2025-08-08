@@ -8,4 +8,5 @@ public interface PaymentService {
     PaymentEntity insert(PaymentDto dto);
 
     boolean cancelPaymentByImpUid(String impUid);
+
 }

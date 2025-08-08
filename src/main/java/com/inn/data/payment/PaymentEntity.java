@@ -18,8 +18,8 @@ public class PaymentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
 
-    @Column(name = "booking_id")
-    private Long bookingId;
+    @Column(name = "booking_idx")
+    private Long bookingIdx;
 
     @Column(name = "imp_uid", nullable = false)
     private String impUid;
@@ -51,4 +51,5 @@ public class PaymentEntity {
 
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
+
 }

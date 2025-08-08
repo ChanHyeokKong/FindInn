@@ -14,8 +14,8 @@ public class BookingDto {
 
     private Long idx;
     private String merchantUid;
-    private Long roomId;
-    private Long memberId;
+    private Long roomIdx;
+    private Long memberIdx;
     private LocalDate checkin;
     private LocalDate checkout;
     private Long price;
