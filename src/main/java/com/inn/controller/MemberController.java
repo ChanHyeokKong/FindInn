@@ -1,16 +1,18 @@
 package com.inn.controller;
 
-import ch.qos.logback.core.model.Model;
+import com.inn.config.CustomUserDetails;
 import com.inn.data.member.MemberDaoInter;
 import com.inn.data.member.MemberDto;
+import com.inn.data.member.MyPageDto;
 import com.inn.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -42,6 +44,14 @@ public class MemberController {
     @GetMapping("/login")
     public String login(){
         return "login/login";
+    }
+
+    @GetMapping("/mypage")
+    public String mypage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
+
+        List<MyPageDto> list = service.getMyReserve(currentUser.getIdx());
+        model.addAttribute("reserves", list);
+        return "member/myreserve";
     }
 
 }

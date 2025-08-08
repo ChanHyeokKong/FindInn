@@ -1,9 +1,7 @@
 package com.inn.service;
 
-import com.inn.data.member.MemberDaoInter;
-import com.inn.data.member.MemberDto;
-import com.inn.data.member.RoleDaoInter;
-import com.inn.data.member.RoleDto;
+import com.inn.data.member.*;
+import com.inn.data.member.manager.ManageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -98,6 +96,10 @@ public class MemberService implements UserDetailsService {
     public List<MemberDto> getAllManager(){
         List<MemberDto> list = memberDao.findAllManager();
         return list;
+    }
+
+    public List<MyPageDto> getMyReserve(Long memberIdx) {
+        return memberDaoInter.findMyReserve(memberIdx);
     }
 
 }

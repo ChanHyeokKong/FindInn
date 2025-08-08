@@ -1,6 +1,7 @@
 package com.inn.service;
 
 import com.inn.data.hotel.HotelEntity;
+import com.inn.data.member.MyPageDto;
 import com.inn.data.member.manager.HotelRoomTypeSummaryDto;
 import com.inn.data.member.manager.HotelWithManagerDto;
 import com.inn.data.member.manager.ManageRepository;
@@ -38,6 +39,11 @@ public class ManagerService {
 
     public List<RoomTypes> getRoomTypesByHotelIds(List<Long> hotelIds) {
         return manageRepository.findRoomTypesByHotelIdIn(hotelIds);
+    }
+
+    public List<MyPageDto> GetAllReservesInMyHotel(Long memberIdx){
+        List<Long> memberIdxes = manageRepository.findMyHotelIdxesByMemberIdx(memberIdx);
+        return manageRepository.findMyHotelReserves(memberIdxes);
     }
 
 }

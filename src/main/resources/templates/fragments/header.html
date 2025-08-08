@@ -16,7 +16,10 @@
         </div>
         <div class="header-login" th:switch="${#authorization.expression('isAuthenticated()')}">
             <button th:case="false" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</button>
-            <button th:case="true" class="btn btn-danger">로그아웃</button>
+            <section th:case="true">
+                <i class="fa-solid fa-circle-user fa-2xl" style="color:white" onclick="location.href='/mypage'"></i>&nbsp;
+                <button class="btn btn-danger">로그아웃</button>
+            </section>
         </div>
     </div>
     <div class="modal fade" id="loginModal">

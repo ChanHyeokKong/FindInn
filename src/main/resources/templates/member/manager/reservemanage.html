@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/mypageLayout}">
+<div layout:fragment="content">
+    <div class="manager-content">
+        <table id="example" class="table table-striped table-bordered" style="width:100%">
+            <tr>
+                <th>호텔 이름</th>
+                <th>방 번호</th>
+                <th>고객 명</th>
+                <th>체크 인</th>
+                <th>체크 아웃</th>
+                <th>예약 취소</th>
+            </tr>
+            <tr th:each="reserve : ${reserves}">
+                <td th:text="${reserve.hotelName}"></td>
+                <td th:text="${reserve.roomNumber}"></td>
+                <td th:text="${reserve.memberName}"></td>
+                <td th:text="${reserve.checkIn}"></td>
+                <td th:text="${reserve.checkOut}"></td>
+                <td><button>상세보기</button></td>
+            </tr>
+        </table>
+    </div>
+</div>
+</html>
