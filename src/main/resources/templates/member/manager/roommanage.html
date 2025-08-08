@@ -20,7 +20,7 @@
                 <td th:text="${hotelRoomInfo.roomTypes.typeName}"></td>
                 <td th:text="${hotelRoomInfo.roomTypes.price}"></td>
                 <td>
-                    <button th:onclick="'location.href=\'/manage/room/detail?idx=' + ${hotelRoomInfo.rooms.id} + '\''">
+                    <button th:onclick="'location.href=\'/manage/room/detail?idx=' + ${hotelRoomInfo.rooms.idx} + '\''">
                         상세보기
                     </button>
                 </td>
