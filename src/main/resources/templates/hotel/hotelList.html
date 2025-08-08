@@ -28,15 +28,14 @@
 		<tbody id="hotelTbody">
 			<tr th:each="hotel : ${hotels}" >
 				<td>
-					<div class="card hotel-card"  th:attr="data-hotel-id=${hotel.hotelIdx}"
-						style="display: flex; flex-direction: row; max-height: 200px;">
+					<div class="card hotel-card"  th:attr="data-hotel-id=${hotel.idx}"
+						style="display: flex; flex-direction: row; height: 200px;">
 
 						<!-- 왼쪽 이미지 영역 -->
-						<div
-							style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+						<div style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
 							     
 							<img th:if="${hotel.hotelImages != null and !#lists.isEmpty(hotel.hotelImages)}" 
-     						th:src="@{'/hotelImage/' + ${hotel.hotelImages[0]}}" alt="호텔 이미지" />
+     						th:src="@{'/hotelImage/' + ${hotel.hotelImages[0]}}" alt="호텔 이미지" style="height:200px;"/>
 								    
 						</div>
 
@@ -44,8 +43,7 @@
 						<div class="card-body" style="flex: 1;">
 							<h5 class="card-title" th:text="${hotel.hotelName}">호텔명</h5>
 							<p class="card-text">
-								<strong>hotel_idx:</strong> <span th:text="${hotel.hotelIdx}"></span><br>
-								<strong>empty:</strong> <span th:text="${hotel.hotelEmpty}"></span><br>
+								<strong>hotel_idx:</strong> <span th:text="${hotel.idx}"></span><br>						
 								<strong>member_idx:</strong> <span th:text="${hotel.memberIdx}"></span>
 
 							</p>
@@ -71,8 +69,7 @@
 					<div id="map" style="width: 100%; height: 650px;"></div>
 
 				</div>
-				<script type="text/javascript"
-					src="//dapi.kakao.com/v2/maps/sdk.js?appkey=5ac2ea2e11f7b380cdf52afbcc384b44"></script>
+				<script th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoJsKey}}"></script>
 			</div>
 		</div>
 	</div>
