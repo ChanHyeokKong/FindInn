@@ -104,9 +104,9 @@ public class MemberService implements UserDetailsService {
         return memberDaoInter.findMyReserve(memberIdx);
     }
 
-    // 네이버 소셜 로그인 처리
+    // 소셜 로그인 처리 (네이버, 카카오 등)
     @Transactional // 트랜잭션 어노테이션 추가
-    public UserDetails processNaverLogin(String socialProvider, String socialProviderKey, String email, String name, String mobile) {
+    public UserDetails processSocialLogin(String socialProvider, String socialProviderKey, String email, String name, String mobile) {
         Optional<SocialMemberDto> socialMemberOptional = socialMemberRepository.findBySocialProviderAndSocialProviderKey(socialProvider, socialProviderKey);
 
         MemberDto member;
@@ -124,7 +124,8 @@ public class MemberService implements UserDetailsService {
                 member = new MemberDto();
                 member.setMemberEmail(email);
                 member.setMemberName(name);
-                member.setMemberPhone(mobile); // 임시 전화번호 설정
+                member.setMemberPassword(null);
+                member.setMemberPhone(mobile); // 네이버에서 가져온 전화번호 설정
 
                 // 기본 역할 (ROLE_USER) 부여
                 Optional<RoleDto> userRoleOptional = Optional.ofNullable(roleDao.findByRoleName("ROLE_USER"));
