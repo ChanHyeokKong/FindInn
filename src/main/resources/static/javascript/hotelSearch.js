@@ -119,15 +119,14 @@ document.addEventListener("DOMContentLoaded", function() {
 				const cell = document.createElement("td");
 
 				cell.innerHTML = `
-					<div class="card hotel-card" data-hotel-id="${hotel.hotelIdx}" style="display: flex; flex-direction: row; max-height: 200px;">
+					<div class="card hotel-card" data-hotel-id="${hotel.idx}" style="display: flex; flex-direction: row; max-height: 200px;">
 						<div style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
 							<img src="${hotel.images || '/images/no-image.png'}" alt="호텔 이미지" style="width: 100%; height: auto;" />
 						</div>
 						<div class="card-body" style="flex: 1;">
 							<h5 class="card-title">${hotel.hotelName}</h5>
 							<p class="card-text">
-								<strong>hotel_idx:</strong> ${hotel.hotelIdx}<br>
-								<strong>empty:</strong> ${hotel.hotelEmpty}<br>
+								<strong>hotel_idx:</strong> ${hotel.idx}<br>
 								<strong>member_idx:</strong> ${hotel.memberIdx}
 							</p>
 						</div>
