@@ -28,7 +28,7 @@
 		<tbody id="hotelTbody">
 			<tr th:each="hotel : ${hotels}" >
 				<td>
-					<div class="card hotel-card"  th:attr="data-hotel-id=${hotel.hotelIdx}"
+					<div class="card hotel-card"  th:attr="data-hotel-id=${hotel.idx}"
 						style="display: flex; flex-direction: row; max-height: 200px;">
 
 						<!-- 왼쪽 이미지 영역 -->
@@ -44,8 +44,7 @@
 						<div class="card-body" style="flex: 1;">
 							<h5 class="card-title" th:text="${hotel.hotelName}">호텔명</h5>
 							<p class="card-text">
-								<strong>hotel_idx:</strong> <span th:text="${hotel.hotelIdx}"></span><br>
-								<strong>empty:</strong> <span th:text="${hotel.hotelEmpty}"></span><br>
+								<strong>hotel_idx:</strong> <span th:text="${hotel.idx}"></span><br>
 								<strong>member_idx:</strong> <span th:text="${hotel.memberIdx}"></span>
 
 							</p>

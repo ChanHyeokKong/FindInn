@@ -15,7 +15,13 @@ public class ReserveController {
     private RoomsService roomsService;
 
     @GetMapping("/reserve")
-    public String processReservation(@RequestParam long roomId, @RequestParam LocalDate checkIn, @RequestParam LocalDate checkOut, RedirectAttributes redirectAttributes,@RequestHeader("Referer") String refererUrl) {
+    public String processReservation(@RequestParam long roomId, @RequestParam(value="checkIn", required = false) LocalDate checkIn, @RequestParam(value="checkOut", required = false) LocalDate checkOut, RedirectAttributes redirectAttributes,@RequestHeader("Referer") String refererUrl) {
+        if (checkIn==null || checkOut==null) {
+            redirectAttributes.addFlashAttribute("message", "예약날짜를 설정해주세요");
+            return "redirect:"+refererUrl;
+        }
+
+
         Rooms room = roomsService.getAvailableRoom(roomId, checkIn, checkOut);
         if (room ==null){
             redirectAttributes.addFlashAttribute("message", "해당 객실은 매진되었습니다.");
