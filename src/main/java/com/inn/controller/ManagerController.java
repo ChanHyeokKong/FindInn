@@ -3,6 +3,7 @@ package com.inn.controller;
 import com.inn.config.CustomUserDetails;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
+import com.inn.data.member.MyPageDto;
 import com.inn.data.member.manager.HotelRoomTypeSummaryDto;
 import com.inn.data.member.manager.HotelWithManagerDto;
 import com.inn.data.rooms.Rooms;
@@ -152,5 +153,13 @@ public class ManagerController {
         roomsRepository.save(newRoom);
 
         return "redirect:/manage/room";
+    }
+
+    @GetMapping("manage/reserve")
+    public String reserveManage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
+        List<MyPageDto> list = service.GetAllReservesInMyHotel(currentUser.getIdx());
+        model.addAttribute("reserves", list);
+
+        return "member/manager/reservemanage";
     }
 }

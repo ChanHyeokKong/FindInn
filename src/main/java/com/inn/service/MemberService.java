@@ -1,9 +1,7 @@
 package com.inn.service;
 
-import com.inn.data.member.MemberDaoInter;
-import com.inn.data.member.MemberDto;
-import com.inn.data.member.RoleDaoInter;
-import com.inn.data.member.RoleDto;
+import com.inn.data.member.*;
+import com.inn.data.member.manager.ManageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,10 +12,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // Transactional import 추가
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.UUID; // UUID import 추가
 
 @Service
 public class MemberService implements UserDetailsService {
@@ -28,10 +28,14 @@ public class MemberService implements UserDetailsService {
     @Autowired
     RoleDaoInter roleDao;
 
+    @Autowired
+    SocialMemberRepository socialMemberRepository; // SocialMemberRepository 주입
+
     PasswordEncoder pe = new BCryptPasswordEncoder();
     @Autowired
     private MemberDaoInter memberDaoInter;
 
+    //회원가입
     public void signup(MemberDto memberDto) {
         memberDto.setMemberPassword(pe.encode(memberDto.getMemberPassword()));
 
@@ -46,6 +50,7 @@ public class MemberService implements UserDetailsService {
 
     }
 
+    // 기존 유저 Role 제거 후 MANAGER 권한 부여
     public void giveManagerRole(Long memberIdx) {
         Optional<MemberDto> memberOptional = memberDao.findById(memberIdx);
 
@@ -66,21 +71,25 @@ public class MemberService implements UserDetailsService {
         }
     }
 
+    //멤버 객체 전체 리턴
     public List<MemberDto> getAllMembers() {
         List<MemberDto> list = memberDao.findAll();
         return list;
     }
 
+    // 역할 객체 전체 리턴
     public List<RoleDto> getAllRoles() {
         List<RoleDto> list = roleDao.findAll();
         return list;
     }
 
+    // 이메일을 통해 멤버 객체 리턴 -> 중복체크 용
     public MemberDto getMemberByEmail(String email) {
         return memberDao.findByMemberEmail(email);
     }
 
 
+    // 멤버 아이디를 검색 -> 멤버 있는지 체크
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         MemberDto member = memberDao.findByMemberEmail(username);
@@ -90,14 +99,50 @@ public class MemberService implements UserDetailsService {
         return new CustomUserDetails(member);
     }
 
-    public List<MemberDto> getAllMember(){
-        List<MemberDto> list = memberDao.findAllUser();
-        return list;
+    // MemberIdx(CurrentUser) 통해 예약 정보 리턴
+    public List<MyPageDto> getMyReserve(Long memberIdx) {
+        return memberDaoInter.findMyReserve(memberIdx);
     }
 
-    public List<MemberDto> getAllManager(){
-        List<MemberDto> list = memberDao.findAllManager();
-        return list;
-    }
+    // 네이버 소셜 로그인 처리
+    @Transactional // 트랜잭션 어노테이션 추가
+    public UserDetails processNaverLogin(String socialProvider, String socialProviderKey, String email, String name, String mobile) {
+        Optional<SocialMemberDto> socialMemberOptional = socialMemberRepository.findBySocialProviderAndSocialProviderKey(socialProvider, socialProviderKey);
 
+        MemberDto member;
+        if (socialMemberOptional.isPresent()) {
+            // 이미 가입된 소셜 회원
+            SocialMemberDto socialMember = socialMemberOptional.get();
+            member = memberDao.findById(socialMember.getMemberIdx())
+                    .orElseThrow(() -> new UsernameNotFoundException("Member not found for social login: " + email));
+            // 필요하다면 여기서 회원 정보 업데이트 로직 추가
+        } else {
+            // 새로운 소셜 회원 또는 기존 이메일 회원과 연동
+            member = memberDao.findByMemberEmail(email);
+            if (member == null) {
+                // 완전히 새로운 회원 (소셜 + 이메일 모두 없음)
+                member = new MemberDto();
+                member.setMemberEmail(email);
+                member.setMemberName(name);
+                member.setMemberPhone(mobile); // 임시 전화번호 설정
+
+                // 기본 역할 (ROLE_USER) 부여
+                Optional<RoleDto> userRoleOptional = Optional.ofNullable(roleDao.findByRoleName("ROLE_USER"));
+                if (userRoleOptional.isPresent()) {
+                    member.getRoles().add(userRoleOptional.get());
+                } else {
+                    System.out.println("Error: ROLE_USER not found.");
+                }
+                member = memberDao.save(member); // 반환되는 객체를 다시 할당
+            }
+
+            // SocialMemberDto 저장
+            SocialMemberDto newSocialMember = new SocialMemberDto();
+            newSocialMember.setSocialProvider(socialProvider);
+            newSocialMember.setSocialProviderKey(socialProviderKey);
+            newSocialMember.setMemberIdx(member.getIdx()); // member.getIdx()는 이제 올바른 ID를 가집니다.
+            socialMemberRepository.save(newSocialMember);
+        }
+        return new CustomUserDetails(member);
+    }
 }

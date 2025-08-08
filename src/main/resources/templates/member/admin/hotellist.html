@@ -12,6 +12,7 @@
         <tr th:each="hotel : ${hotels}">
             <td th:text="${hotel.hotelEntity.idx}"></td>
             <td th:text="${hotel.hotelEntity.hotelName}"></td>
+            <td th:text="${hotel.emptyRoom}"></td>
             <td th:text="${hotel.memberName}"></td>
 
         </tr>

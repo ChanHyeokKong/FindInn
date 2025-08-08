@@ -1,6 +1,7 @@
 package com.inn.service;
 
 import com.inn.data.hotel.HotelEntity;
+import com.inn.data.member.MyPageDto;
 import com.inn.data.member.manager.HotelRoomTypeSummaryDto;
 import com.inn.data.member.manager.HotelWithManagerDto;
 import com.inn.data.member.manager.ManageRepository;
@@ -36,8 +37,15 @@ public class ManagerService {
         return manageRepository.findHotelByMemberIdx(memberIdx);
     }
 
+    // HotelIdx 들로 호텔에 있는 RoomTypes 객체들 반환
     public List<RoomTypes> getRoomTypesByHotelIds(List<Long> hotelIds) {
         return manageRepository.findRoomTypesByHotelIdIn(hotelIds);
+    }
+
+    // MemberIdx(호텔관리자)를 통해 본인 호텔의 모든 예약 불러오기
+    public List<MyPageDto> GetAllReservesInMyHotel(Long memberIdx){
+        List<Long> memberIdxes = manageRepository.findMyHotelIdxesByMemberIdx(memberIdx);
+        return manageRepository.findMyHotelReserves(memberIdxes);
     }
 
 }

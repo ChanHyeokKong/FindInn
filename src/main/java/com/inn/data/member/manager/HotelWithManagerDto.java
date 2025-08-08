@@ -15,10 +15,12 @@ public class HotelWithManagerDto {
     private Rooms rooms;
     private String memberName;
     private RoomTypes roomTypes;
+    private Long emptyRoom;
 
-    public HotelWithManagerDto(HotelEntity hotelEntity, String memberName) {
+    public HotelWithManagerDto(HotelEntity hotelEntity, String memberName, Long emptyRoom) {
         this.hotelEntity = hotelEntity;
         this.memberName = memberName;
+        this.emptyRoom = emptyRoom;
     }
 
 }
