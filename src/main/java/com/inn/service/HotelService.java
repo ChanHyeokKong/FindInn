@@ -1,16 +1,15 @@
 package com.inn.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.inn.data.hotel.HotelDto;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
-import com.inn.data.member.manager.HotelWithManagerDto;
 
 @Service
 public class 	HotelService {
@@ -32,7 +31,7 @@ public class 	HotelService {
 		}else
 		{	hotels = hotelRepository.findByHotelNameContainingAndHotelCategory(keyword, category);
 
-		
+
 		}
 		
 
@@ -51,7 +50,12 @@ public class 	HotelService {
 			    .collect(Collectors.toList());
 	}
 	
+	public Optional<HotelEntity> getHotelDataById(long idx) {
+		return hotelRepository.findById(idx);
 	}
+
+
+}
 	
 	
 

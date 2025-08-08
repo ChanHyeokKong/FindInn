@@ -15,12 +15,13 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
     Optional<BookingEntity> findByMerchantUid(String merchantUid);
 
     @Query("SELECT b FROM BookingEntity b " +
-            "WHERE b.roomId = :roomId " +
+            "WHERE b.roomIdx = :roomIdx " +
             "AND b.status IN ('PENDING', 'CONFIRMED') " +
             "AND b.checkout > :checkin " +
             "AND b.checkin < :checkout")
     List<BookingEntity> findOverlappingBookings(
-            @Param("roomId") Long roomId,
+            @Param("roomIdx") Long roomIdx,
             @Param("checkin") LocalDate checkin,
             @Param("checkout") LocalDate checkout);
+
 }

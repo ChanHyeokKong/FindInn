@@ -22,11 +22,11 @@ public class BookingEntity {
     @Column(name = "merchant_uid", nullable = false, unique = true)
     private String merchantUid;
 
-    @Column(name = "room_id", nullable = false)
-    private Long roomId;
+    @Column(name = "room_idx", nullable = false)
+    private Long roomIdx;
 
-    @Column(name = "member_id")
-    private Long memberId;
+    @Column(name = "member_idx")
+    private Long memberIdx;
 
     @Column(name = "checkin", nullable = false)
     private LocalDate checkin;
@@ -49,4 +49,5 @@ public class BookingEntity {
 
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
+
 }

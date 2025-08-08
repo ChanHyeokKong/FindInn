@@ -28,11 +28,11 @@ public class BookingRestController {
     // 예약 중복 확인
     @GetMapping("/validate")
     public boolean validateBookingOverlap(
-            @RequestParam Long roomId,
+            @RequestParam Long roomIdx,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkin,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkout
     ) {
-        return bookingService.isOverlappingBookingExists(roomId, checkin, checkout);
+        return bookingService.isOverlappingBookingExists(roomIdx, checkin, checkout);
     }
 
     // 예약 저장
@@ -41,7 +41,7 @@ public class BookingRestController {
         try {
             BookingEntity booking = bookingService.insert(dto);
             return ResponseEntity.ok().body(
-                    Map.of("result", "success", "id", booking.getIdx())
+                    Map.of("result", "success", "idx", booking.getIdx())
             );
         } catch (Exception e) {
             return ResponseEntity
@@ -51,10 +51,10 @@ public class BookingRestController {
     }
 
     // 예약 상태를 CANCELED로 변경하는 API
-    @PutMapping("/update/cancel/{id}")
-    public ResponseEntity<?> cancelBooking(@PathVariable Long id) {
+    @PutMapping("/update/cancel/{idx}")
+    public ResponseEntity<?> cancelBooking(@PathVariable Long idx) {
         try {
-            BookingEntity updated = bookingService.updateStatusToCanceled(id);
+            BookingEntity updated = bookingService.updateStatusToCanceled(idx);
             return ResponseEntity.ok(Map.of("result", "success", "status", updated.getStatus()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

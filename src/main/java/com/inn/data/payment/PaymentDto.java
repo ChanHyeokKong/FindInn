@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class PaymentDto {
 
     private Long idx;
-    private Long bookingId;
+    private Long bookingIdx;
     private String impUid;
     private String merchantUid;
     private String payMethod;
