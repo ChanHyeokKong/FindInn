@@ -1,16 +1,21 @@
-let timer = null; // 타이머
-let remaining = 180; // 3분
+// ✅ DOM 요소 캐싱
 const authSection = document.getElementById('authSection');
 const authInput = document.getElementById('authInput');
 const checkAuthBtn = document.getElementById('checkAuthBtn');
 const timerText = document.getElementById('timerText');
 const msgBox = document.getElementById('authResultMsg');
-
-// ✅ 인증번호 발송 버튼
 const sendAuthBtn = document.getElementById('sendAuthBtn');
+const guestPhoneInput = document.getElementById('guestPhone');
+const serverAuthCodeInput = document.getElementById('serverAuthCode');
+
+// ✅ 타이머 관련 변수
+let timer = null;
+let remaining = 180;
+
+// ✅ 인증번호 발송 버튼 이벤트
 if (sendAuthBtn) {
     sendAuthBtn.addEventListener('click', function () {
-        const phone = document.getElementById('guestPhone').value;
+        const phone = guestPhoneInput.value;
         if (!phone) {
             alert("휴대폰 번호를 입력하세요.");
             return;
@@ -23,9 +28,9 @@ if (sendAuthBtn) {
             success: function (data) {
                 if (data !== 'bad') {
                     alert("인증번호가 전송되었습니다!");
-                    document.getElementById('serverAuthCode').value = data;
+                    serverAuthCodeInput.value = data;
 
-                    // ✅ 인증 입력창 보이기 및 초기화
+                    // 인증 입력창 보이기 및 초기화
                     authSection.style.display = 'block';
                     authInput.disabled = false;
                     checkAuthBtn.disabled = false;
@@ -33,7 +38,6 @@ if (sendAuthBtn) {
                     msgBox.textContent = '';
                     timerText.textContent = '';
 
-                    // ✅ 타이머 시작
                     startTimer();
                 } else {
                     alert("전송 실패. 다시 시도하세요.");
@@ -46,10 +50,10 @@ if (sendAuthBtn) {
     });
 }
 
-// ✅ 인증번호 확인 버튼
-document.getElementById('checkAuthBtn').addEventListener('click', function () {
+// ✅ 인증번호 확인 버튼 이벤트
+checkAuthBtn.addEventListener('click', function () {
     const inputCode = authInput.value;
-    const serverCode = document.getElementById('serverAuthCode').value;
+    const serverCode = serverAuthCodeInput.value;
 
     if (!serverCode) {
         msgBox.textContent = "먼저 인증번호를 받아주세요.";
@@ -66,16 +70,16 @@ document.getElementById('checkAuthBtn').addEventListener('click', function () {
     if (inputCode === serverCode) {
         clearInterval(timer);
 
-        // ✅ 인증 관련 요소 비활성화 및 숨김
+        // 인증 관련 요소 비활성화 및 숨김
         authInput.value = '';
         msgBox.textContent = '';
         timerText.textContent = '';
         authInput.disabled = true;
         checkAuthBtn.disabled = true;
         authSection.style.display = "none";
-        document.getElementById('sendAuthBtn').style.display = "none";  // 인증번호 받기 버튼 숨김
+        sendAuthBtn.style.display = "none";
 
-        // ✅ 인증 상태 전역 변수 설정
+        // ✅ 인증 완료!
         isPhoneVerified = true;
 
         msgBox.textContent = "휴대폰 인증이 완료되었습니다.";
@@ -88,7 +92,7 @@ document.getElementById('checkAuthBtn').addEventListener('click', function () {
 
 // ✅ 타이머 함수
 function startTimer() {
-    clearInterval(timer); // 기존 타이머 제거
+    clearInterval(timer);
     remaining = 180;
 
     timer = setInterval(() => {

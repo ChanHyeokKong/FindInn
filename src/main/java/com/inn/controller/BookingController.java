@@ -31,13 +31,20 @@ public class BookingController {
             Model model) {
 
         if (currentUser != null) {
-            model.addAttribute("memberIdx", currentUser.getIdx());
-            model.addAttribute("memberEmail", currentUser.getUsername());
+//            model.addAttribute("memberIdx", currentUser.getIdx());
+//            model.addAttribute("memberEmail", currentUser.getUsername());
+            model.addAttribute("memberIdx", null);
+            model.addAttribute("memberEmail", "test@example.com");
             model.addAttribute("isLogined", true);
         } else {
             model.addAttribute("isLogined", true);
         }
 
+        // 요일
+        String checkinDay = bookingService.getKoreanShortDayOfWeek(checkin);
+        String checkoutDay = bookingService.getKoreanShortDayOfWeek(checkout);
+
+        // 가격
         long price = 150L;
         long nights = Duration.between(checkin.atStartOfDay(), checkout.atStartOfDay()).toDays();
         long totalPrice = price * nights;
@@ -47,6 +54,8 @@ public class BookingController {
         model.addAttribute("r_name", "디럭스 더블룸 101호");
         model.addAttribute("checkin", checkin);
         model.addAttribute("checkout", checkout);
+        model.addAttribute("checkinDay", checkinDay);
+        model.addAttribute("checkoutDay", checkoutDay);
         model.addAttribute("price", price);
         model.addAttribute("nights", nights);
         model.addAttribute("totalPrice", totalPrice);
