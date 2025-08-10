@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@4.2.0/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+</head>
 <div layout:fragment="content">
     <div class="container mt-3">
         <form action="/manage/addhotel/action" method="post">
@@ -21,6 +25,30 @@
                 <button type="submit">호텔 추가</button>
             </div>
         </form>
+
+        <form action="/manage/changeDesc" th:object="${post}" method="post">
+            <select name="hotelId">
+                <option th:each="hotel : ${hotels}" th:value="${hotel.idx}">
+                    [[${hotel.hotelName}]]
+                </option>
+            </select>
+
+            <textarea id="editor" th:field="*{content}"></textarea>
+            <button type="submit">Save Post</button>
+        </form>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/froala-editor@4.2.0/js/froala_editor.pkgd.min.js"></script>
+
+        <script>
+            $(function() {
+                new FroalaEditor('#editor', {
+                    // Set the editor height to 400 pixels
+                    height: 400
+                });
+            });
+        </script>
+
     </div>
 </div>
 </html>

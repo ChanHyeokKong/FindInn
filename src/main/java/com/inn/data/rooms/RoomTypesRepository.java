@@ -37,4 +37,23 @@ public interface RoomTypesRepository extends JpaRepository<RoomTypes, Long> {
     List<RoomTypes> findAvailableRoomType(@Param("checkInDate") LocalDate checkInDate,
                                           @Param("checkOutDate") LocalDate checkOutDate,
                                           @Param("hotelId") Long hotelId);
+
+
+    @Query("""
+        SELECT new com.inn.data.rooms.RoomTypeAvailDto(
+            rt,
+            CASE WHEN COUNT(DISTINCT r.idx) > COUNT(DISTINCT res.room.idx) THEN true ELSE false END
+        )
+        FROM RoomTypes rt
+        LEFT JOIN Rooms r ON r.roomType.idx = rt.idx
+        LEFT JOIN Reserve res ON res.room.idx = r.idx AND res.checkIn < :checkOutDate AND res.checkOut > :checkInDate
+        WHERE rt.hotelId = :hotelId
+        GROUP BY rt.idx
+    """)
+    List<RoomTypeAvailDto> findRoomTypeAvailability(
+            @Param("hotelId") Long hotelId,
+            @Param("checkInDate") LocalDate checkInDate,
+            @Param("checkOutDate") LocalDate checkOutDate
+    );
+
 }
