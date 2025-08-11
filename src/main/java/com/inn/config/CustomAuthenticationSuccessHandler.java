@@ -27,6 +27,14 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                             Authentication authentication) throws IOException, ServletException {
 
+        // 1. returnUrl 파라미터 확인
+        String returnUrl = request.getParameter("returnUrl");
+        if (returnUrl != null && !returnUrl.isEmpty() && !returnUrl.equals("/error")) {
+            logger.info("Redirecting to returnUrl: {}", returnUrl);
+            getRedirectStrategy().sendRedirect(request, response, returnUrl);
+            return;
+        }
+
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         HttpSession session = request.getSession();
 
@@ -34,7 +42,7 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
         logger.info("Authentication successful for user: {}", authentication.getName());
         logger.info("User authorities: {}", authorities);
 
-        // 1. 역할 기반 리다이렉션 (관리자 우선)
+        // 2. 역할 기반 리다이렉션 (관리자 우선)
         for (GrantedAuthority grantedAuthority : authorities) {
             if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
                 // 관리자는 항상 관리자 대시보드로 이동
@@ -48,7 +56,7 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
             }
         }
 
-        // 2. LastPageInterceptor에 의해 저장된 URL 확인
+        // 3. LastPageInterceptor에 의해 저장된 URL 확인
         String lastPageUrl = (String) session.getAttribute(LAST_PAGE_URL_SESSION_KEY);
         if (lastPageUrl != null && !lastPageUrl.isEmpty()) {
             session.removeAttribute(LAST_PAGE_URL_SESSION_KEY); // 사용 후 세션에서 제거
@@ -56,13 +64,13 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
             return;
         }
 
-        // 3. SavedRequestAwareAuthenticationSuccessHandler의 기본 동작 (보호된 페이지 접근 시)
+        // 4. SavedRequestAwareAuthenticationSuccessHandler의 기본 동작 (보호된 페이지 접근 시)
         if (request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST") != null) {
             super.onAuthenticationSuccess(request, response, authentication);
             return;
         }
 
-        // 4. 위 모든 경우에 해당하지 않을 때 기본 URL로 리다이렉트
+        // 5. 위 모든 경우에 해당하지 않을 때 기본 URL로 리다이렉트
         String redirectUrl = "/"; // 기본 리다이렉트 URL
          for (GrantedAuthority grantedAuthority : authorities) {
             if (grantedAuthority.getAuthority().equals("ROLE_USER")) {

@@ -4,6 +4,8 @@ import com.inn.config.CustomUserDetails;
 import com.inn.data.member.MemberDaoInter;
 import com.inn.data.member.MemberDto;
 import com.inn.data.member.MyPageDto;
+import com.inn.data.member.QnaDto;
+import com.inn.data.member.QnaRepository;
 import com.inn.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,9 @@ public class MemberController {
     @Autowired
     MemberDaoInter dao;
 
+    @Autowired
+    QnaRepository qnaRepository;
+
     @PostMapping("/isMember")
     public ResponseEntity<MemberDto> isMember(MemberDto dto) {
         System.out.printf("isMember: %s\n", dto.getMemberEmail());
@@ -52,11 +57,24 @@ public class MemberController {
         return "login/login";
     }
 
-    @GetMapping("/mypage")
+    @GetMapping("/mypage/reserve")
     public String mypage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model) {
 
         List<MyPageDto> list = service.getMyReserve(currentUser.getIdx());
         model.addAttribute("reserves", list);
         return "member/myreserve";
     }
+
+    @GetMapping("/qna")
+    public String qna(Model model) {
+        List<QnaDto> qnaList = qnaRepository.findAll();
+        model.addAttribute("qnaList", qnaList);
+        return "member/qna";
+    }
+
+    @GetMapping("/qna/write")
+    public String qnawrite() {
+        return "member/qnawrite";
+    }
+
 }

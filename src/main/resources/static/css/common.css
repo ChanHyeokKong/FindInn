@@ -16,13 +16,35 @@
     box-sizing: border-box; /* padding과 border를 너비에 포함 */
 }
 
-.header-logo img{
-    width: 150px; /* 로고 너비 고정 */
-    vertical-align: middle; /* 이미지 세로 정렬 (念のため) */
+.header-logo {
+    flex-shrink: 0; /* 로고 영역이 줄어들지 않도록 설정 */
 }
 
+.header-logo img{
+    width: 150px; /* 로고 너비 고정 */
+    vertical-align: middle; /* 이미지 세로 정렬 */
+}
+
+.header-menu {
+    flex-grow: 1; /* 메뉴 영역이 남은 공간을 모두 차지하도록 설정 */
+    display: flex;
+    justify-content: center; /* 메뉴 아이템들을 중앙에 정렬 */
+}
+
+.header-menu .menu {
+    display: flex;
+    align-items: center;
+    gap: 25px; /* 메뉴 아이템 간의 간격 */
+}
+
+.header-login {
+    flex-shrink: 0; /* 로그인 영역이 줄어들지 않도록 설정 */
+    display: flex;
+    align-items: center;
+}
+
+
 .header-login button{
-    /* 기존 스타일 유지 */
     margin-right: 30px ;
 }
 
@@ -30,7 +52,7 @@
     text-decoration: none;
     color: #FFFFFF;
     font-weight: bold;
-    font-size: 30px;
+    font-size: 20px; /* 글자 크기 조정 */
 }
 
 .sidebar {
@@ -41,13 +63,11 @@
     width: 260px; /* 사이드바 너비 고정 */
     height: calc(100vh - 70px); /* 화면 높이에서 헤더 높이(70px)를 뺀 만큼 차지 */
     background: #007BFF;
-    /* float: left; 는 더 이상 필요 없으므로 제거 */
     padding: 20px;
     box-sizing: border-box; /* 패딩을 너비에 포함 */
 }
 
 .sidebar ul{
-    /* padding: 0; 을 제거하여 글머리 기호가 보일 공간을 확보합니다. */
     margin: 0;
     font-size: 27px;
     font-weight: bold;

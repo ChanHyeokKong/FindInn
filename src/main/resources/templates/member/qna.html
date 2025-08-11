@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+  <title>자주 묻는 질문</title>
+  <link rel="stylesheet" th:href="@{/css/faq.css}">
+</head>
+<body>
+
+<div layout:fragment="content">
+  <div class="container faq-container">
+    <h2 class="text-center mb-4">자주 묻는 질문</h2>
+
+    <div th:each="qna : ${qnaList}" class="faq-item">
+      <button class="faq-question">
+        <span th:text="${qna.question}"></span>
+        <span class="icon">&#9660;</span>
+      </button>
+      <div class="faq-answer">
+        <p th:text="${qna.answer}"></p>
+      </div>
+    </div>
+
+  </div>
+
+  <script th:src="@{/javascript/faq.js}"></script>
+</div>
+
+</body>
+</html>

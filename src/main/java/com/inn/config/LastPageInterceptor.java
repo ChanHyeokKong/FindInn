@@ -24,7 +24,9 @@ public class LastPageInterceptor implements HandlerInterceptor {
             !requestUri.startsWith("/javascript/") &&
             !requestUri.startsWith("/image/") &&
             !requestUri.startsWith("/error") &&
-            !requestUri.startsWith("/isMember")) { // /isMember도 추가
+            !requestUri.startsWith("/isMember") &&
+            !requestUri.startsWith("/favicon.ico"))
+        {
 
             session.setAttribute(LAST_PAGE_URL_SESSION_KEY, requestUri);
         }
