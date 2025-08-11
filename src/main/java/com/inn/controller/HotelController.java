@@ -50,6 +50,9 @@ public class HotelController {
 	        @RequestParam(value = "category", required = false) String category,
 	        @RequestParam(value = "tags", required = false) List<String> tags
 	    ) {
+		
+		System.out.println("tags = " + tags);
+		
 	        HotelSearchCondition condition = new HotelSearchCondition();
 	        condition.setKeyword(keyword);
 	        condition.setCategory(category);
