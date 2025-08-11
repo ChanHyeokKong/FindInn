@@ -52,7 +52,7 @@ public class MemberController {
         return "login/login";
     }
 
-    @GetMapping("/mypage")
+    @GetMapping("/mypage/reserve")
     public String mypage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model) {
 
         List<MyPageDto> list = service.getMyReserve(currentUser.getIdx());

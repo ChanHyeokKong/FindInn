@@ -17,7 +17,7 @@
         <div class="header-login" th:switch="${#authorization.expression('isAuthenticated()')}">
             <button th:case="false" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</button>
             <section th:case="true">
-                <i class="fa-solid fa-circle-user fa-2xl" style="color:white" onclick="location.href='/mypage'"></i>&nbsp;
+                <i class="fa-solid fa-circle-user fa-2xl" style="color:white" onclick="location.href='/mypage/reserve'"></i>&nbsp;
                 <button class="btn btn-danger">로그아웃</button>
             </section>
         </div>
@@ -36,7 +36,8 @@
                 <div class="modal-body">
                     <section class="login-selector">
                         <button class="email-login">Email로 로그인</button>
-                        <button class="google-login">Google로 로그인</button>
+<!--                        전화 번호 미제공으로 인하여 취소 -->
+<!--                        <button class="google-login">Google로 로그인</button>-->
                         <!-- 네이버 로그인 버튼 수정 -->
                         <form th:action="@{/oauth2/authorization/naver}" method="get">
                             <button type="submit" class="naver-login">Naver로 로그인</button>
@@ -49,7 +50,7 @@
                         <form action="/login" method="post" id="sign-form">
                             <ul class="form-group">
                                 <caption>Email</caption>
-                                <li><input type="email" class="form-control" name="memberEmail"></li>
+                                <li><input type="email" class="form-control" name="memberEmail" required></li>
 
                                 <section class="after-click d-none">
                                     <caption>비밀번호</caption>
