@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import com.inn.service.MemberService;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import com.inn.config.CustomOAuth2UserService; // CustomOAuth2UserService import 추가
+import org.springframework.security.web.AuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -21,10 +22,12 @@ public class SecurityConfig {
 
     private final MemberService memberService;
     private final CustomOAuth2UserService customOAuth2UserService; // CustomOAuth2UserService 주입
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
-    public SecurityConfig(MemberService memberService, CustomOAuth2UserService customOAuth2UserService) {
+    public SecurityConfig(MemberService memberService, CustomOAuth2UserService customOAuth2UserService, AuthenticationEntryPoint authenticationEntryPoint) {
         this.memberService = memberService;
         this.customOAuth2UserService = customOAuth2UserService;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Bean
@@ -68,9 +71,13 @@ public class SecurityConfig {
                                 "/javascript/**",
                                 "/image/**",
                                 "/isMember",
-                                "/login/oauth2/code/naver" // 네이버 콜백 경로 추가
+                                "/login/oauth2/code/naver",
+                                "/qna"
                         ).permitAll() // 이 경로들은 인증 없이 접근 허용
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint)
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login") // 로그인 페이지 URL

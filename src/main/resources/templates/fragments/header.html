@@ -5,6 +5,11 @@
         </div>
         <div class="header-menu">
             <div class="menu">
+                <div class="menu-item-qna">
+                    <a sec:authorize="isAnonymous()||hasRole('USER')" th:href="@{/qna}">고객문의</a>
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/qna}">고객문의</a>
+                    <a sec:authorize="hasRole('MANAGER')&&!hasRole('ADMIN')" th:href="@{/manage/qna}">고객문의</a>
+                </div>
                 <div class="menu_item_hotel">
                     <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/memberlist}">Hotel</a>
                 </div>

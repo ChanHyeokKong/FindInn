@@ -59,3 +59,19 @@ $(document).ajaxError(function(event, xhr, settings, thrownError) {
         // and reset its state if it was used for other purposes.
     }
 });
+
+// 페이지 로드 시 URL 파라미터를 확인하여 로그인 모달을 자동으로 엽니다.
+$(document).ready(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('loginRequired') && urlParams.get('loginRequired') === 'true') {
+        // 로그인 모달의 ID가 'loginModal'이라고 가정합니다.
+        $('#loginModal').modal('show');
+
+        // 로그인 후에는 URL에서 파라미터를 제거하여 페이지를 깔끔하게 유지합니다.
+        // 브라우저의 history API를 지원하는 경우에만 작동합니다.
+        if (window.history.replaceState) {
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+        }
+    }
+});

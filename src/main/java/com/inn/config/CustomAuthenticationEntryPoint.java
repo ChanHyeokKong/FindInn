@@ -6,31 +6,39 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
+@Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+        String ajaxHeader = request.getHeader("X-Requested-With");
+        boolean isAjax = "XMLHttpRequest".equals(ajaxHeader);
 
-        String requestUri = request.getRequestURI();
-
-        // If the request is already for the login page, do not redirect again to avoid loop
-        // Instead, send a 401 error. The client-side JS will then handle showing the modal.
-        if ("/login".equals(requestUri)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - Already on login page");
-            return;
-        }
-
-        // AJAX 요청인지 확인 (X-Requested-With 헤더는 jQuery, Axios 등에서 자동으로 추가)
-        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
-            // AJAX 요청이면 401 Unauthorized 응답
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+        if (isAjax) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"message\": \"로그인이 필요합니다.\", \"status\": 401}");
         } else {
-            // 일반 요청이면 로그인 페이지로 리다이렉트
-            response.sendRedirect("/login");
+            String referer = request.getHeader("Referer");
+            String returnUrl = request.getRequestURI();
+
+            // 요청 URI에 쿼리 스트링이 있는 경우 함께 포함
+            if (request.getQueryString() != null) {
+                returnUrl += "?" + request.getQueryString();
+            }
+
+            String redirectUrl = UriComponentsBuilder.fromUriString(referer != null ? referer : "/")
+                    .queryParam("loginRequired", "true")
+                    .queryParam("returnUrl", returnUrl)
+                    .build()
+                    .toUriString();
+
+            response.sendRedirect(redirectUrl);
         }
     }
 }

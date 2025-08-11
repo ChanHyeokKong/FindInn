@@ -59,4 +59,10 @@ public class MemberController {
         model.addAttribute("reserves", list);
         return "member/myreserve";
     }
+
+    @GetMapping("/qna")
+    public String qna() {
+        return "member/qna";
+    }
+
 }

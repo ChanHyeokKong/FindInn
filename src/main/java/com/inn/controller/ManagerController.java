@@ -162,4 +162,9 @@ public class ManagerController {
 
         return "member/manager/reservemanage";
     }
+
+    @GetMapping("manage/qna")
+    public String qnaManage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
+        return "member/manager/qna";
+    }
 }
