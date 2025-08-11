@@ -47,10 +47,10 @@
                 <li>객실명: <span th:text="${r_name}">객실명</span></li>
                 <li>객실 번호: <span th:text="${roomIdx}">room_idx</span></li>
                 <li>
-                    체크인: <span th:text="|${checkin} (${checkinDay})|">체크인</span>
+                    체크인: <span th:text="|${checkin} ${checkinDay}|">체크인</span>
                 </li>
                 <li>
-                    체크아웃: <span th:text="|${checkout} (${checkoutDay})|">체크아웃</span>
+                    체크아웃: <span th:text="|${checkout} ${checkoutDay}|">체크아웃</span>
                 </li>
             </ul>
         </section>
