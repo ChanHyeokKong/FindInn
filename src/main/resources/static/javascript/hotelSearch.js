@@ -1,37 +1,159 @@
 document.addEventListener("DOMContentLoaded", function() {
 	
 	registerHotelCardClicks();
-	// 검색출력
+
 	const btnSearch = document.getElementById("btnSearch");
+	if (btnSearch) {
+	    btnSearch.addEventListener("click", function() {
+	        // 이벤트 핸들러 내용
+	    });
+	} else {
+	    console.error("btnSearch 요소가 존재하지 않습니다.");
+	}
+	
+	const radios = document.querySelectorAll('input[name="category"]');
+	const checks = document.querySelectorAll('input[name="tag"]');
+	const input = document.querySelector("input[name='searchKeyword']");
+	const tbody = document.querySelector("#hotelTbody");
 
-	btnSearch.addEventListener("click", function() {
-		const keyword = document.querySelector('input[name="search"]').value;
+	let selectedTags = [];
 
-		// 라디오 버튼 전부 해제 후 'all' 체크
-		const radios = document.querySelectorAll('input[name="category"]');
+	// 검색 함수 (키워드, 카테고리, 태그 포함)
+	function searchHotels() {
+		const keyword = input.value.trim();
+		const categoryRadio = Array.from(radios).find(r => r.checked);
+		const category = categoryRadio ? categoryRadio.value : 'all';
+
+		// tags 파라미터 만들기 (tags=tag1&tags=tag2...)
+		const tagParams = selectedTags		
+		    .map(tag => `tags=${encodeURIComponent(tag)}`)
+		    .join('&');
+		
+
+		let url = `/h_search?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(category)}`;
+		if (tagParams) url += `&${tagParams}`;
+		
+		console.log("완성된 URL:", url);
+
+
+		fetch(url)
+			.then(res => res.json())
+			.then(data => {
+				renderHotels(data);
+			})
+			.catch(err => console.error("검색 오류:", err));
+	}
+
+	// 검색 버튼 클릭
+	btnSearch.addEventListener("click", () => {
+		// 검색 시 카테고리 모두 해제 후 'all' 체크
 		radios.forEach(radio => radio.checked = false);
 		const allRadio = document.querySelector('input[name="category"][value="all"]');
 		if (allRadio) allRadio.checked = true;
 
-		const category = 'all';
+		
+		// 태그 초기화
+		selectedTags = [];
+		checks.forEach(chk => chk.checked = false);
 
-		fetch(`/h_search?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(category)}`)
-			.then(response => response.json())
-			.then(data => {
-				renderHotels(data);
-			})
-			.catch(error => console.error("검색 오류:", error));
+		searchHotels();
 	});
 
 	// Enter 키로 검색
-	const input = document.querySelector("input[name='search']");
 	input.addEventListener("keydown", function(event) {
-		if (event.key === "Enter") {
-			btnSearch.click();
-		}
+		if (event.key === "Enter") btnSearch.click();
 	});
 
-	// 오늘 이전 날짜 선택 금지
+	// 카테고리 라디오 변경 시 검색
+	radios.forEach(radio => {
+		radio.addEventListener("change", () => {
+			searchHotels();
+		});
+	});
+
+	// 태그 체크박스 변경 시 검색
+	checks.forEach(check => {
+		check.addEventListener("change", () => {
+			selectedTags = Array.from(checks)
+				.filter(chk => chk.checked)
+				.map(chk => chk.value);
+
+				selectedTags = [...new Set(selectedTags)];
+				
+				console.log("선택된 태그들:", selectedTags);
+			searchHotels();
+		});
+	});
+
+	// 호텔 목록 렌더링 함수
+	function renderHotels(data) {
+		tbody.innerHTML = "";
+
+		if (data.length === 0) {
+			const row = document.createElement("tr");
+			const cell = document.createElement("td");
+			cell.colSpan = 1;
+			cell.textContent = "검색 결과가 없습니다.";
+			row.appendChild(cell);
+			tbody.appendChild(row);
+			return;
+		}
+
+		data.forEach(hotel => {
+			const row = document.createElement("tr");
+			const cell = document.createElement("td");
+
+			let imgTag = "";
+			if (hotel.hotelImages && hotel.hotelImages.length > 0) {
+				imgTag = `<img src="/hotelImage/${hotel.hotelImages[0]}" alt="호텔 이미지" style="height: 200px; display: block;" />`;
+			}
+
+			cell.innerHTML = `
+				<div class="card hotel-card" data-hotel-id="${hotel.idx}" style="display: flex; flex-direction: row; height: 200px;">
+					<div style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+						${imgTag}
+					</div>
+					<div class="card-body" style="flex: 1;">
+						<h5 class="card-title">${hotel.hotelName}</h5>
+						<p class="card-text">
+							<strong>hotel_idx:</strong> ${hotel.idx}<br>
+							<strong>member_idx:</strong> ${hotel.memberIdx}
+						</p>
+					</div>
+				</div>
+			`;
+
+			row.appendChild(cell);
+			tbody.appendChild(row);
+		});
+
+		registerHotelCardClicks();
+	}
+
+	// 호텔 카드 클릭 이벤트 등록 함수
+	function registerHotelCardClicks() {
+		const cards = document.querySelectorAll('.hotel-card');
+		
+		cards.forEach(card => {
+			card.onclick = () => {
+				const hotelId = card.getAttribute('data-hotel-id');
+
+				const checkIn = document.getElementById('start').value;
+				const checkOut = document.getElementById('end').value;
+				const personal = document.getElementById('capacity').value;
+
+				if (!checkIn || !checkOut || !personal) {
+					alert("날짜, 인원수를 모두 입력해주세요.");
+					return;
+				}
+
+				const url = `domestic-accommodations?id=${hotelId}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}&personal=${encodeURIComponent(personal)}`;
+				location.href = url;
+			};
+		});
+	}
+
+	// 날짜 관련 설정
 	var today = new Date();
 	var dd = today.getDate();
 	var mm = today.getMonth() + 1;
@@ -86,106 +208,4 @@ document.addEventListener("DOMContentLoaded", function() {
 			}
 		});
 	}
-
-	// 사이드바 옵션 radio 이벤트
-	const radios = document.querySelectorAll('input[name="category"]');
-	radios.forEach(radio => {
-		radio.addEventListener('change', () => {
-			const keyword = document.querySelector('input[name="search"]').value;
-			const selectedCategory = radio.value;
-
-			fetch(`/h_search?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(selectedCategory)}`)
-				.then(response => response.json())
-				.then(data => {
-					renderHotels(data);
-				})
-				.catch(error => console.error("카테고리 검색 오류:", error));
-		});
-	});
-
-	// 호텔 목록 렌더링 함수 (중복 제거)
-	function renderHotels(data) {
-		const tbody = document.querySelector("#hotelTable tbody");
-		tbody.innerHTML = ""; // 초기화
-
-		if (data.length === 0) {
-			const row = document.createElement("tr");
-			const cell = document.createElement("td");
-			cell.colSpan = 1;
-			cell.textContent = "검색 결과가 없습니다.";
-			row.appendChild(cell);
-			tbody.appendChild(row);
-		} else {
-			data.forEach(hotel => {
-				const row = document.createElement("tr");
-				const cell = document.createElement("td");
-				
-				let imgTag = "";
-				            if (hotel.hotelImages && hotel.hotelImages.length > 0) {
-								imgTag = `<img src="/hotelImage/${hotel.hotelImages[0]}" alt="호텔 이미지" style="height: 200px; display: block;"  />`;
-								}
-
-				cell.innerHTML = `
-
-					<div class="card hotel-card" data-hotel-id="${hotel.idx}" style="display: flex; flex-direction: row; height: 200px;">
-					<div style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-					
-					
-					${imgTag}
-					</div>
-						<div class="card-body" style="flex: 1;">
-							<h5 class="card-title">${hotel.hotelName}</h5>
-							<p class="card-text">
-								<strong>hotel_idx:</strong> ${hotel.idx}<br>
-
-
-								<strong>member_idx:</strong> ${hotel.memberIdx}
-							</p>
-						</div>
-					</div>
-				`;
-
-				row.appendChild(cell);
-				tbody.appendChild(row);
-			});
-		}
-
-		// 렌더링 후 호텔 카드 클릭 이벤트 재등록 (이벤트 위임 대신 간단한 재등록)
-		registerHotelCardClicks();
-	}
-
-	// 호텔 카드 클릭 이벤트 등록 함수
-	function registerHotelCardClicks() {
-		const cards = document.querySelectorAll('.hotel-card');
-		
-		cards.forEach(card => {
-			card.onclick = () => {
-				const hotelId = card.getAttribute('data-hotel-id');
-
-				const checkIn = document.getElementById('start').value;
-				const checkOut = document.getElementById('end').value;
-				const personal = document.getElementById('capacity').value;
-
-				if (!checkIn || !checkOut || !personal) {
-					alert("날짜, 인원수를 모두 입력해주세요.");
-					return;
-				}
-
-				const url = `domestic-accommodations?id=${hotelId}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}&personal=${encodeURIComponent(personal)}`;
-				location.href = url;
-			};
-		});
-	}
-
-	//사이드바 태그 
-	let selectedTags = [];
-	
-	const checks = document.querySelectorAll('input[name="tag"]');
-		checks.forEach(check => {
-			check.addEventListener('change', () => {
-				
-				
-			} )
-
-	})
 });

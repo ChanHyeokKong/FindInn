@@ -11,8 +11,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HotelRepository extends JpaRepository<HotelEntity, Long>, JpaSpecificationExecutor<HotelEntity> {
 
-	List<HotelEntity> findByHotelNameContainingAndHotelCategory(String keyword, String category);	 
-	List<HotelEntity> findByHotelNameContaining(String keyword);
+	 List<HotelEntity> findByHotelNameContaining(String keyword);
+
+	 List<HotelEntity> findByHotelNameContainingAndHotelCategory(String keyword, String category);
 	
 	@Query(value = """
 		    SELECT hotel_idx
