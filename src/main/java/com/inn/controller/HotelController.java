@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.inn.data.hotel.HotelDto;
 import com.inn.data.hotel.HotelEntity;
+import com.inn.data.hotel.HotelSearchCondition;
 import com.inn.service.HotelService;
 
 import lombok.Value;
@@ -44,12 +45,17 @@ public class HotelController {
 	
 	@GetMapping("/h_search")
 	@ResponseBody
-	public List<HotelDto> getHotelData(
-			@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
-			@RequestParam(defaultValue = "all", value = "category", required = false) String hotelCategory) {
-	
-		
-		return hotelService.getHotelDataByKeywordAndCategory(keyword,hotelCategory);
+	public List<HotelDto> searchHotels(
+	        @RequestParam(value = "keyword", required = false) String keyword,
+	        @RequestParam(value = "category", required = false) String category,
+	        @RequestParam(value = "tags", required = false) List<String> tags
+	    ) {
+	        HotelSearchCondition condition = new HotelSearchCondition();
+	        condition.setKeyword(keyword);
+	        condition.setCategory(category);
+	        condition.setTags(tags);
+
+	        return hotelService.searchHotels(condition);
 	}
 	
 	

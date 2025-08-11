@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.inn.data.hotel.HotelDto;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
+import com.inn.data.hotel.HotelSearchCondition;
 import com.inn.data.hotel.HotelSpecifications;
 
 @Service
@@ -48,35 +49,23 @@ public class HotelService {
                 .collect(Collectors.toList());
     }
 
-    // 통합 검색: 키워드 + 카테고리 + 태그 포함 (가격 제외)
-    public List<HotelDto> searchHotels(String keyword, String category, List<String> tags) {
-        List<Long> tagFilteredHotelIds = null;
 
-        if (tags != null && !tags.isEmpty()) {
-            tagFilteredHotelIds = hotelRepository.findHotelIdxByAllTags(tags, tags.size());
+    // ⚠️ 수정된 searchHotels 메서드
+    public List<HotelDto> searchHotels(HotelSearchCondition condition) {
+        String keyword = condition.getKeyword();
+        String category = condition.getCategory();
+        List<String> tags = condition.getTags();
 
-            // 태그에 해당되는 호텔이 하나도 없으면 바로 빈 리스트 반환
-            if (tagFilteredHotelIds.isEmpty()) {
-                return List.of(); // 빈 리스트
-            }
-        }
-
-        final List<Long> finalTagFilteredHotelIds = tagFilteredHotelIds;  // final 변수로 복사
-
-        
-        // Specification 조립
+        // 모든 검색 조건을 Specification으로 한 번에 조합합니다.
         Specification<HotelEntity> spec = Specification
-                .where(HotelSpecifications.keywordContains(keyword))
-                .and(HotelSpecifications.categoryEquals(category));
+                .where(HotelSpecifications.keywordContains(keyword))       // 1. 키워드 조건
+                .and(HotelSpecifications.categoryEquals(category))         // 2. 카테고리 조건
+                .and(HotelSpecifications.hasAllTags(tags));                // 3. 태그 조건
 
-        // 태그 조건 추가
-        if (tagFilteredHotelIds != null) {
-            spec = spec.and((root, query, cb) -> root.get("idx").in(finalTagFilteredHotelIds));
-        }
-
-        // 검색 실행
+        // 조합된 Specification으로 한 번의 쿼리를 실행하여 결과를 가져옵니다.
         List<HotelEntity> result = hotelRepository.findAll(spec);
 
+        // 결과를 DTO로 변환하여 반환
         return result.stream()
                 .map(hotel -> new HotelDto(
                         hotel.getIdx(),
@@ -85,9 +74,9 @@ public class HotelService {
                         hotel.getMemberIdx()))
                 .collect(Collectors.toList());
     }
-
-    // 태그로 hotel_idx 리스트 뽑기 (native query)
-    public List<Long> findByHotelTagIn(List<String> tags, int tagCount) {
-        return hotelRepository.findHotelIdxByAllTags(tags, tagCount);
-    }
+    
+    // ⚠️ 기존 findByHotelTagIn 메서드는 이제 사용되지 않으므로 삭제하거나 주석 처리하는 것이 좋습니다.
+    // public List<Long> findByHotelTagIn(List<String> tags, int tagCount) {
+    //     return hotelRepository.findHotelIdxByAllTags(tags, tagCount);
+    // }
 }
