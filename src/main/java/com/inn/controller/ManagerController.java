@@ -207,14 +207,14 @@ public class ManagerController {
     public String qnaManage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
         Long hotelIdx = currentUser.getIdx();
         List<ChatRoomDto> list = chatRoomRepository.findAllByHotelIdx(hotelIdx);
-
+        //rest로 옮겨야 하나
 
         return "member/manager/qna";
     }
 
     @GetMapping("manage/qna/getRoom")
     public String getRoom(@AuthenticationPrincipal CustomUserDetails currentUser, Long hotelIdx, Model model){
-
+        
 
         return "redirect:/member/manager/qna";
     }
