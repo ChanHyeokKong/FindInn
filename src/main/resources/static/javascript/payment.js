@@ -107,6 +107,8 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                                             roomIdx: roomIdx,
                                                             checkin: checkin,
                                                             checkout: checkout,
+                                                            checkinDay: checkinDay,
+                                                            checkoutDay: checkoutDay,
                                                             guestPhone: rsp.buyer_tel
                                                         }),
                                                         success: function () {

@@ -12,5 +12,7 @@ public class BookingInfo {
     private String roomIdx;
     private String checkin;
     private String checkout;
+    private String checkinDay;
+    private String checkoutDay;
     private String guestPhone;
 }

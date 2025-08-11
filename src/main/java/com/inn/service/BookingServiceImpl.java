@@ -22,15 +22,18 @@ public class BookingServiceImpl implements BookingService {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final int RANDOM_LENGTH = 6;
     private static final SecureRandom random = new SecureRandom();
-    
+
     /**
-     * 현재 시간(밀리초) + 랜덤 6자리 영문 대문자 조합으로 고유 merchantUid 생성
+     * 현재 시간(초) + 랜덤 6자리 영문 대문자 조합으로 고유 merchantUid 생성
      */
     @Override
     public String generateMerchantUid() {
         StringBuilder sb = new StringBuilder();
-        sb.append(System.currentTimeMillis());
 
+        // 현재 시간 초 단위 (1970년 기준)
+        sb.append(System.currentTimeMillis() / 1000);
+
+        // 랜덤 6자리 대문자 추가
         for (int i = 0; i < RANDOM_LENGTH; i++) {
             int idx = random.nextInt(CHARACTERS.length());
             sb.append(CHARACTERS.charAt(idx));
@@ -44,13 +47,13 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public String getKoreanShortDayOfWeek(LocalDate date) {
         return switch (date.getDayOfWeek()) {
-            case MONDAY    -> "월";
-            case TUESDAY   -> "화";
-            case WEDNESDAY -> "수";
-            case THURSDAY  -> "목";
-            case FRIDAY    -> "금";
-            case SATURDAY  -> "토";
-            case SUNDAY    -> "일";
+            case MONDAY    -> "(월)";
+            case TUESDAY   -> "(화)";
+            case WEDNESDAY -> "(수)";
+            case THURSDAY  -> "(목)";
+            case FRIDAY    -> "(금)";
+            case SATURDAY  -> "(토)";
+            case SUNDAY    -> "(일)";
         };
     }
 
