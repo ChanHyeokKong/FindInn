@@ -1,5 +1,8 @@
 package com.inn.controller;
 
+import com.inn.config.CustomUserDetails;
+import com.inn.data.chat.ChatDto;
+import com.inn.data.chat.ChatRepository;
 import com.inn.data.detail.AccommodationDto;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.data.rooms.RoomTypeAvailDto;
@@ -7,6 +10,7 @@ import com.inn.service.HotelService;
 import com.inn.service.RoomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +34,9 @@ public class AccommodationController {
     @Value("${kakao.map.javascript-key}")
     private String kakaoApiKey;
 
+    @Autowired
+    ChatRepository chatRepository;
+
     @GetMapping("/domestic-accommodations")
     public String accommodationDetail(
             @RequestParam("id") Long id,
@@ -38,7 +45,8 @@ public class AccommodationController {
             @RequestParam(value = "personal", required = false) Integer personal,
             Model model,
             RedirectAttributes redirectAttributes,
-            @RequestHeader(value = "Referer", required = false) String referer) {
+            @RequestHeader(value = "Referer", required = false) String referer,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
         
         AccommodationDto accommodation = new AccommodationDto();
         int numberOfPeople = (personal != null) ? personal : 1;
@@ -71,8 +79,11 @@ public class AccommodationController {
         List <RoomTypeAvailDto> rooms = roomsService.getAllHotelRoomTypesWithAvailability(id,checkIn,checkOut);
         accommodation.setRoomTypes(rooms);
 
+        List<ChatDto> list = chatRepository.findAllBySender(currentUser.getMemberName());
+
         model.addAttribute("accommodation", accommodation);
         model.addAttribute("kakaoApiKey", kakaoApiKey);
+        model.addAttribute("currentUser", currentUser);
 
         return "detail/accommodation-detail";
     }

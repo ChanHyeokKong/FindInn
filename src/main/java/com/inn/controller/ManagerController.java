@@ -1,6 +1,8 @@
 package com.inn.controller;
 
 import com.inn.config.CustomUserDetails;
+import com.inn.data.chat.ChatRoomDto;
+import com.inn.data.chat.ChatRoomRepository;
 import com.inn.data.detail.DescriptionDto;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
@@ -43,6 +45,8 @@ public class ManagerController {
     RoomTypesRepository roomTypesRepository;
     @Autowired
     RoomsRepository roomsRepository;
+    @Autowired
+    ChatRoomRepository chatRoomRepository;
 
     @GetMapping("manage/room/detail")
     public String roomDetail(Long idx){
@@ -201,6 +205,17 @@ public class ManagerController {
 
     @GetMapping("manage/qna")
     public String qnaManage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
+        Long hotelIdx = currentUser.getIdx();
+        List<ChatRoomDto> list = chatRoomRepository.findAllByHotelIdx(hotelIdx);
+
+
         return "member/manager/qna";
+    }
+
+    @GetMapping("manage/qna/getRoom")
+    public String getRoom(@AuthenticationPrincipal CustomUserDetails currentUser, Long hotelIdx, Model model){
+
+
+        return "redirect:/member/manager/qna";
     }
 }

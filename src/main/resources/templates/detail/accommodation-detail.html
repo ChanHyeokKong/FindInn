@@ -2,6 +2,7 @@
     <meta charset="UTF-8">
     <title th:text="${accommodation.name} + ' | 여기어때'">숙소 상세</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
 </head>
 
 <body>
@@ -81,7 +82,7 @@
                     </p>
                     <hr>
                     <div class="d-grid">
-                        <a href="#" class="btn btn-outline-dark">숙소 문의하기</a>
+                        <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#chatModal">숙소 문의하기</button>
                     </div>
                 </div>
             </div>
@@ -95,7 +96,41 @@
              style="width:100%;height:450px; margin: 0 auto; ">
         </div>
     </div>
+<!--    고객 문의용 모달 창 -->
+    <div class="modal fade" id="chatModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">[[${accommodation.name}]] 에 문의하기</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body chat-box" id="chat-box">
+                    <div class="message received">
+                        <p>안녕하세요! 궁금한 점이 있으시면 무엇이든 물어보세요.</p>
+                        <span class="timestamp">오전 10:30</span>
+                    </div>
+                    <div class="message sent">
+                        <p>네, 안녕하세요. 혹시 2박 3일 예약 가능한가요?</p>
+                        <span class="timestamp">오전 10:31</span>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <div class="input-group">
+                        <input type="text" id="chat-input" class="form-control" placeholder="메시지를 입력하세요...">
+                        <button id="send-button" class="btn btn-primary">전송</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>
+
 
 
 <script th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoApiKey} + '&libraries=services'}"></script>
@@ -104,4 +139,5 @@
 <script th:if="${message}">
     alert("[[${message}]]");
 </script>
+<script src="/javascript/chat.js"></script>
 </body>
