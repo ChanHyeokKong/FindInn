@@ -1,27 +1,33 @@
 package com.inn.controller;
 
 import com.inn.config.CustomUserDetails;
+import com.inn.data.detail.DescriptionDto;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
 import com.inn.data.member.MyPageDto;
 import com.inn.data.member.manager.HotelRoomTypeSummaryDto;
 import com.inn.data.member.manager.HotelWithManagerDto;
+import com.inn.data.post.Post;
 import com.inn.data.rooms.Rooms;
 import com.inn.data.rooms.RoomsRepository;
 import com.inn.data.rooms.RoomTypes;
 import com.inn.data.rooms.RoomTypesRepository;
 import com.inn.service.ManagerService;
 import com.inn.service.MemberService;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -100,9 +106,39 @@ public class ManagerController {
             List<RoomTypes> roomTypes = service.getRoomTypesByHotelIds(hotelIds);
             model.addAttribute("roomTypes", roomTypes);
         }
-
+        Post postWithTemplate = new Post();
+        String templateContent = """
+        <h1>Enter Your Post Title Here</h1>
+        <p>This is a starting paragraph. You can provide instructions or default text here.</p>
+        <ul>
+            <li>List item 1</li>
+            <li>List item 2</li>
+        </ul>
+        <p>Start writing... ✍️</p>
+    """;
+        postWithTemplate.setContent(templateContent);
+        model.addAttribute("post", postWithTemplate);
         return "member/manager/addhotel";
     }
+
+
+    @PostMapping("manage/changeDesc")
+    public String changeDescription(@AuthenticationPrincipal CustomUserDetails currentUser, @ModelAttribute DescriptionDto post){
+        String unsafeHtml = post.getContent();
+        Safelist safelist = Safelist.relaxed();
+        safelist.addAttributes(":all", "style");
+        String safeHtml = Jsoup.clean(unsafeHtml, safelist);
+
+        Optional<HotelEntity> hotel = hotelRepository.findById(post.getHotelId());
+        if (hotel.isPresent()) {
+            HotelEntity hotelEntity = hotel.get();
+            hotelEntity.setDescription(safeHtml);
+            hotelRepository.save(hotelEntity);
+        }
+        return "redirect:http://localhost:8080/domestic-accommodations?id="+post.getHotelId();
+    }
+
+
 
     @PostMapping("manage/addhotel/action")
     public String addHotelAction(@RequestParam Long hotelId,

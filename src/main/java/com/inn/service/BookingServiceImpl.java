@@ -22,7 +22,7 @@ public class BookingServiceImpl implements BookingService {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final int RANDOM_LENGTH = 6;
     private static final SecureRandom random = new SecureRandom();
-
+    
     /**
      * 현재 시간(밀리초) + 랜덤 6자리 영문 대문자 조합으로 고유 merchantUid 생성
      */
@@ -36,6 +36,22 @@ public class BookingServiceImpl implements BookingService {
             sb.append(CHARACTERS.charAt(idx));
         }
         return sb.toString();
+    }
+
+    /**
+     * 요일 추출
+     */
+    @Override
+    public String getKoreanShortDayOfWeek(LocalDate date) {
+        return switch (date.getDayOfWeek()) {
+            case MONDAY    -> "월";
+            case TUESDAY   -> "화";
+            case WEDNESDAY -> "수";
+            case THURSDAY  -> "목";
+            case FRIDAY    -> "금";
+            case SATURDAY  -> "토";
+            case SUNDAY    -> "일";
+        };
     }
 
     /**
