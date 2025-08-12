@@ -28,4 +28,6 @@ public class HotelDto {
         this.memberIdx = memberIdx;
     }
 
+	public HotelDto() {
+	}
 }
