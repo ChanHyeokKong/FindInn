@@ -160,4 +160,15 @@ public class HotelService {
 
         return dto;
     }
+
+
+    public String getHotelDescription(Long hotelId) {
+        Optional<HotelEntity> hotelOptional = hotelRepository.findById(hotelId);
+        if (hotelOptional.isPresent()) {
+            System.out.println(hotelOptional.get().getDescription());
+            return hotelOptional.get().getDescription();
+        } else {
+            return "";
+        }
+    }
 }
