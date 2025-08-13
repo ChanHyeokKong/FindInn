@@ -2,7 +2,7 @@
 document.getElementById('payBtn').addEventListener('click', function () {
     // 예약자 정보
     const name = document.getElementById('guestName').value;
-    const phone = document.getElementById('guestPhone').value;
+    const phone = document.getElementById('guestPhone').value.replace(/-/g, '');
     if (!name || !phone) {
         alert("예약자 정보를 입력해주세요");
         return;
