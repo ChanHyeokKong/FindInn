@@ -15,7 +15,7 @@ let remaining = 180;
 // ✅ 인증번호 발송 버튼 이벤트
 if (sendAuthBtn) {
     sendAuthBtn.addEventListener('click', function () {
-        const phone = guestPhoneInput.value;
+        const phone = guestPhoneInput.value.replace(/-/g, '');
         if (!phone) {
             alert("휴대폰 번호를 입력하세요.");
             return;
@@ -78,6 +78,9 @@ checkAuthBtn.addEventListener('click', function () {
         checkAuthBtn.disabled = true;
         authSection.style.display = "none";
         sendAuthBtn.style.display = "none";
+
+        // 번호 입력란 비활성화
+        guestPhoneInput.disabled = true;
 
         // ✅ 인증 완료!
         isPhoneVerified = true;
