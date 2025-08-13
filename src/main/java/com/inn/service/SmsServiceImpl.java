@@ -47,9 +47,12 @@ public class SmsServiceImpl implements SmsService {
     // 예약 확인 문자
     @Override
     public void sendBookingConfirmation(BookingInfo info) {
+        String checkinWithDay = info.getCheckin() + " " + info.getCheckinDay();
+        String checkoutWithDay = info.getCheckout() + " " + info.getCheckoutDay();
+
         String messageText = String.format(
-                "[Find Inn] 예약완료 안내                    \n\n" +
-                        "안녕하세요\n고객님의 예약이 확정되었습니다.\n아래 예약 정보를 확인해 주세요.\n\n" +
+                "[Find Inn] 예약완료 안내               \n\n" +
+                        "안녕하세요 Find Inn 입니다.\n고객님의 예약이 확정되었습니다.\n아래 예약 정보를 확인해 주세요.\n\n" +
                         "- 예약번호 : %s\n" +
                         "- 객실ID : %s\n\n" +
                         "- 입실일시 : %s\n" +
@@ -58,8 +61,8 @@ public class SmsServiceImpl implements SmsService {
                         "※ 개인정보보호를 위해 고객님의 전화번호는 안심번호로 숙소에 전달됩니다.",
                 info.getMerchantUid(),
                 info.getRoomIdx(),
-                info.getCheckin(),
-                info.getCheckout()
+                checkinWithDay,
+                checkoutWithDay
         );
 
         Message message = new Message();
