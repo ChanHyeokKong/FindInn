@@ -176,9 +176,5 @@ public class HotelService {
         }
     }
 
-    // ⚠️ 기존 findByHotelTagIn 메서드는 이제 사용되지 않으므로 삭제하거나 주석 처리하는 것이 좋습니다.
-    // public List<Long> findByHotelTagIn(List<String> tags, int tagCount) {
-    //     return hotelRepository.findHotelIdxByAllTags(tags, tagCount);
-    // }
 
 }

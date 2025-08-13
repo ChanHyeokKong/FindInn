@@ -1,3 +1,7 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
 <head>
     <meta charset="UTF-8">
     <title th:text="${accommodation.name}">숙소 상세</title>
@@ -6,7 +10,10 @@
 </head>
 
 <body class="bg-light">
-
+<th:block layout:fragment="content">
+<br>
+<br>
+<br>
 <div class="container-fluid px-0">
     <div class="bg-white">
         <div class="container py-4">
@@ -259,4 +266,5 @@
         }
     });
 </script>
+</th:block>
 </body>
