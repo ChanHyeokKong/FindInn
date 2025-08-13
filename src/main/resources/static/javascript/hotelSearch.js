@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		console.log("완성된 URL:", url);
 
 
-		fetch(url)
+		fetch(url, { cache: 'no-cache' })
 			.then(res => res.json())
 			.then(data => {
 				renderHotels(data);
@@ -127,6 +127,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				selectedTags = [...new Set(selectedTags)];
 				
 				console.log("선택된 태그들:", selectedTags);
+				
 			searchHotels();
 		});
 	});

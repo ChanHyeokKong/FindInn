@@ -58,6 +58,7 @@ public class HotelController {
 	@GetMapping("/h_search")
 	@ResponseBody
 	public List<HotelDto> searchHotels(
+
 			@RequestParam(value = "keyword", required = false) String keyword,
 			@RequestParam(value = "category", required = false) String category,
 			@RequestParam(value = "tags", required = false) List<String> tags,

@@ -1,14 +1,14 @@
 package com.inn.data.payment;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
-@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PaymentDto {
 
     private Long idx;

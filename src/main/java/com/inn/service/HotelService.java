@@ -64,16 +64,19 @@ public class HotelService {
         String category = condition.getCategory();
         List<String> tags = condition.getTags();
 
-        // 모든 검색 조건을 Specification으로 한 번에 조합합니다.
         Specification<HotelEntity> spec = Specification
-                .where(HotelSpecifications.keywordContains(keyword))       // 1. 키워드 조건
-                .and(HotelSpecifications.categoryEquals(category))         // 2. 카테고리 조건
-                .and(HotelSpecifications.hasAllTags(tags));                // 3. 태그 조건
+            .where(HotelSpecifications.keywordContains(keyword))
+            .and(HotelSpecifications.categoryEquals(category));
 
-        // 조합된 Specification으로 한 번의 쿼리를 실행하여 결과를 가져옵니다.
+        // 태그 조건 따로 처리
+        if (tags != null && !tags.isEmpty()) {
+            List<Long> idxList = hotelRepository.findHotelIdxByAllTags(tags, tags.size());
+            if (idxList.isEmpty()) return List.of();
+            spec = spec.and((root, query, cb) -> root.get("idx").in(idxList));
+        }
+
         List<HotelEntity> result = hotelRepository.findAll(spec);
 
-        // 결과를 DTO로 변환하여 반환
         return result.stream()
                 .map(hotel -> new HotelDto(
                         hotel.getIdx(),
@@ -84,6 +87,7 @@ public class HotelService {
     }
 
     public List<HotelDto> searchHotelsWithConditions(String keyword, String category, List<String> tags, LocalDate checkIn, LocalDate checkOut, Long minPrice) {
+
 
         // 1. Start with the base of the query
         StringBuilder sql = new StringBuilder(
@@ -179,4 +183,17 @@ public class HotelService {
 
         return dtos;
     }
+
+
+    public String getHotelDescription(Long hotelId) {
+        Optional<HotelEntity> hotelOptional = hotelRepository.findById(hotelId);
+        if (hotelOptional.isPresent()) {
+            System.out.println(hotelOptional.get().getDescription());
+            return hotelOptional.get().getDescription();
+        } else {
+            return "";
+        }
+    }
+
+
 }

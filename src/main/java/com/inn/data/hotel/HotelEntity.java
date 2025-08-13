@@ -9,8 +9,6 @@ import lombok.Data;
 @Entity
 @Table(name = "hotel")
 public class HotelEntity {
-	
-	
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Long idx;

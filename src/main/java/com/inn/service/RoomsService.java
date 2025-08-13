@@ -23,16 +23,6 @@ public class RoomsService {
     Random rand = new Random();
 
     public List<RoomTypeAvailDto> getAllHotelRoomTypesWithAvailability(long hotelId, LocalDate checkIn, LocalDate checkOut) {
-//        List<RoomTypes> allRoomTypes = roomTypesRepository.findByHotelId(hotelId);
-//        List<RoomTypes> availableRoomTypes = roomTypesRepository.findAvailableRoomType(checkIn, checkOut, hotelId);
-//        Set<RoomTypes> availableSet = new HashSet<>(availableRoomTypes);
-//
-//        return allRoomTypes.stream()
-//                .map(roomType -> {
-//                    boolean isAvailable = availableSet.contains(roomType);
-//                    return new RoomTypeAvailDto(roomType, isAvailable);
-//                })
-//                .collect(Collectors.toList());
         return roomTypesRepository.findRoomTypeAvailability(hotelId, checkIn, checkOut);
     }
 

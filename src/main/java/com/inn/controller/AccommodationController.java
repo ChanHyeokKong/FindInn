@@ -60,20 +60,20 @@ public class AccommodationController {
         accommodation.setName(hotel.get().getHotelName());
         accommodation.setAddress(hotel.get().getHotelAddress());
         // 임시 하드코딩
-        accommodation.setImageGalleries(Arrays.asList(
-                "/images/pension_main.jpg",
-                "/images/pension_room1.jpg",
-                "/images/pension_pool.jpg"
-        ));
+        List<String> images = hotel.get().getHotelImages();
         accommodation.setCheckInTime("15:00");
         accommodation.setCheckOutTime("11:00");
+
         // 해당 호텔의 방 정보
         List <RoomTypeAvailDto> rooms = roomsService.getAllHotelRoomTypesWithAvailability(id,checkIn,checkOut);
         accommodation.setRoomTypes(rooms);
-
+        for (RoomTypeAvailDto room : rooms) {
+            images.add(room.getImageUrl());
+        }
+        accommodation.setImageGalleries(images);
         model.addAttribute("accommodation", accommodation);
         model.addAttribute("kakaoApiKey", kakaoApiKey);
-
+        System.out.println(accommodation.getImageGalleries());
         return "detail/accommodation-detail";
     }
 }
