@@ -1,5 +1,6 @@
 package com.inn.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,27 @@ public class HotelController {
 	@GetMapping("/h_search")
 	@ResponseBody
 	public List<HotelDto> searchHotels(
+
+			@RequestParam(value = "keyword", required = false) String keyword,
+			@RequestParam(value = "category", required = false) String category,
+			@RequestParam(value = "tags", required = false) List<String> tags,
+			@RequestParam(value = "checkIn", required = false) LocalDate checkIn,
+			@RequestParam(value = "checkOut", required = false) LocalDate checkOut,
+			@RequestParam(value = "personCount", required = false) Long cnt
+	) {
+		System.out.println(keyword);
+		System.out.println(tags);
+		System.out.println(category);
+		System.out.println(checkIn);
+		System.out.println(checkOut);
+		System.out.println(cnt);
+		List<HotelDto> results = hotelService.searchHotelsWithConditions(keyword, category, tags, checkIn, checkOut);
+		System.out.println(results);
+		return results;
+
+  /*
+      //기존 main 코드 주석 처리 후 병합 필요 없을 시 제거
+      
 	        @RequestParam(value = "keyword", required = false) String keyword,
 	        @RequestParam(value = "category", required = false) String category,
 	        @RequestParam(value = "tags", required = false) List<String> tags
@@ -59,6 +81,8 @@ public class HotelController {
 	        condition.setTags(tags);
 
 	        return hotelService.searchHotels(condition);
+          */
+
 	}
 	
 	

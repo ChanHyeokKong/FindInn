@@ -28,9 +28,9 @@ document.addEventListener("DOMContentLoaded", function() {
 		const tagParams = selectedTags		
 		    .map(tag => `tags=${encodeURIComponent(tag)}`)
 		    .join('&');
-		
+		console.log(checkIn);
 
-		let url = `/h_search?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(category)}`;
+		let url = `/h_search?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(category)}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}`;
 		if (tagParams) url += `&${tagParams}`;
 		
 		console.log("완성된 URL:", url);
@@ -170,7 +170,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("end").setAttribute("min", e);
 	};
 
+	let checkIn = '';
+	let checkOut = '';
 	window.startDate = function(e) {
+		checkIn = e;
 		console.log("입실날짜:", e);
 	};
 
@@ -183,6 +186,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			document.getElementById("end").value = '';
 			return;
 		}
+		checkOut = e;
 		console.log("퇴실날짜:", e);
 	};
 

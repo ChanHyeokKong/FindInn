@@ -22,5 +22,6 @@ public class RoomTypeAvailDto {
         this.capacity = roomType.getCapacity();
         this.price = roomType.getPrice();
         this.available = isAvailable;
+        this.imageUrl = roomType.getImageUrl();
     }
 }
