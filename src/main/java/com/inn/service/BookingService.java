@@ -1,5 +1,6 @@
 package com.inn.service;
 
+import com.inn.data.booking.BookingCompleteInfo;
 import com.inn.data.booking.BookingDto;
 import com.inn.data.booking.BookingEntity;
 import com.inn.data.booking.BookingRoomInfo;
@@ -19,6 +20,8 @@ public interface BookingService {
     BookingEntity insert(BookingDto dto);
 
     BookingEntity updateStatusToCanceled(Long idx);
+
+    BookingCompleteInfo getBookingCompleteInfo(Long bookingIdx);
 
     // 기타 예약 관련 메서드들 선언...
 

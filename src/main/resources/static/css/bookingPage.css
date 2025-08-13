@@ -36,10 +36,25 @@
 .booking-title {
     font-size: 28px;
     font-weight: bold;
-    color: #007BFF;
-    text-align: center;
-    margin-bottom: 40px;
-    border-bottom: none;
+    color: #000;
+    text-align: left;
+    margin: 0;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 24px;      /* 아이콘 크기 조절 */
+  color: #000;          /* 아이콘 색상 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-back:hover {
+  color: #007bff;       /* 호버 시 색상 변경 (원하는 색으로 조정) */
 }
 
 /* 제목 통일 (h2 스타일 통일) */

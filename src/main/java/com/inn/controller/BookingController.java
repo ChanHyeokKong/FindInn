@@ -1,6 +1,7 @@
 package com.inn.controller;
 
 import com.inn.config.CustomUserDetails;
+import com.inn.data.booking.BookingCompleteInfo;
 import com.inn.data.booking.BookingRoomInfo;
 import com.inn.service.BookingService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class BookingController {
     @Value("${portone.channel-key}")
     private String channelKey;
 
+    // 예약 및 결제 페이지
     @GetMapping("/booking")
     public String bookingPage(
             @RequestParam("checkIn") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkin,
@@ -75,8 +77,20 @@ public class BookingController {
         return "booking/bookingPage";
     }
 
+    // 예약 성공 확인 페이지
     @GetMapping("/booking/complete")
-    public String bookingPage() {
+    public String bookingCompletePage(@RequestParam Long bookingIdx, Model model) {
+        BookingCompleteInfo info = bookingService.getBookingCompleteInfo(bookingIdx);
+
+        model.addAttribute("merchantUid", info.getMerchantUid());
+        model.addAttribute("checkin", info.getCheckin());
+        model.addAttribute("checkout", info.getCheckout());
+        model.addAttribute("checkinDay", info.getCheckinDay());
+        model.addAttribute("checkoutDay", info.getCheckoutDay());
+        model.addAttribute("roomName", info.getRoomName());
+        model.addAttribute("roomNumber", info.getRoomNumber());
+        model.addAttribute("paidAmount", info.getPaidAmount());
+
         return "booking/bookingComplete";
     }
 }

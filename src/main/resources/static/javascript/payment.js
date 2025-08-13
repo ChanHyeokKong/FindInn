@@ -115,7 +115,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                                         success: function () {
                                                             console.log("📨 예약완료 문자 전송 완료");
                                                             // 8. 예약 확인 페이지로 이동
-                                                            // window.location.href = "/booking/complete";
+                                                            window.location.href = "/booking/complete?bookingIdx=" + encodeURIComponent(bookingIdx);
                                                         },
                                                         error: function (xhr) {
                                                             const res = xhr.responseJSON;
