@@ -1,6 +1,11 @@
 document.addEventListener("DOMContentLoaded", function() {
 	
 	registerHotelCardClicks();
+	
+	
+	
+	
+	
 
 	const btnSearch = document.getElementById("btnSearch");
 	if (btnSearch) {
@@ -15,6 +20,29 @@ document.addEventListener("DOMContentLoaded", function() {
 	const checks = document.querySelectorAll('input[name="tag"]');
 	const input = document.querySelector("input[name='searchKeyword']");
 	const tbody = document.querySelector("#hotelTbody");
+	const range = document.querySelector('input[name=priceRange]');
+	const display = document.getElementById("priceDisplay");
+	
+	//가격
+	function updateDisplay(value) {
+	    const intVal = parseInt(value);
+	    if (intVal >= 500000) {
+	        display.textContent = "0원~";
+	    } else {
+	        display.textContent = "0원 ~ " +  intVal.toLocaleString() + "원";
+	    }
+	}
+
+	// 최초 로딩 시 값 세팅
+	updateDisplay(range.value);
+
+	// 슬라이더 움직일 때 값 갱신
+	range.addEventListener("input", function () {
+	    updateDisplay(this.value);
+	    searchHotels();  // 슬라이더 조작 시 검색 실행
+	});
+		
+	
 
 	let selectedTags = [];
 
@@ -23,6 +51,19 @@ document.addEventListener("DOMContentLoaded", function() {
 		const keyword = input.value.trim();
 		const categoryRadio = Array.from(radios).find(r => r.checked);
 		const category = categoryRadio ? categoryRadio.value : 'all';
+		const priceRangeInput = document.querySelector('input[name="priceRange"]');
+		const priceRange = priceRangeInput ? priceRangeInput.value : '';
+		const restart = document.querySelector("#restart");
+		
+		
+		
+		//초기화 버튼
+		restart.addEventListener("click", () =>{
+			location.reload();
+		}) 
+		
+		
+		
 
 		// tags 파라미터 만들기 (tags=tag1&tags=tag2...)
 		const tagParams = selectedTags		
@@ -30,7 +71,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		    .join('&');
 		console.log(checkIn);
 
-		let url = `/h_search?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(category)}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}`;
+		let url = `/h_search?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(category)}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}
+		&priceRange=${encodeURIComponent(priceRange)}`;
 		if (tagParams) url += `&${tagParams}`;
 		
 		console.log("완성된 URL:", url);
@@ -43,10 +85,14 @@ document.addEventListener("DOMContentLoaded", function() {
 			})
 			.catch(err => console.error("검색 오류:", err));
 	}
+	
+
 
 	// 검색 버튼 클릭
 	btnSearch.addEventListener("click", () => {
 		// 검색 시 카테고리 모두 해제 후 'all' 체크
+		if (range) range.value = 500000;
+		updateDisplay(range.value);
 		radios.forEach(radio => radio.checked = false);
 		const allRadio = document.querySelector('input[name="category"][value="all"]');
 		if (allRadio) allRadio.checked = true;
@@ -62,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	// Enter 키로 검색
 	input.addEventListener("keydown", function(event) {
 		if (event.key === "Enter") btnSearch.click();
-	});
+	});  
 
 	// 카테고리 라디오 변경 시 검색
 	radios.forEach(radio => {
@@ -107,6 +153,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			if (hotel.hotelImages && hotel.hotelImages.length > 0) {
 				imgTag = `<img src="/hotelImage/${hotel.hotelImages[0]}" alt="호텔 이미지" style="height: 200px; display: block;" />`;
 			}
+			
 
 			cell.innerHTML = `
 				<div class="card hotel-card" data-hotel-id="${hotel.idx}" style="display: flex; flex-direction: row; height: 200px;">
@@ -117,7 +164,10 @@ document.addEventListener("DOMContentLoaded", function() {
 						<h5 class="card-title">${hotel.hotelName}</h5>
 						<p class="card-text">
 							<strong>hotel_idx:</strong> ${hotel.idx}<br>
-							<strong>member_idx:</strong> ${hotel.memberIdx}
+							<strong>member_idx:</strong> ${hotel.memberIdx}<br>
+							<strong>min_price:</strong> ${hotel.priceRange}<br>
+							<strong>address:</strong> ${hotel.hotelAddress}<br>
+							<strong>Tel:</strong> ${hotel.hotelTel}<br>
 						</p>
 					</div>
 				</div>
@@ -130,6 +180,12 @@ document.addEventListener("DOMContentLoaded", function() {
 		registerHotelCardClicks();
 	}
 
+	
+	
+
+	
+	
+	
 	// 호텔 카드 클릭 이벤트 등록 함수
 	function registerHotelCardClicks() {
 		const cards = document.querySelectorAll('.hotel-card');
@@ -212,4 +268,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			}
 		});
 	}
+	
+	searchHotels();
 });
