@@ -64,25 +64,6 @@ public class HotelController {
 		List<HotelDto> results = hotelService.searchHotelsWithConditions(keyword, category, tags, checkIn, checkOut);
 		System.out.println(results);
 		return results;
-
-  /*
-      //기존 main 코드 주석 처리 후 병합 필요 없을 시 제거
-      
-	        @RequestParam(value = "keyword", required = false) String keyword,
-	        @RequestParam(value = "category", required = false) String category,
-	        @RequestParam(value = "tags", required = false) List<String> tags
-	    ) {
-		
-		System.out.println("tags = " + tags);
-		
-	        HotelSearchCondition condition = new HotelSearchCondition();
-	        condition.setKeyword(keyword);
-	        condition.setCategory(category);
-	        condition.setTags(tags);
-
-	        return hotelService.searchHotels(condition);
-          */
-
 	}
 	
 	
