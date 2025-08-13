@@ -1,6 +1,6 @@
 package com.inn.controller;
 
-import com.inn.data.booking.BookingInfo;
+import com.inn.data.booking.BookingSmsInfo;
 import com.inn.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +27,7 @@ public class SmsController {
 
     // ✅ 예약 완료 문자 전송
     @PostMapping("/booking-confirm")
-    public ResponseEntity<?> sendReservationConfirmation(@RequestBody BookingInfo info) {
+    public ResponseEntity<?> sendReservationConfirmation(@RequestBody BookingSmsInfo info) {
         try {
             smsService.sendBookingConfirmation(info);
             return ResponseEntity.ok("문자 전송 성공");

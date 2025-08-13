@@ -104,7 +104,8 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                                         contentType: "application/json",
                                                         data: JSON.stringify({
                                                             merchantUid: rsp.merchant_uid,
-                                                            roomIdx: roomIdx,
+                                                            hotelName: hotelName,
+                                                            roomName: roomName,
                                                             checkin: checkin,
                                                             checkout: checkout,
                                                             checkinDay: checkinDay,

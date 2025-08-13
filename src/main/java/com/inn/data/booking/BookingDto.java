@@ -1,15 +1,17 @@
 package com.inn.data.booking;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class BookingDto {
 
     private Long idx;
