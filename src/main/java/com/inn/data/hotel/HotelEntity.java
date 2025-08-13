@@ -46,5 +46,8 @@ public class HotelEntity {
 	@Lob
 	private String description;
 	
+	@Transient
+	private Integer minPrice;
+	
 
 }
