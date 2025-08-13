@@ -3,6 +3,12 @@ package com.inn.service;
 import com.inn.data.booking.BookingDto;
 import com.inn.data.booking.BookingEntity;
 import com.inn.data.booking.BookingRepository;
+import com.inn.data.booking.BookingRoomInfo;
+import com.inn.data.hotel.HotelEntity;
+import com.inn.data.hotel.HotelRepository;
+import com.inn.data.rooms.RoomTypes;
+import com.inn.data.rooms.Rooms;
+import com.inn.data.rooms.RoomsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -18,6 +25,8 @@ import java.util.List;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
+    private final RoomsRepository roomsRepository;
+    private final HotelRepository hotelRepository;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final int RANDOM_LENGTH = 6;
@@ -39,6 +48,36 @@ public class BookingServiceImpl implements BookingService {
             sb.append(CHARACTERS.charAt(idx));
         }
         return sb.toString();
+    }
+
+    /**
+     * 객실 정보 조회
+     */
+    @Override
+    public BookingRoomInfo getBookingRoomInfo(Long roomIdx) {
+        Rooms room = roomsRepository.findById(roomIdx)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 객실입니다."));
+
+        HotelEntity hotel = hotelRepository.findById(room.getHotelId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 호텔입니다."));
+
+        RoomTypes roomType = room.getRoomType();
+
+        String firstImage = null;
+        List<String> images = hotel.getHotelImages();
+        if (images != null && !images.isEmpty()) {
+            firstImage = images.get(0);
+        }
+
+        return BookingRoomInfo.builder()
+                .hotelImage(firstImage)
+                .hotelName(hotel.getHotelName())
+                .roomName(roomType.getTypeName())
+                .roomNumber(room.getRoomNumber())
+                .roomPrice(roomType.getPrice())
+                .capacity(roomType.getCapacity())
+                .description(roomType.getDescription())
+                .build();
     }
 
     /**

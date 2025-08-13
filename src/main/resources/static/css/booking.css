@@ -1,0 +1,159 @@
+/* ===== 전체 레이아웃 ===== */
+.booking-wrapper {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+/* ===== 좌측 / 우측 비율 ===== */
+.left-section {
+    flex: 1.2;
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.right-section {
+    flex: 1;
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* ===== 제목 ===== */
+h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #007BFF;
+}
+
+h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* ===== 구분선 ===== */
+hr {
+    border: none;
+    border-top: 1px solid #e2e6ea;
+    margin: 10px 0 20px;
+}
+
+/* ===== 폼 스타일 ===== */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: border-color 0.2s ease-in-out;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.2);
+}
+
+/* ===== 버튼 공통 ===== */
+button {
+    cursor: pointer;
+    font-size: 15px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease-in-out, transform 0.05s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* 파란색 메인 버튼 */
+.btn-primary,
+#sendAuthBtn,
+#checkAuthBtn,
+#payBtn {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+}
+
+.btn-primary:hover,
+#sendAuthBtn:hover,
+#checkAuthBtn:hover,
+#payBtn:hover {
+    background-color: #0056B3;
+}
+
+/* 결제 수단 버튼 */
+.payMethodBtn {
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    color: #333;
+    padding: 10px 14px;
+    margin-right: 10px;
+}
+
+.payMethodBtn:hover {
+    background-color: #e9ecef;
+}
+
+.payMethodBtn.selected {
+    background-color: #007BFF;
+    color: #fff;
+    border-color: #007BFF;
+}
+
+/* ===== 객실/결제 정보 목록 ===== */
+.right-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.right-section li {
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.right-section strong {
+    color: #333;
+}
+
+/* ===== 결제 정보 강조 ===== */
+.right-section p {
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.right-section strong {
+    font-weight: bold;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 900px) {
+    .booking-wrapper {
+        flex-direction: column;
+    }
+}

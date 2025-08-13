@@ -1,15 +1,18 @@
 package com.inn.data.booking;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
-@Data
-public class BookingInfo {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class BookingSmsInfo {
     private String merchantUid;
-    private String roomIdx;
+    private String hotelName;
+    private String roomName;
     private String checkin;
     private String checkout;
     private String checkinDay;
