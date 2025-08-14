@@ -11,11 +11,13 @@ import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -108,6 +110,47 @@ public class PaymentController {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("result", "fail", "message", failMsg, "detail", e.getMessage()));
+        }
+    }
+
+    /**
+     * AJAX로 merchantUid 받아 결제 취소 및 예약 취소
+     */
+    @PostMapping("/cancel")
+    public ResponseEntity<?> cancelPayment(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkin,
+            @RequestParam String merchantUid) {
+
+        LocalDate today = LocalDate.now();
+
+        if (!today.isBefore(checkin)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("result", "fail", "message", "취소 가능한 시간이 지나 예약을 취소할 수 없습니다."));
+        }
+
+        try {
+            // 1. merchantUid로 결제 취소 시도
+            boolean cancelled = paymentService.cancelPaymentByMerchantUid(merchantUid);
+
+            if (!cancelled) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("result", "fail", "message", "결제 취소에 실패했습니다."));
+            }
+
+            // 2. 결제 취소 성공 시 예약 상태도 취소로 변경
+            Optional<BookingEntity> optionalBooking = bookingRepository.findByMerchantUid(merchantUid);
+            if (optionalBooking.isPresent()) {
+                BookingEntity booking = optionalBooking.get();
+                booking.setStatus("CANCELED");
+                booking.setCanceledAt(LocalDateTime.now());
+                bookingRepository.save(booking);
+            }
+
+            return ResponseEntity.ok(Map.of("result", "success", "message", "결제가 취소되었습니다."));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("result", "fail", "message", e.getMessage()));
         }
     }
 }
