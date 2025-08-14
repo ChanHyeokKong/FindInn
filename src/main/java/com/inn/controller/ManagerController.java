@@ -185,7 +185,9 @@ public class ManagerController {
                                 @RequestParam long roomNumber) {
 
         Rooms newRoom = new Rooms();
-        newRoom.setHotelId(hotelId);
+        HotelEntity hotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with ID: " + hotelId));
+        newRoom.setHotel(hotel);
         newRoom.setRoomNumber(roomNumber);
 
         RoomTypes roomTypeProxy = new RoomTypes();

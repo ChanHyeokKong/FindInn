@@ -1,5 +1,6 @@
 package com.inn.data.rooms;
 
+import com.inn.data.hotel.HotelEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -13,7 +14,9 @@ public class Rooms {
 
     private Long roomNumber;
 
-    private Long hotelId;
+    @ManyToOne
+    @JoinColumn(name = "hotel_id", referencedColumnName = "idx")
+    private HotelEntity hotel;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_type_id", referencedColumnName = "idx")
