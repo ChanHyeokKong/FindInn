@@ -4,7 +4,7 @@
       layout:decorate="~{layout/layout}">
 
 <head>
-    <title>예약 완료</title>
+    <title>예약 완료 페이지</title>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <th:block layout:fragment="head"></th:block>
@@ -42,14 +42,15 @@
     </div>
 
     <div class="btn-group">
-        <button type="button" class="btn btn-secondary" onclick="location.href='/'">홈으로</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='/'">
+            홈으로
+        </button>
         <button type="button" class="btn btn-primary"
-                onclick="location.href='@{/booking/details/{bookingIdx}(bookingIdx=${bookingIdx})}'">
+                th:onclick="|location.href='@{/booking/detail/{merchantUid}(merchantUid=${merchantUid})}'|">
             예약 상세 확인
         </button>
     </div>
 
 </div>
-
 </body>
 </html>
