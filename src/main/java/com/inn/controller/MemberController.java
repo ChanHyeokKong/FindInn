@@ -77,4 +77,16 @@ public class MemberController {
         return "member/qnawrite";
     }
 
+    @GetMapping("/mypage/qna")
+    public String myQna(@AuthenticationPrincipal CustomUserDetails currentUser, Model model) {
+        if (currentUser == null) {
+            return "redirect:/?login=false";
+        }
+        Long memberIdx = currentUser.getIdx();
+        List<com.inn.data.chat.ChatRoomDto> chatRooms = service.getChatRoomsForMember(memberIdx);
+        model.addAttribute("chatRooms", chatRooms);
+        model.addAttribute("currentMemberIdx", memberIdx);
+        return "member/myqna";
+    }
+
 }

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/mypageLayout}">
+<div layout:fragment="content">
+  <link rel="stylesheet" th:href="@{/css/chat.css}">
+  <div class="myqna-content">
+    <h2>나의 문의 내역</h2>
+
+    <!-- 채팅방 목록 테이블 -->
+    <table id="chatRoomTable" class="table table-striped table-bordered" style="width:100%">
+      <thead>
+      <tr>
+        <th>문의 호텔</th>
+        <th>마지막 메시지</th>
+        <th>문의 시간</th>
+        <th>문의 확인</th>
+      </tr>
+      </thead>
+      <tbody id="chatRoomTbody">
+      <tr th:each="chatRoom : ${chatRooms}">
+        <td th:text="${chatRoom.hotelName}"></td>
+        <td th:text="${chatRoom.lastMessage}"></td>
+        <td th:text="${chatRoom.lastMessageTime != null ? #temporals.format(chatRoom.lastMessageTime, 'yyyy-MM-dd HH:mm') : ''}"></td>
+        <td>
+          <button class="btn btn-info btn-sm view-chat-btn"
+                  th:data-chat-room-idx="${chatRoom.idx}"
+                  th:data-hotel-name="${chatRoom.hotelName}"
+                  data-bs-toggle="modal" data-bs-target="#chatModal">
+            채팅 보기
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Chat Modal -->
+  <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="chatModalLabel"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body chat-box" id="chatBox" style="height: 400px; overflow-y: auto;">
+          <!-- Chat messages will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <div class="input-group">
+            <input type="text" id="chatInput" class="form-control" placeholder="메시지를 입력하세요...">
+            <button id="sendButton" class="btn btn-primary">전송</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    const currentMemberIdx = /*[[${currentMemberIdx}]]*/ 0;
+    /*]]>*/
+  </script>
+  <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js}"></script>
+  <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js}"></script>
+  <script th:src="@{/javascript/myqnachat.js}"></script>
+</div>
+
+
+
+
+</html>

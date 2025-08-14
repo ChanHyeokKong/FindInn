@@ -100,9 +100,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         displayManagerMessage(msg, msg.senderIdx === currentManagerMemberId ? 'sent' : 'received');
                     });
                     connectManagerChat(); // Connect to WebSocket for this chat room
+
+                    // Scroll to bottom after messages are loaded
+                    managerChatBox.scrollTop = managerChatBox.scrollHeight;
                 })
                 .catch(error => console.error('Manager Chat: Error loading chat history:', error));
         });
+    });
+
+    // Scroll to bottom when modal is shown
+    document.getElementById('managerChatModal').addEventListener('shown.bs.modal', function () {
+        managerChatBox.scrollTop = managerChatBox.scrollHeight;
     });
 
     // Event listeners for sending messages from manager
