@@ -15,7 +15,7 @@ public interface ManageRepository extends JpaRepository<HotelEntity, Long> {
     @Query("SELECT new com.inn.data.member.manager.HotelWithManagerDto(h, r, m.memberName, rt, COUNT(*)) " +
             "FROM HotelEntity h " +
             "JOIN MemberDto m ON h.memberIdx = m.idx " +
-            "JOIN Rooms r ON h.idx = r.hotelId " +
+            "JOIN Rooms r ON h.idx = r.hotel.idx " +
             "JOIN RoomTypes rt ON r.roomType.idx = rt.idx " +
             "WHERE m.idx = :memberIdx")
     List<HotelWithManagerDto> findHotelRoomsAndTypesByMemberIdx(@Param("memberIdx") Long memberIdx);
@@ -55,7 +55,7 @@ public interface ManageRepository extends JpaRepository<HotelEntity, Long> {
            ") " +
            "FROM HotelEntity h " +
            "JOIN MemberDto m ON h.memberIdx = m.idx " +
-           "LEFT JOIN Rooms r ON r.hotelId = h.idx " +
+           "LEFT JOIN Rooms r ON r.hotel.idx = h.idx " +
            "LEFT JOIN Reserve rs ON rs.room = r AND CURRENT_DATE BETWEEN rs.checkIn AND rs.checkOut " +
            "GROUP BY h.idx, h.hotelName, m.memberName")
     List<HotelWithManagerDto> findAllWithManagerName();
