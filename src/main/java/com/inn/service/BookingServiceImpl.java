@@ -1,11 +1,10 @@
 package com.inn.service;
 
-import com.inn.data.booking.BookingDto;
-import com.inn.data.booking.BookingEntity;
-import com.inn.data.booking.BookingRepository;
-import com.inn.data.booking.BookingRoomInfo;
+import com.inn.data.booking.*;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
+import com.inn.data.payment.PaymentEntity;
+import com.inn.data.payment.PaymentRepository;
 import com.inn.data.rooms.RoomTypes;
 import com.inn.data.rooms.Rooms;
 import com.inn.data.rooms.RoomsRepository;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -27,6 +25,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final RoomsRepository roomsRepository;
     private final HotelRepository hotelRepository;
+    private final PaymentRepository paymentRepository;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final int RANDOM_LENGTH = 6;
@@ -134,6 +133,33 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.save(booking);
     }
 
-    // 기타 예약 비즈니스 로직 구현...
+    /**
+     * 예약 완료 정보 조회
+     */
+    @Override
+    public BookingCompleteInfo getBookingCompleteInfo(Long bookingIdx) {
+        BookingEntity booking = bookingRepository.findById(bookingIdx)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
 
+        PaymentEntity payment = paymentRepository.findByBookingIdx(bookingIdx)
+                .orElseThrow(() -> new IllegalArgumentException("결제 정보가 없습니다."));
+
+        Rooms room = roomsRepository.findById(booking.getRoomIdx())
+                .orElseThrow(() -> new IllegalArgumentException("객실 정보를 찾을 수 없습니다."));
+
+        // 체크인/체크아웃 요일 (ex: (월))
+        String checkinDay = getKoreanShortDayOfWeek(booking.getCheckin());
+        String checkoutDay = getKoreanShortDayOfWeek(booking.getCheckout());
+
+        return BookingCompleteInfo.builder()
+                .merchantUid(booking.getMerchantUid())
+                .checkin(booking.getCheckin())
+                .checkout(booking.getCheckout())
+                .checkinDay(checkinDay)
+                .checkoutDay(checkoutDay)
+                .roomName(room.getRoomType().getTypeName())
+                .roomNumber(room.getRoomNumber())
+                .paidAmount(payment.getPaidAmount())
+                .build();
+    }
 }

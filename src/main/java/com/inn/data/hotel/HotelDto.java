@@ -11,13 +11,13 @@ public class HotelDto {
 	
 	private Long idx;
 	private Long memberIdx;
-	private String hotelName;
-	
+	private String hotelName;	
 	private List<String> hotelImages;
 	private String hotelAddress;
 	private String hotelTel;
 	private String hotelCategory;
 	private List<String> hotelTag;
+	private Integer priceRange;
 
 
 	 public HotelDto(Long idx, String hotelName,

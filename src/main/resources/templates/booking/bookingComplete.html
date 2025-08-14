@@ -3,7 +3,53 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 
-<th:block layout:fragment="content">
-    성공
-</th:block>
+<head>
+    <title>예약 완료</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <th:block layout:fragment="head"></th:block>
+    <link rel="stylesheet" th:href="@{/css/bookingComplete.css}"/>
+</head>
+
+<body>
+<div layout:fragment="content" class="booking-complete-container">
+
+    <div class="icon-check">
+        <i class="fas fa-check-circle"></i>
+    </div>
+
+    <h2>결제완료</h2>
+    <p class="subtitle">고객님의 예약이 확정되었어요.<br/>아래의 예약 정보를 확인해주세요.</p>
+
+    <div class="booking-info-box">
+        <dl>
+            <dt>예약번호</dt>
+            <dd th:text="${merchantUid}"></dd>
+
+            <dt>예약 기간</dt>
+            <dd>
+                <span th:text="${checkin} + ' ' + ${checkinDay} + ' 15:00 ~'"></span><br/>
+                <span th:text="${checkout} + ' ' + ${checkoutDay} + ' 11:00'"></span><br/>
+                <span th:text="'(' + ${#numbers.formatInteger(T(java.time.temporal.ChronoUnit).DAYS.between(checkin, checkout), 0)} + '박)'"></span>
+            </dd>
+
+            <dt>객실</dt>
+            <dd th:text="${roomName}"></dd>
+
+            <dt>결제 금액</dt>
+            <dd th:text="${#numbers.formatInteger(paidAmount, 0, 'COMMA')} + '원'"></dd>
+        </dl>
+    </div>
+
+    <div class="btn-group">
+        <button type="button" class="btn btn-secondary" onclick="location.href='/'">홈으로</button>
+        <button type="button" class="btn btn-primary"
+                onclick="location.href='@{/booking/details/{bookingIdx}(bookingIdx=${bookingIdx})}'">
+            예약 상세 확인
+        </button>
+    </div>
+
+</div>
+
+</body>
 </html>

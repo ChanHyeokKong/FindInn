@@ -4,48 +4,60 @@
       layout:decorate="~{layout/layout}">
 
 <head>
-    <title>호텔 예약 확인 및 결제</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 확인 및 결제 페이지</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <th:block layout:fragment="head"></th:block>
-    <link rel="stylesheet" th:href="@{/css/booking.css}" />
+    <link rel="stylesheet" th:href="@{/css/bookingPage.css}"/>
 </head>
 
 <body>
-<th:block layout:fragment="content">
+<div layout:fragment="content">
 
     <div class="container">
-
-        <h1>호텔 예약 확인 및 결제</h1>
 
         <div class="booking-wrapper">
 
             <!-- 왼쪽 영역: 예약자 정보 + 결제 수단 -->
             <div class="left-section">
 
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <button type="button" class="btn-back" onclick="history.back()">
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        <span class="sr-only">뒤로가기</span> <!-- 스크린 리더용 텍스트 -->
+                    </button>
+                    &nbsp;
+                    <h1 class="booking-title" style="margin: 0;">예약 확인 및 결제</h1>
+                </div>
+
                 <!-- 예약자 정보 -->
                 <section>
                     <h2>예약자 정보</h2>
-                    <hr>
-                    <form id="bookingForm" autocomplete="off">
-                        <div class="form-group">
+                    <form id="bookingForm" autocomplete="off" class="booking-form">
+                        <div class="form-group short-input">
                             <label for="guestName">예약자 이름</label>
-                            <input type="text" id="guestName" name="guestName" placeholder="홍길동" required>
+                            <input type="text" id="guestName" name="guestName" placeholder="홍길동" required/>
                         </div>
 
-                        <div class="form-group">
-                            <label for="guestPhone">휴대폰 번호</label>
-                            <input type="tel" id="guestPhone" name="guestPhone" placeholder="010-1234-5678" required>
-                            <button type="button" id="sendAuthBtn" th:if="${!isLogined}">
+                        <div class="form-group phone-auth-row">
+                            <div class="phone-input-wrapper">
+                                <label for="guestPhone">휴대폰 번호</label>
+                                <input type="tel" id="guestPhone" name="guestPhone" placeholder="010-1234-5678"
+                                       required/>
+                            </div>
+                            <button type="button" id="sendAuthBtn" th:if="${!isLogined}"
+                                    class="btn btn-primary auth-btn">
                                 인증번호 받기
                             </button>
                         </div>
 
-                        <div id="authSection" style="display:none;">
+                        <div id="authSection" style="display:none;" class="auth-section">
                             <label for="authInput">인증번호 입력</label>
-                            <input type="text" id="authInput" placeholder="인증번호 입력">
-                            <input type="hidden" id="serverAuthCode" value="">
-                            <button type="button" id="checkAuthBtn">확인</button>
+                            <div class="auth-input-row">
+                                <input type="text" id="authInput" placeholder="인증번호 입력"/>
+                                <button type="button" id="checkAuthBtn" class="btn btn-primary auth-btn">확인</button>
+                            </div>
+                            <input type="hidden" id="serverAuthCode" value=""/>
                             <p id="timerText" style="color: gray;"></p>
                         </div>
 
@@ -56,8 +68,7 @@
                 <!-- 결제 수단 -->
                 <section>
                     <h2>결제 수단</h2>
-                    <hr>
-                    <div id="payMethodSection">
+                    <div id="payMethodSection" class="pay-method-section">
                         <button type="button" class="payMethodBtn selected" data-method="tosspay">토스페이</button>
                         <button type="button" class="payMethodBtn" data-method="kakaopay">카카오페이</button>
                         <button type="button" class="payMethodBtn" data-method="card">신용/체크카드</button>
@@ -69,24 +80,27 @@
             <!-- 오른쪽 영역: 객실 정보 + 결제 정보 -->
             <div class="right-section">
 
-                <!-- 객실 정보 -->
-                <section>
-                    <h2>객실 정보</h2>
-                    <hr>
+                <!-- 호텔명 + 호텔 이미지 -->
+                <section class="booking-summary">
+                    <h2 th:text="${hotelName}">호텔명</h2>
+                    <div style="text-align:center; margin-bottom: 20px;">
+                        <img th:src="@{${hotelImage}}" alt="호텔 이미지"
+                             style="max-width: 100%; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"/>
+                    </div>
+
+                    <!-- 객실 정보 리스트 -->
                     <ul>
-                        <li><strong>호텔명:</strong> <span th:text="${hotelName}">호텔명</span></li>
                         <li><strong>객실:</strong> <span th:text="${roomNameAndNum}">객실명 및 번호</span></li>
-                        <li><strong>체크인:</strong> <span th:text="|${checkin} ${checkinDay}|">체크인</span></li>
-                        <li><strong>체크아웃:</strong> <span th:text="|${checkout} ${checkoutDay}|">체크아웃</span></li>
+                        <li><strong>체크인:</strong> <span th:text="|${checkin} ${checkinDay} 15:00|">체크인</span></li>
+                        <li><strong>체크아웃:</strong> <span th:text="|${checkout} ${checkoutDay} 11:00|">체크아웃</span></li>
                         <li><strong>기준인원:</strong> <span th:text="'최대 '+ ${capacity} + '인'">인원수</span></li>
                         <li><strong>추가정보:</strong> <span th:text="${description}">설명</span></li>
                     </ul>
                 </section>
 
                 <!-- 결제 정보 -->
-                <section>
+                <section class="booking-summary">
                     <h2>결제 정보</h2>
-                    <hr>
                     <p>
                         객실 가격(<span th:text="${nights}">?</span>박):
                         <span th:text="${#numbers.formatInteger(price * nights, 0, 'COMMA')} + '원'">?원</span>
@@ -96,7 +110,7 @@
                         <strong th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')} + '원'">?원</strong>
                     </p>
                     <p>
-                        <button id="payBtn">결제하기</button>
+                        <button id="payBtn" class="btn btn-primary btn-pay">결제하기</button>
                     </p>
                 </section>
 
@@ -141,13 +155,14 @@
 
         <!-- 스크립트 -->
         <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+        <script th:src="@{/javascript/addHyphen.js}"></script>
         <script th:src="@{/javascript/smsAuth.js}"></script>
         <script th:src="@{/javascript/payMethod.js}"></script>
         <script th:src="@{/javascript/payment.js}"></script>
 
     </div>
 
-</th:block>
+</div>
 </body>
 
 </html>

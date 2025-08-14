@@ -1,5 +1,8 @@
 package com.inn.controller;
 
+import com.inn.config.CustomUserDetails;
+import com.inn.data.chat.ChatDto;
+import com.inn.data.chat.ChatRepository;
 import com.inn.data.detail.AccommodationDto;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.data.rooms.RoomTypeAvailDto;
@@ -7,6 +10,7 @@ import com.inn.service.HotelService;
 import com.inn.service.RoomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +34,9 @@ public class AccommodationController {
     @Value("${kakao.map.javascript-key}")
     private String kakaoApiKey;
 
+    @Autowired
+    ChatRepository chatRepository;
+
     @GetMapping("/domestic-accommodations")
     public String accommodationDetail(
             @RequestParam("id") Long id,
@@ -38,7 +45,8 @@ public class AccommodationController {
             @RequestParam(value = "personal", required = false) Integer personal,
             Model model,
             RedirectAttributes redirectAttributes,
-            @RequestHeader(value = "Referer", required = false) String referer) {
+            @RequestHeader(value = "Referer", required = false) String referer,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
         
         AccommodationDto accommodation = new AccommodationDto();
         int numberOfPeople = (personal != null) ? personal : 1;
@@ -56,6 +64,8 @@ public class AccommodationController {
         }
         else{
             accommodation.setHotel(hotel.get());
+            // Add this line to print the hotel ID
+            System.out.println("Hotel ID being set to accommodation: " + hotel.get().getIdx());
         }
         accommodation.setName(hotel.get().getHotelName());
         accommodation.setAddress(hotel.get().getHotelAddress());
@@ -67,6 +77,7 @@ public class AccommodationController {
         // 해당 호텔의 방 정보
         List <RoomTypeAvailDto> rooms = roomsService.getAllHotelRoomTypesWithAvailability(id,checkIn,checkOut);
         accommodation.setRoomTypes(rooms);
+
         for (RoomTypeAvailDto room : rooms) {
             images.add(room.getImageUrl());
         }
@@ -74,6 +85,15 @@ public class AccommodationController {
         model.addAttribute("accommodation", accommodation);
         model.addAttribute("kakaoApiKey", kakaoApiKey);
         System.out.println(accommodation.getImageGalleries());
+        model.addAttribute("currentUser", currentUser);
+
+        // Add current user's memberIdx to the model
+        if (currentUser != null) {
+            model.addAttribute("currentMemberIdx", currentUser.getIdx());
+        } else {
+            model.addAttribute("currentMemberIdx", null); // Or a default value if not logged in
+        }
+
         return "detail/accommodation-detail";
     }
 }

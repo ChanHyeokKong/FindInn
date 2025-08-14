@@ -1,26 +1,74 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/managerLayout}">
 <div layout:fragment="content">
+  <link rel="stylesheet" th:href="@{/css/chat.css}">
   <div class="manager-content">
-    <a href="/manage/addhotel"><i class="fa-solid fa-plus"> 호텔 상세 추가</i></a>
-    <table id="example" class="table table-striped table-bordered" style="width:100%">
+    <h2>고객 문의 (채팅방 목록)</h2>
+
+    <!-- 호텔 필터링 -->
+    <div class.="row mb-3">
+      <div class="col-md-4">
+        <label for="hotelFilter" class="form-label">호텔 선택</label>
+        <select id="hotelFilter" class="form-select">
+          <option value="all">전체 보기</option>
+          <option th:each="hotel : ${hotels}" th:value="${hotel.idx}" th:text="${hotel.hotelName}"></option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 채팅방 목록 테이블 -->
+    <table id="chatRoomTable" class="table table-striped table-bordered" style="width:100%">
+      <thead>
       <tr>
-        <th>호텔 이름</th>
-        <th>방 이름</th>
-        <th>방 설명</th>
-        <th>최대 인원 수</th>
-        <th>방 개수</th>
-        <th>상세보기</th>
+        <th>문의 사용자</th>
+        <th>호텔명</th>
+        <th>마지막 메시지</th>
+        <th>문의 시간</th>
+        <th>문의 확인</th>
       </tr>
-      <tr th:each="hotelRoomInfo : ${hotelRoomInfos}">
-        <td th:text="${hotelRoomInfo.hotelName}"></td>
-        <td th:text="${hotelRoomInfo.roomTypeName}"></td>
-        <td th:text="${hotelRoomInfo.roomTypeDescription}"></td>
-        <td th:text="${hotelRoomInfo.roomTypeCapacity}"></td>
-        <td th:text="${hotelRoomInfo.roomCount}"></td>
-        <td><button th:onclick="'location.href=\'/manage/room/detail?idx=' + ${hotelRoomInfo.hotelId} + '\''">상세보기</button></td>
+      </thead>
+      <tbody id="chatRoomTbody">
+      <tr th:each="chatRoom : ${chatRooms}" th:data-hotel-id="${chatRoom.hotelIdx}">
+        <td th:text="${chatRoom.memberName}"></td>
+        <td th:text="${chatRoom.hotelName}"></td>
+        <td th:text="${chatRoom.lastMessage}"></td>
+        <td th:text="${chatRoom.lastMessageTime != null ? #temporals.format(chatRoom.lastMessageTime, 'yyyy-MM-dd HH:mm') : ''}"></td>
+        <td>
+          <button class="btn btn-info btn-sm view-chat-btn"
+                  th:data-chat-room-idx="${chatRoom.idx}"
+                  th:data-hotel-idx="${chatRoom.hotelIdx}"
+                  th:data-member-idx="${chatRoom.memberIdx}"
+                  data-bs-toggle="modal" data-bs-target="#managerChatModal">
+            채팅 보기
+          </button>
+        </td>
       </tr>
+      </tbody>
     </table>
   </div>
+
+  <!-- Manager Chat Modal -->
+  <div class="modal fade" id="managerChatModal" tabindex="-1" aria-labelledby="managerChatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="managerChatModalLabel">채팅방: <span id="modalChatRoomId"></span></h5>
+          <button type.button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body chat-box" id="managerChatBox" style="height: 400px; overflow-y: auto;">
+          <!-- Chat messages will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <div class="input-group">
+            <input type="text" id="managerChatInput" class="form-control" placeholder="메시지를 입력하세요...">
+            <button id="managerSendButton" class="btn btn-primary">전송</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js}"></script>
+  <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js}"></script>
+  <script th:src="@{/javascript/managerchat.js}"></script>
 </div>
 </html>

@@ -55,6 +55,12 @@ public class HotelController {
 			@RequestParam(value = "checkOut", required = false) LocalDate checkOut,
 			@RequestParam(value = "personCount", required = false) Long cnt
 	) {
+		System.out.println(keyword);
+		System.out.println(tags);
+		System.out.println(category);
+		System.out.println(checkIn);
+		System.out.println(checkOut);
+		System.out.println(cnt);
 		List<HotelDto> results = hotelService.searchHotelsWithConditions(keyword, category, tags, checkIn, checkOut);
 		System.out.println(results);
 		return results;

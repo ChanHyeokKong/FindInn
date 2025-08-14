@@ -2,7 +2,7 @@
 document.getElementById('payBtn').addEventListener('click', function () {
     // 예약자 정보
     const name = document.getElementById('guestName').value;
-    const phone = document.getElementById('guestPhone').value;
+    const phone = document.getElementById('guestPhone').value.replace(/-/g, '');
     if (!name || !phone) {
         alert("예약자 정보를 입력해주세요");
         return;
@@ -115,7 +115,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                                         success: function () {
                                                             console.log("📨 예약완료 문자 전송 완료");
                                                             // 8. 예약 확인 페이지로 이동
-                                                            // window.location.href = "/booking/complete";
+                                                            window.location.href = "/booking/complete?bookingIdx=" + encodeURIComponent(bookingIdx);
                                                         },
                                                         error: function (xhr) {
                                                             const res = xhr.responseJSON;
