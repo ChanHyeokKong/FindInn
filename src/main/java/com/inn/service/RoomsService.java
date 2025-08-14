@@ -1,7 +1,10 @@
 package com.inn.service;
 
 
+import com.inn.data.hotel.HotelRepository;
+import com.inn.data.review.ReviewDto;
 import com.inn.data.rooms.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,9 @@ public class RoomsService {
     @Autowired
     RoomTypesRepository roomTypesRepository;
 
+    @Autowired
+    HotelRepository hotelRepository;
+
     Random rand = new Random();
 
     public List<RoomTypeAvailDto> getAllHotelRoomTypesWithAvailability(long hotelId, LocalDate checkIn, LocalDate checkOut) {
@@ -36,6 +42,18 @@ public class RoomsService {
             Rooms randomRoom = rooms.get(randomIndex);
             return randomRoom;
         }
+    }
+    public record RoomHotelDetailsDto(String roomTypeName, String hotelName) {
+    }
+
+    public RoomHotelDetailsDto getHotelNamebyRoomTypeId(long roomTypeId) {
+        RoomTypes roomType = roomTypesRepository.findById(roomTypeId)
+                .orElseThrow(() -> new EntityNotFoundException("RoomType not found with id: " + roomTypeId));
+
+        String typeName = roomType.getTypeName();
+        String hotelName = roomType.getHotel().getHotelName();
+
+        return new RoomHotelDetailsDto(typeName, hotelName);
     }
 
 
