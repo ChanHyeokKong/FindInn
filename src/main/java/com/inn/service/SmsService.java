@@ -8,4 +8,6 @@ public interface SmsService {
 
     void sendBookingConfirmation(BookingSmsInfo info);
 
+    void sendBookingCancelByMerchantUid(String merchantUid);
+
 }

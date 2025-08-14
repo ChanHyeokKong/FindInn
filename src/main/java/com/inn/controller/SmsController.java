@@ -35,4 +35,16 @@ public class SmsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("문자 전송 실패");
         }
     }
+
+    // ✅ 예약 취소 문자 전송
+    @PostMapping("/booking-cancel")
+    public ResponseEntity<?> sendReservationCancel(@RequestParam String merchantUid) {
+        try {
+            smsService.sendBookingCancelByMerchantUid(merchantUid);
+            return ResponseEntity.ok("예약 취소 문자 전송 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("예약 취소 문자 전송 실패: " + e.getMessage());
+        }
+    }
 }

@@ -117,8 +117,7 @@
         <hr/>
         <div class="cancel-header" style="display: flex; justify-content: space-between; align-items: center;">
             <h3>예약 취소</h3>
-            <button th:if="${detail.canCancel}" type="button" class="btn btn-cancel"
-                    th:onclick="|location.href='@{/booking/cancel/{merchantUid}(merchantUid=${detail.merchantUid})}'|">
+            <button th:if="${detail.canCancel}" type="button" class="btn btn-cancel">
                 예약취소
             </button>
         </div>
@@ -131,6 +130,17 @@
             예약 취소 및 금액 환불 가능한 시간이 이미 지났습니다.
         </p>
     </section>
+
+    <!-- 스크립트 전달용 변수 -->
+    <script th:inline="javascript">
+
+        // 체크인 날짜 (취소 가능 여부 확인)
+        const checkin = [[${detail.checkin}]];
+
+        // 예약번호
+        const merchantUid = [[${detail.merchantUid}]];
+
+    </script>
 
     <script th:src="@{/javascript/bookingDetail.js}"></script>
 
