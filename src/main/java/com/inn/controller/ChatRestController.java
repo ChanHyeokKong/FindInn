@@ -16,7 +16,7 @@ public class ChatRestController {
     @Autowired
     ChatService chatService;
 
-    @GetMapping
+    @GetMapping("/chatRoom/reload")
     public List<ChatRoomDto> GetHotelChatRoom(@AuthenticationPrincipal CustomUserDetails currUser ,Long hotelIdx){
 
         if(hotelIdx == 0){
