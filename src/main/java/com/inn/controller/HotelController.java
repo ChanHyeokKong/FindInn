@@ -53,7 +53,7 @@ public class HotelController {
 			@RequestParam(value = "tags", required = false) List<String> tags,
 			@RequestParam(value = "checkIn", required = false) LocalDate checkIn,
 			@RequestParam(value = "checkOut", required = false) LocalDate checkOut,
-			@RequestParam(value = "personCount", required = false) Long cnt,
+			@RequestParam(value = "personCount", required = false) Long personCount,
 			@RequestParam(value = "priceRange", required = false) Long price
 
 	) {
@@ -65,10 +65,13 @@ public class HotelController {
 		System.out.println(category);
 		System.out.println(checkIn);
 		System.out.println(checkOut);
-		System.out.println(cnt);
-		List<HotelDto> results = hotelService.searchHotelsWithConditions(keyword, category, tags, checkIn, checkOut,  safePrice);
+		System.out.println(personCount);
+		List<HotelDto> results = hotelService.searchHotelsWithConditions(keyword, category, tags, checkIn, checkOut,  safePrice, personCount);
 		System.out.println(results);
 
+		
+		System.out.printf("검색 조건: keyword=%s, category=%s, checkIn=%s, checkOut=%s, tags=%s, 인원수=%s, price=%d\n",
+			    keyword, category, checkIn, checkOut, tags, personCount, safePrice);
 		return results;
 	}
 
