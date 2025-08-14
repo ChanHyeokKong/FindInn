@@ -57,7 +57,7 @@ public class BookingServiceImpl implements BookingService {
         Rooms room = roomsRepository.findById(roomIdx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 객실입니다."));
 
-        HotelEntity hotel = hotelRepository.findById(room.getHotelId())
+        HotelEntity hotel = hotelRepository.findById(room.getHotel().getIdx())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 호텔입니다."));
 
         RoomTypes roomType = room.getRoomType();
