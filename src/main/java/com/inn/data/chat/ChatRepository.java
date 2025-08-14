@@ -8,5 +8,7 @@ import java.util.List;
 @Repository
 public interface ChatRepository extends JpaRepository<ChatDto, Long> {
 
-    List<ChatDto> findAllBySender(String sender);
+    List<ChatDto> findAllBySender(Long sender);
+
+    List<ChatDto> findAllByChatRoomIdxOrderBySendTime(Long chatRoomIdx);
 }

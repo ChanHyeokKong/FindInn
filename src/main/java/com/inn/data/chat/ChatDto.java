@@ -16,7 +16,7 @@ public class ChatDto {
     private Long idx;
 
     @Column
-    private Long ChatRoomIdx;
+    private Long chatRoomIdx;
 
     @Column
     private Long sender;

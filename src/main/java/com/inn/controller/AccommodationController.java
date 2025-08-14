@@ -79,7 +79,6 @@ public class AccommodationController {
         List <RoomTypeAvailDto> rooms = roomsService.getAllHotelRoomTypesWithAvailability(id,checkIn,checkOut);
         accommodation.setRoomTypes(rooms);
 
-        List<ChatDto> list = chatRepository.findAllBySender(currentUser.getMemberName());
 
         model.addAttribute("accommodation", accommodation);
         model.addAttribute("kakaoApiKey", kakaoApiKey);
