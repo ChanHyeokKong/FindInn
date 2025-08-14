@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface RoomTypesRepository extends JpaRepository<RoomTypes, Long> {
-    @Query("SELECT rt FROM RoomTypes rt WHERE rt.hotelId = :hotelId")
+    @Query("SELECT rt FROM RoomTypes rt WHERE rt.hotel.idx = :hotelId")
     @Transactional(readOnly = true)
     List<RoomTypes> findByHotelId(@Param("hotelId") Long hotelId);
 
@@ -23,7 +23,7 @@ public interface RoomTypesRepository extends JpaRepository<RoomTypes, Long> {
         SELECT 1
         FROM Rooms r
         WHERE r.roomType = rt
-        AND r.hotelId = :hotelId
+        AND rt.hotel.idx = :hotelId
         AND NOT EXISTS (
             SELECT 1
             FROM Reserve res
@@ -50,7 +50,7 @@ public interface RoomTypesRepository extends JpaRepository<RoomTypes, Long> {
         AND b.checkin < :checkOutDate
         AND b.checkout > :checkInDate
         AND b.status = 'CONFIRMED'
-    WHERE rt.hotelId = :hotelId
+    WHERE rt.hotel.idx = :hotelId
     GROUP BY rt.idx
 """)
     List<RoomTypeAvailDto> findRoomTypeAvailability(

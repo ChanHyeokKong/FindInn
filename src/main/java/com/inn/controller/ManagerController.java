@@ -18,6 +18,7 @@ import com.inn.data.rooms.RoomTypesRepository;
 import com.inn.service.HotelService;
 import com.inn.service.ManagerService;
 import com.inn.service.MemberService;
+import jakarta.persistence.EntityNotFoundException;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,7 +151,9 @@ public class ManagerController {
                                @RequestParam long price,
                                @RequestParam long capacity) {
         RoomTypes newRoomType = new RoomTypes();
-        newRoomType.setHotelId(hotelId);
+        HotelEntity hotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with ID: " + hotelId));
+        newRoomType.setHotel(hotel);
         newRoomType.setDescription(description);
         newRoomType.setTypeName(typeName);
         newRoomType.setPrice(price);
