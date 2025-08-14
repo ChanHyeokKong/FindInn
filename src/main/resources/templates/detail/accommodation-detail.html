@@ -12,6 +12,7 @@
 
 <body class="bg-light">
 <th:block layout:fragment="content">
+<input type="hidden" id="currentMemberIdx" th:value="${currentMemberIdx}" /> <!-- NEW LINE -->
 <br>
 <br>
 <br>
@@ -31,9 +32,13 @@
                 </div>
                 <div class="col-auto">
                     <div class="d-flex gap-2">
+                        <button id="chat-button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#chatModal" th:attr="data-hotel-idx=${accommodation.hotel.idx}">
+                            <i class="bi bi-chat-dots"></i> 문의하기
+                        </button>
                         <button class="btn btn-outline-secondary btn-sm">
                             <i class="bi bi-heart"></i> 찜하기
                         </button>
+
                     </div>
                 </div>
             </div>
@@ -201,6 +206,40 @@
     </div>
 </div>
 
+    <!--    고객 문의용 모달 창 -->
+    <div class="modal fade" id="chatModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">[[${accommodation.name}]] 에 문의하기</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body chat-box" id="chat-box">
+                    <div class="message received">
+                        <p>안녕하세요! 궁금한 점이 있으시면 무엇이든 물어보세요.</p>
+                        <span class="timestamp">오전 10:30</span>
+                    </div>
+                    <div class="message sent">
+                        <p>네, 안녕하세요. 혹시 2박 3일 예약 가능한가요?</p>
+                        <span class="timestamp">오전 10:31</span>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <div class="input-group">
+                        <input type="text" id="chat-input" class="form-control" placeholder="메시지를 입력하세요...">
+                        <button id="send-button" class="btn btn-primary">전송</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 <!-- Gallery Modal -->
 <div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
@@ -246,7 +285,10 @@
         </div>
     </div>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script th:src="@{/javascript/test.js}"></script> <!-- NEW LINE - changed to th:src -->
+<script th:src="@{/javascript/chat.js}"></script> <!-- changed to th:src -->
 <script th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoApiKey} + '&libraries=services'}"></script>
 <script src="/javascript/detailMap.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -268,5 +310,4 @@
     });
 </script>
 </th:block>
-<script src="/javascript/chat.js"></script>
 </body>

@@ -4,6 +4,7 @@ import com.inn.config.CustomUserDetails;
 import com.inn.data.chat.ChatRoomDto;
 import com.inn.data.chat.ChatRoomRepository;
 import com.inn.data.detail.DescriptionDto;
+import com.inn.data.hotel.HotelDto;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
 import com.inn.data.member.MyPageDto;
@@ -203,9 +204,18 @@ public class ManagerController {
 
     @GetMapping("manage/qna")
     public String qnaManage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
-        Long hotelIdx = currentUser.getIdx();
-        List<ChatRoomDto> list = chatRoomRepository.findAllByHotelIdx(hotelIdx);
-        //rest로 옮겨야 하나
+        if (currentUser == null) {
+            return "redirect:/?login=false";
+        }
+        Long managerIdx = currentUser.getIdx();
+
+        // 1. 매니저가 관리하는 모든 호텔 목록 조회
+        List<HotelEntity> hotels = service.GetAllMyHotel(managerIdx);
+        model.addAttribute("hotels", hotels);
+
+        // 2. 해당 호텔들에 대한 모든 채팅방 정보와 마지막 메시지 정보 조회
+        List<ChatRoomDto> chatRooms = service.getChatRoomsAndLastMessageByManager(managerIdx);
+        model.addAttribute("chatRooms", chatRooms);
 
         return "member/manager/qna";
     }

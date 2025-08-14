@@ -64,6 +64,8 @@ public class AccommodationController {
         }
         else{
             accommodation.setHotel(hotel.get());
+            // Add this line to print the hotel ID
+            System.out.println("Hotel ID being set to accommodation: " + hotel.get().getIdx());
         }
         accommodation.setName(hotel.get().getHotelName());
         accommodation.setAddress(hotel.get().getHotelAddress());
@@ -84,6 +86,13 @@ public class AccommodationController {
         model.addAttribute("kakaoApiKey", kakaoApiKey);
         System.out.println(accommodation.getImageGalleries());
         model.addAttribute("currentUser", currentUser);
+
+        // Add current user's memberIdx to the model
+        if (currentUser != null) {
+            model.addAttribute("currentMemberIdx", currentUser.getIdx());
+        } else {
+            model.addAttribute("currentMemberIdx", null); // Or a default value if not logged in
+        }
 
         return "detail/accommodation-detail";
     }

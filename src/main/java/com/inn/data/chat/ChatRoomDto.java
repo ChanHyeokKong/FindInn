@@ -3,7 +3,7 @@ package com.inn.data.chat;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -19,5 +19,17 @@ public class ChatRoomDto {
 
     @Column
     private Long hotelIdx;
+
+    @Transient
+    private String hotelName;
+
+    @Transient
+    private String memberName;
+
+    @Transient
+    private String lastMessage;
+
+    @Transient
+    private LocalDateTime lastMessageTime;
 
 }
