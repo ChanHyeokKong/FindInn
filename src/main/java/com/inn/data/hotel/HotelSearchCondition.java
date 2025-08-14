@@ -9,4 +9,5 @@ public class HotelSearchCondition {
     private String keyword;
     private String category;
     private List<String> tags;
+    private long price;
 }

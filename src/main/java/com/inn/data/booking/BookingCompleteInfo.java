@@ -6,22 +6,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingDto {
-
-    private Long idx;
+public class BookingCompleteInfo {
     private String merchantUid;
-    private Long roomIdx;
-    private Long memberIdx;
     private LocalDate checkin;
     private LocalDate checkout;
-    private Long price;
-    private String status;
-    private LocalDateTime canceledAt;
-
+    private String checkinDay;
+    private String checkoutDay;
+    private String roomName;
+    private Long roomNumber;
+    private Long paidAmount;
 }

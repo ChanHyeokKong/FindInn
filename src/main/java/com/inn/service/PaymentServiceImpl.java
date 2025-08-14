@@ -20,6 +20,9 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final IamportClient iamportClient;
 
+    /**
+     * 결제 저장
+     */
     @Override
     public PaymentEntity insert(PaymentDto dto) {
         PaymentEntity payment = PaymentEntity.builder()

@@ -15,14 +15,14 @@ public interface HotelRepository extends JpaRepository<HotelEntity, Long>, JpaSp
 
 	 List<HotelEntity> findByHotelNameContainingAndHotelCategory(String keyword, String category);
 	
-	@Query(value = """
-		    SELECT hotel_idx
-		    FROM hotel_tag
-		    WHERE hotel_tag IN (:tags)
-		    GROUP BY hotel_idx
-		    HAVING COUNT(DISTINCT hotel_tag) = :tagCount
-		""", nativeQuery = true)
-		List<Long> findHotelIdxByAllTags(@Param("tags") List<String> tags, @Param("tagCount") int tagCount);
+	 @Query(value = """
+			    SELECT hotel_idx
+			    FROM hotel_tag
+			    WHERE hotel_tag IN (:tags)
+			    GROUP BY hotel_idx
+			    HAVING COUNT(DISTINCT hotel_tag) = :tagCount
+			    """, nativeQuery = true)
+			List<Long> findHotelIdxByAllTags(@Param("tags") List<String> tags, @Param("tagCount") int tagCount);
 
 	 
 	 

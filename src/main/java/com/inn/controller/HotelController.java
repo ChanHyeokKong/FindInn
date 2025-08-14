@@ -1,5 +1,6 @@
 package com.inn.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +31,23 @@ public class HotelController {
 	
 	
 	@GetMapping("/h_list")
-	public String hotelList (Model model) {
-		List<HotelEntity> hotels;
+	public String hotelList (Model model,
+			@RequestParam(value = "keyword", required = false) String keyword,
+			@RequestParam(value = "category", required = false) String category,
+			@RequestParam(value = "tags", required = false) List<String> tags,
+			@RequestParam(value = "checkIn", required = false) LocalDate checkIn,
+			@RequestParam(value = "checkOut", required = false) LocalDate checkOut,
+			@RequestParam(value = "personCount", required = false) Long cnt,
+			@RequestParam(value = "priceRange", required = false) Long price
+			) {
+		
+		
+		long safeMinPrice = (price != null) ? price : 0L;
+		List<HotelDto> hotels;
 		
 		
 		
-			hotels = hotelService.getAllHotelData();
+			hotels = hotelService.searchHotelsWithConditions(keyword, category, tags, checkIn, checkOut, safeMinPrice);
 			
 		
 		model.addAttribute("kakaoJsKey",kakaoJsKey);
@@ -46,16 +58,29 @@ public class HotelController {
 	@GetMapping("/h_search")
 	@ResponseBody
 	public List<HotelDto> searchHotels(
-	        @RequestParam(value = "keyword", required = false) String keyword,
-	        @RequestParam(value = "category", required = false) String category,
-	        @RequestParam(value = "tags", required = false) List<String> tags
-	    ) {
-	        HotelSearchCondition condition = new HotelSearchCondition();
-	        condition.setKeyword(keyword);
-	        condition.setCategory(category);
-	        condition.setTags(tags);
 
-	        return hotelService.searchHotels(condition);
+			@RequestParam(value = "keyword", required = false) String keyword,
+			@RequestParam(value = "category", required = false) String category,
+			@RequestParam(value = "tags", required = false) List<String> tags,
+			@RequestParam(value = "checkIn", required = false) LocalDate checkIn,
+			@RequestParam(value = "checkOut", required = false) LocalDate checkOut,
+			@RequestParam(value = "personCount", required = false) Long cnt,
+			@RequestParam(value = "priceRange", required = false) Long price
+			
+	) {
+		
+		long safePrice = (price != null) ? price : 0L;
+		
+		System.out.println(keyword);
+		System.out.println(tags);
+		System.out.println(category);
+		System.out.println(checkIn);
+		System.out.println(checkOut);
+		System.out.println(cnt);
+		List<HotelDto> results = hotelService.searchHotelsWithConditions(keyword, category, tags, checkIn, checkOut,  safePrice);
+		System.out.println(results);
+		
+		return results;
 	}
 	
 	

@@ -17,10 +17,11 @@ public interface RoomsRepository extends JpaRepository<Rooms, Long> {
     WHERE r.roomType.idx = :roomTypeId
     AND NOT EXISTS (
         SELECT 1
-        FROM Reserve res
-        WHERE res.room.idx = r.idx
-        AND res.checkIn < :checkOutDate
-        AND res.checkOut > :checkInDate
+        FROM BookingEntity b
+        WHERE b.roomIdx = r.idx
+        AND b.checkin < :checkOutDate
+        AND b.checkout > :checkInDate
+        AND b.status = 'CONFIRMED'
     )
 """)
     @Transactional(readOnly = true)

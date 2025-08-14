@@ -14,6 +14,7 @@ import com.inn.data.rooms.Rooms;
 import com.inn.data.rooms.RoomsRepository;
 import com.inn.data.rooms.RoomTypes;
 import com.inn.data.rooms.RoomTypesRepository;
+import com.inn.service.HotelService;
 import com.inn.service.ManagerService;
 import com.inn.service.MemberService;
 import org.jsoup.Jsoup;
@@ -47,6 +48,8 @@ public class ManagerController {
     RoomsRepository roomsRepository;
     @Autowired
     ChatRoomRepository chatRoomRepository;
+    @Autowired
+    private HotelService hotelService;
 
     @GetMapping("manage/room/detail")
     public String roomDetail(Long idx){
@@ -105,21 +108,16 @@ public class ManagerController {
         model.addAttribute("hotels", hotels);
 
         List<Long> hotelIds = hotels.stream().map(HotelEntity::getIdx).collect(Collectors.toList());
-
+        String templateContent = "";
         if(!hotelIds.isEmpty()) {
             List<RoomTypes> roomTypes = service.getRoomTypesByHotelIds(hotelIds);
             model.addAttribute("roomTypes", roomTypes);
+            templateContent = hotelService.getHotelDescription(hotelIds.get(0));
+            System.out.println(hotelIds.get(0));
+            System.out.println("hotelIds : " + hotelIds);
         }
         Post postWithTemplate = new Post();
-        String templateContent = """
-        <h1>Enter Your Post Title Here</h1>
-        <p>This is a starting paragraph. You can provide instructions or default text here.</p>
-        <ul>
-            <li>List item 1</li>
-            <li>List item 2</li>
-        </ul>
-        <p>Start writing... ✍️</p>
-    """;
+
         postWithTemplate.setContent(templateContent);
         model.addAttribute("post", postWithTemplate);
         return "member/manager/addhotel";
@@ -210,12 +208,5 @@ public class ManagerController {
         //rest로 옮겨야 하나
 
         return "member/manager/qna";
-    }
-
-    @GetMapping("manage/qna/getRoom")
-    public String getRoom(@AuthenticationPrincipal CustomUserDetails currentUser, Long hotelIdx, Model model){
-        
-
-        return "redirect:/member/manager/qna";
     }
 }

@@ -9,8 +9,6 @@ import lombok.Data;
 @Entity
 @Table(name = "hotel")
 public class HotelEntity {
-	
-	
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Long idx;
@@ -47,6 +45,9 @@ public class HotelEntity {
 
 	@Lob
 	private String description;
+	
+	@Transient
+	private Integer minPrice;
 	
 
 }
