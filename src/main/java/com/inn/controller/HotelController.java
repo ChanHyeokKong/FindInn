@@ -47,7 +47,6 @@ public class HotelController {
 	@GetMapping("/h_search")
 	@ResponseBody
 	public List<HotelDto> searchHotels(
-
 			@RequestParam(value = "keyword", required = false) String keyword,
 			@RequestParam(value = "category", required = false) String category,
 			@RequestParam(value = "tags", required = false) List<String> tags,
@@ -55,7 +54,6 @@ public class HotelController {
 			@RequestParam(value = "checkOut", required = false) LocalDate checkOut,
 			@RequestParam(value = "personCount", required = false) Long cnt,
 			@RequestParam(value = "priceRange", required = false) Long price
-
 	) {
 
 		long safePrice = (price != null) ? price : 0L;
@@ -66,7 +64,7 @@ public class HotelController {
 		System.out.println(checkIn);
 		System.out.println(checkOut);
 		System.out.println(cnt);
-		List<HotelDto> results = hotelService.searchHotelsWithConditions(keyword, category, tags, checkIn, checkOut,  safePrice);
+		List<HotelDto> results = hotelService.searchHotelsWithConditions(keyword, category, tags, checkIn, checkOut, safePrice);
 		System.out.println(results);
 
 		return results;
