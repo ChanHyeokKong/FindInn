@@ -25,8 +25,7 @@ public class HotelEntity {
 	@Column(name = "hotelImages")
 	private List<String> hotelImages;
 	
-	private String hotelImage;
-	
+
 	@Column(nullable = false)
 	private String hotelAddress;
 	

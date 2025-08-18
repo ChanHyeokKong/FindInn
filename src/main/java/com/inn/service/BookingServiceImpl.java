@@ -63,14 +63,8 @@ public class BookingServiceImpl implements BookingService {
 
         RoomTypes roomType = room.getRoomType();
 
-        String firstImage = null;
-        List<String> images = hotel.getHotelImages();
-        if (images != null && !images.isEmpty()) {
-            firstImage = images.get(0);
-        }
-
         return BookingRoomInfo.builder()
-                .hotelImage(firstImage)
+                .hotelImage(hotel.getHotelImage())
                 .hotelName(hotel.getHotelName())
                 .roomName(roomType.getTypeName())
                 .roomNumber(room.getRoomNumber())
@@ -217,8 +211,7 @@ public class BookingServiceImpl implements BookingService {
 
                 // 호텔 정보
                 .hotelName(hotel.getHotelName())
-                .hotelImage(hotel.getHotelImages() != null && !hotel.getHotelImages().isEmpty()
-                        ? hotel.getHotelImages().get(0) : null)
+                .hotelImage(hotel.getHotelImage())
                 .hotelAddress(hotel.getHotelAddress())
 
                 // 객실 정보
