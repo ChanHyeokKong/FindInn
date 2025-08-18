@@ -55,8 +55,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		const priceRange = priceRangeInput ? priceRangeInput.value : '';
 		const restart = document.querySelector("#restart");
 		
-		
-		
+		const checkIn = document.getElementById("start").value;
+		const checkOut = document.getElementById("end").value;
+		const personCount = document.getElementById("personCount").value;
+
 		//초기화 버튼
 		restart.addEventListener("click", () =>{
 			location.reload();
@@ -72,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		console.log(checkIn);
 
 		let url = `/h_search?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(category)}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}
-		&priceRange=${encodeURIComponent(priceRange)}`;
+		&priceRange=${encodeURIComponent(priceRange)}&personCount=${encodeURIComponent(personCount)}`;
 		if (tagParams) url += `&${tagParams}`;
 		
 		console.log("완성된 URL:", url);
@@ -147,31 +149,40 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 
 		data.forEach(hotel => {
+			
+			console.log("hotel.idx:", hotel.idx, "hotelImage:", hotel.hotelImage);
+			    let imgTag = "";
+			    if (hotel.hotelImage) {
+			        imgTag = `<img src="/hotelImage/${hotel.hotelImage}" alt="호텔 이미지" style="height: 200px; display: block;" />`;
+			    } else {
+			        console.log(`호텔 idx ${hotel.idx}에 이미지 없음`);
+			    }
+			
 			const row = document.createElement("tr");
 			const cell = document.createElement("td");
 
-			let imgTag = "";
-			if (hotel.hotelImages && hotel.hotelImages.length > 0) {
-				imgTag = `<img src="/hotelImage/${hotel.hotelImages[0]}" alt="호텔 이미지" style="height: 200px; display: block;" />`;
+			//let imgTag = "";
+			if (hotel.hotelImage) {
+				imgTag = `<img src="/hotelImage/${hotel.hotelImage}" alt="호텔 이미지" style="height: 200px; display: block;" />`;
 			}
 			
 
 			cell.innerHTML = `
-				<div class="card hotel-card" data-hotel-id="${hotel.idx}" style="display: flex; flex-direction: row; height: 200px;">
-					<div style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-						${imgTag}
-					</div>
-					<div class="card-body" style="flex: 1;">
-						<h5 class="card-title">${hotel.hotelName}</h5>
-						<p class="card-text">
-							<strong>hotel_idx:</strong> ${hotel.idx}<br>
-							<strong>member_idx:</strong> ${hotel.memberIdx}<br>
-							<strong>min_price:</strong> ${hotel.priceRange}<br>
-							<strong>address:</strong> ${hotel.hotelAddress}<br>
-							<strong>Tel:</strong> ${hotel.hotelTel}<br>
-						</p>
-					</div>
-				</div>
+			  <div class="card hotel-card" data-hotel-id="${hotel.idx}">
+			    <div class="image-container">
+			      ${imgTag}
+			    </div>
+				<div class="card-body" style="flex: 1;">
+				              <h5 class="card-title">${hotel.hotelName}</h5>
+				              <p class="card-text">
+				                <strong>hotel_idx:</strong> <span>${hotel.idx}</span><br>
+				                <strong>member_idx:</strong> <span>${hotel.memberIdx}</span><br>
+				                <strong>min_price:</strong> <span>${hotel.priceRange}</span><br>
+				                <strong>address:</strong> <span>${hotel.hotelAddress}</span><br>
+				                <strong>Tel:</strong> <span>${hotel.hotelTel}</span><br>
+				              </p>
+				            </div>
+			  </div>
 			`;
 
 			row.appendChild(cell);
@@ -197,14 +208,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
 				const checkIn = document.getElementById('start').value;
 				const checkOut = document.getElementById('end').value;
-				const personal = document.getElementById('capacity').value;
+				const personCount = document.getElementById('personCount').value;
 
-				if (!checkIn || !checkOut || !personal) {
+				if (!checkIn || !checkOut || !personCount) {
 					alert("날짜, 인원수를 모두 입력해주세요.");
 					return;
 				}
 
-				const url = `domestic-accommodations?id=${hotelId}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}&personal=${encodeURIComponent(personal)}`;
+				const url = `domestic-accommodations?id=${hotelId}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}&personCount=${encodeURIComponent(personCount)}`;
 				location.href = url;
 			};
 		});
@@ -224,6 +235,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	window.setendmin = function(e) {
 		document.getElementById("end").setAttribute("min", e);
+		document.getElementById("end").value="";
+		
 	};
 
 	let checkIn = '';

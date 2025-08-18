@@ -86,14 +86,12 @@ public class HotelService {
                 .collect(Collectors.toList());
     }
 
-    public List<HotelDto> searchHotelsWithConditions(String keyword, String category, List<String> tags, LocalDate checkIn, LocalDate checkOut, Long minPrice) {
+    public List<HotelDto> searchHotelsWithConditions(String keyword, String category, List<String> tags, LocalDate checkIn, LocalDate checkOut, Long minPrice, Long personCount) {
 
 
         // 1. Start with the base of the query
         StringBuilder sql = new StringBuilder(
-        		"SELECT h.idx, h.hotel_name, h.member_idx, h.hotel_tel, h.hotel_category, h.hotel_address, rt.min_price FROM hotel h LEFT JOIN hotel_tags t ON h.idx = t.hotel_idx LEFT JOIN( SELECT hotel_id, MIN(price) AS min_price FROM room_types GROUP BY hotel_id) rt ON h.idx = rt.hotel_id WHERE 1=1"
-
-        		
+        		"SELECT h.idx, h.hotel_name, h.member_idx, h.hotel_tel, h.hotel_category, h.hotel_address, h.hotel_image ,rt.min_price FROM hotel h LEFT JOIN hotel_tags t ON h.idx = t.hotel_idx LEFT JOIN( SELECT hotel_id, MIN(price) AS min_price FROM room_types GROUP BY hotel_id) rt ON h.idx = rt.hotel_id WHERE 1=1"
         		);
 
         
@@ -102,12 +100,24 @@ public class HotelService {
         if (minPrice != null && minPrice < 500000) {
             sql.append(" AND rt.min_price IS NOT NULL AND rt.min_price <= :priceRange");
         }
+        
+        //인원수
+        if (personCount != null && personCount > 0) {
+            sql.append(" AND h.idx IN (");
+            sql.append(" SELECT r.hotel_id");
+            sql.append(" FROM rooms r");
+            sql.append(" JOIN room_types rt2 ON r.room_type_id = rt2.idx");
+            sql.append(" GROUP BY r.hotel_id");
+            sql.append(" HAVING SUM(rt2.capacity) >= :personCount");
+            sql.append(")");
+        }
        
         
         
         // 2. Add keyword and category conditions if they exist
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql.append(" AND h.hotel_name LIKE :keyword");
+        	sql.append(" AND (h.hotel_name LIKE :keyword OR h.hotel_address LIKE :keyword)");
+           
         }
         if (category != null && !category.trim().isEmpty() && !category.equalsIgnoreCase("all")) {
             sql.append(" AND h.hotel_category LIKE :category");
@@ -138,8 +148,8 @@ public class HotelService {
         // 4. Add room availability condition if dates are provided
         if (checkIn != null && checkOut != null) {
             sql.append(" AND EXISTS (SELECT 1 FROM rooms r WHERE r.hotel_id = h.idx AND NOT EXISTS (");
-            sql.append(" SELECT 1 FROM reserve res WHERE res.room_id = r.room_id");
-            sql.append(" AND res.check_in < :checkOutDate AND res.check_out > :checkInDate))");
+            sql.append(" SELECT 1 FROM booking b WHERE b.room_idx = r.idx");
+            sql.append(" AND b.checkin < :checkOutDate AND b.checkout > :checkInDate))");
         }
 
         // 5. Create the query and set parameters
@@ -158,10 +168,16 @@ public class HotelService {
             query.setParameter("checkInDate", checkIn);
             query.setParameter("checkOutDate", checkOut);
         }
+        
+        if (personCount != null && personCount > 0) {
+            query.setParameter("personCount", personCount);
+        }
+        
+        
 
         // The result needs to be mapped to HotelDto, which can be done after fetching
         List<Object[]> resultList = query.getResultList();
-
+        System.out.println("🔍 Generated SQL: " + sql.toString());
         // ✅ DTO로 수동 매핑
         List<HotelDto> dtos = resultList.stream().map(row -> {
             HotelDto dto = new HotelDto();
@@ -172,12 +188,12 @@ public class HotelService {
             dto.setHotelTel((String) row[3]);
             dto.setHotelCategory((String) row[4]);
             dto.setHotelAddress((String) row[5]);
-            dto.setPriceRange(row[6] != null ? ((Number) row[6]).intValue() : null);
+            dto.setHotelImage((String) row[6]); 
+            dto.setPriceRange(row[7] != null ? ((Number) row[7]).intValue() : null);
             
 
-            dto.setHotelImages(null); // 필요 시 별도 쿼리 또는 생략
-            dto.setHotelTag(null);    // 필요 시 별도 쿼리 또는 생략
 
+            dto.setHotelTag(null);    // 
             return dto;
         }).collect(Collectors.toList());
 
