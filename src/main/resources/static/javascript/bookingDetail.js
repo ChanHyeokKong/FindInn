@@ -1,3 +1,14 @@
+// 호텔주소 복사
+function copyHotelAddress() {
+    const address = document.querySelector('.hotel-address').innerText;
+    navigator.clipboard.writeText(address).then(() => {
+        alert("호텔 주소가 복사되었습니다.");
+    }).catch(err => {
+        console.error("복사 실패:", err);
+        alert("복사에 실패했습니다.");
+    });
+}
+
 // 예약번호 복사
 function copyMerchantUid() {
     const number = document.getElementById('merchantUid').innerText;
