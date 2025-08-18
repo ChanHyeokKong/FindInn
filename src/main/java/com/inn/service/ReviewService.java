@@ -14,6 +14,10 @@ import com.inn.data.rooms.RoomTypes;
 import com.inn.data.rooms.RoomTypesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -81,7 +86,7 @@ public class ReviewService {
                 return dto;
             }
             dto.setMemberId(data.get().getMemberIdx());
-            dto.setReviewDate(LocalDate.now());
+            dto.setReviewDate(LocalDateTime.now());
             RoomsService.RoomHotelDetailsDto rhd = roomsService.getHotelNamebyRoomTypeId(data.get().getRoomIdx());
             dto.setHotelId(rhd.hotelId());
             dto.setHotelName(rhd.hotelName());
@@ -116,7 +121,7 @@ public class ReviewService {
         review.setHotel(hotel.get());
         Optional<RoomTypes> roomTypes = roomTypesRepository.findById(dto.getRoomTypeId());
         review.setRoomType(roomTypes.get());
-        review.setReviewDate(LocalDate.now());
+        review.setReviewDate(LocalDateTime.now());
         review.setContent(dto.getContent());
         review.setRating(dto.getRating());
         Optional<BookingEntity> booking = bookingRepository.findById(dto.getBookingId());
@@ -151,6 +156,49 @@ public class ReviewService {
         }
 
         reviewRepository.save(review);
+    }
+
+
+    public Page<ReviewDto> getReviewsByHotels(Long hotel_id, int page, int size) {
+        Optional<HotelEntity> hotel = hotelRepository.findById(hotel_id);
+
+        if (hotel.isPresent()) {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("reviewDate").descending());
+
+            Page<Review> reviewPage = reviewRepository.findByHotel(hotel.get(), pageable);
+            Page<ReviewDto> dtoPage = reviewPage.map(review -> getReviewDto(review));
+            return dtoPage;
+        }
+        return Page.empty();
+    }
+
+
+    private static ReviewDto getReviewDto(Review review) {
+        ReviewDto dto = new ReviewDto();
+        dto.setIdx(review.getIdx());
+        dto.setMemberName(review.getMember().getMemberName());
+        dto.setBookingId(review.getBooking().getIdx());
+        dto.setMemberId(review.getMember().getIdx());
+        dto.setMemberName(review.getMember().getMemberName());
+        dto.setHotelId(review.getHotel().getIdx());
+        dto.setHotelName(review.getHotel().getHotelName());
+        dto.setRoomTypeId(review.getRoomType().getIdx());
+        dto.setRoomName(review.getRoomType().getTypeName());
+        dto.setReviewDate(review.getReviewDate());
+        dto.setRating(review.getRating());
+        dto.setMemberId(review.getMember().getIdx());
+        dto.setContent(review.getContent());
+        dto.setRating(review.getRating());
+        List<ReviewFile> reviewFiles = review.getReviewFiles();
+
+        if (reviewFiles != null && !reviewFiles.isEmpty()) {
+            List<String> imageNames = reviewFiles.stream()
+                    .map(reviewFile -> Path.of(reviewFile.getStoredFilePath()).getFileName().toString())
+                    .collect(Collectors.toList());
+            dto.setImagePaths(imageNames);
+        }
+
+        return dto;
     }
 
 }

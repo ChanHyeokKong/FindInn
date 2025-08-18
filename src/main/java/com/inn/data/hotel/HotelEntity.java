@@ -24,9 +24,7 @@ public class HotelEntity {
 	@CollectionTable(name = "hotelImages", joinColumns = @JoinColumn(name = "hotel_idx"))
 	@Column(name = "hotelImages")
 	private List<String> hotelImages;
-	
-	private String hotelImage;
-	
+
 	@Column(nullable = false)
 	private String hotelAddress;
 	

@@ -5,11 +5,14 @@ import com.inn.data.chat.ChatDto;
 import com.inn.data.chat.ChatRepository;
 import com.inn.data.detail.AccommodationDto;
 import com.inn.data.hotel.HotelEntity;
+import com.inn.data.review.ReviewDto;
 import com.inn.data.rooms.RoomTypeAvailDto;
 import com.inn.service.HotelService;
+import com.inn.service.ReviewService;
 import com.inn.service.RoomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,6 +40,8 @@ public class AccommodationController {
 
     @Autowired
     ChatRepository chatRepository;
+    @Autowired
+    private ReviewService reviewService;
 
     @GetMapping("/domestic-accommodations")
     public String accommodationDetail(
@@ -47,7 +52,8 @@ public class AccommodationController {
             Model model,
             RedirectAttributes redirectAttributes,
             @RequestHeader(value = "Referer", required = false) String referer,
-            @AuthenticationPrincipal CustomUserDetails currentUser) {
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @RequestParam(defaultValue = "0") int page) {
         
         AccommodationDto accommodation = new AccommodationDto();
         int numberOfPeople = (personal != null) ? personal : 1;
@@ -65,8 +71,6 @@ public class AccommodationController {
         }
         else{
             accommodation.setHotel(hotel.get());
-            // Add this line to print the hotel ID
-            System.out.println("Hotel ID being set to accommodation: " + hotel.get().getIdx());
         }
         accommodation.setName(hotel.get().getHotelName());
         accommodation.setAddress(hotel.get().getHotelAddress());
@@ -88,13 +92,68 @@ public class AccommodationController {
         System.out.println(accommodation.getImageGalleries());
         model.addAttribute("currentUser", currentUser);
 
+        int size = 5; //한번에 리뷰 5개 로드
+        Page<ReviewDto> reviewPage = reviewService.getReviewsByHotels(id, page, size);
+        model.addAttribute("hotelId", id);
+        model.addAttribute("reviewPage", reviewPage);
+
         // Add current user's memberIdx to the model
         if (currentUser != null) {
             model.addAttribute("currentMemberIdx", currentUser.getIdx());
         } else {
             model.addAttribute("currentMemberIdx", null); // Or a default value if not logged in
         }
+        if (!reviewPage.isEmpty()) {
+            // Get the first review from the page to inspect it
+            ReviewDto firstReview = reviewPage.getContent().get(0);
+            System.out.println("Review Content: " + firstReview.getContent());
+            System.out.println("Review Rating: " + firstReview.getRating());
+            System.out.println("Review Room Name: " + firstReview.getRoomName());
+
+            // Check the nested member object specifically
+            if (firstReview.getMember() != null) {
+                System.out.println("Member Name: " + firstReview.getMember().getMemberName());
+            } else {
+                System.out.println("Member object is NULL.");
+            }
+        } else {
+            System.out.println("Review page is empty.");
+        }
+        System.out.println("-----------------------------");
 
         return "detail/accommodation-detail";
+    }
+
+
+    @GetMapping("/reviewLists")
+    public String reviewDetail(@RequestParam("id") Long id,@RequestParam(defaultValue = "0") int page, Model model) {
+        int size = 5; //한번에 리뷰 5개 로드
+        Page<ReviewDto> reviewPage = reviewService.getReviewsByHotels(id, page, size);
+
+
+        System.out.println("--- DEBUGGING REVIEW DATA ---");
+        if (!reviewPage.isEmpty()) {
+            // Get the first review from the page to inspect it
+            ReviewDto firstReview = reviewPage.getContent().get(0);
+            System.out.println("Review Content: " + firstReview.getContent());
+            System.out.println("Review Rating: " + firstReview.getRating());
+            System.out.println("Review Room Name: " + firstReview.getRoomName());
+
+            // Check the nested member object specifically
+            if (firstReview.getMember() != null) {
+                System.out.println("Member Name: " + firstReview.getMember().getMemberName());
+            } else {
+                System.out.println("Member object is NULL.");
+            }
+        } else {
+            System.out.println("Review page is empty.");
+        }
+        System.out.println("-----------------------------");
+
+        System.out.println("Review Page Content: " + reviewPage.getContent());
+        model.addAttribute("reviewPage", reviewPage);
+        model.addAttribute("hotelId", id);
+        return "detail/accommodation-detail :: review-fragment";
+
     }
 }
