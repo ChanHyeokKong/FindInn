@@ -95,6 +95,12 @@ public class BookingController {
         return "booking/bookingComplete";
     }
 
+    // 비회원 예약 조회 페이지
+    @GetMapping("/booking/search")
+    public String bookingSearchPage() {
+        return "booking/bookingSearch";
+    }
+
     // 예약 상세 페이지
     @GetMapping("/booking/detail")
     public String bookingDetailPage(@RequestParam("merchantUid") String merchantUid, Model model) {
