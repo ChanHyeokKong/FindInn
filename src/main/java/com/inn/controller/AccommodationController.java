@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -69,8 +70,8 @@ public class AccommodationController {
         }
         accommodation.setName(hotel.get().getHotelName());
         accommodation.setAddress(hotel.get().getHotelAddress());
-        // 임시 하드코딩
-        List<String> images = hotel.get().getHotelImages();
+        List<String> images = new ArrayList<>();
+        images.add(hotel.get().getHotelImage());
         accommodation.setCheckInTime("15:00");
         accommodation.setCheckOutTime("11:00");
 
