@@ -13,6 +13,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  servlet:
+    multipart:
+      max-request-size: 20MB
+      max-file-size: 10MB
   sql:
     init:
       mode: always
@@ -20,3 +24,5 @@ server:
   servlet:
     session:
       timeout: 60m
+file:
+  upload-dir: ${user.home}/app-uploads/reviews
