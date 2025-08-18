@@ -6,7 +6,7 @@ import com.inn.data.rooms.RoomTypes;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,15 +17,15 @@ public class ReviewDto {
     public long memberId;
     public MemberDto member;
     public Long hotelId;
+    public String memberName;
     public String hotelName;
     public String roomName;
     public String hotelImages;
     public Long roomTypeId;
     public Long rating;
     public String content;
-    public LocalDate reviewDate;
+    public LocalDateTime reviewDate;
     private List<String> imagePaths = new ArrayList<>();
     private List<MultipartFile> files = new ArrayList<>();
     public Long reviewId;
-
 }

@@ -9,6 +9,7 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class Review {
     @JoinColumn(name="bookingId",referencedColumnName = "idx")
     BookingEntity booking;
 
-    LocalDate reviewDate;
+    LocalDateTime reviewDate;
     String content;
     Long rating;
 }

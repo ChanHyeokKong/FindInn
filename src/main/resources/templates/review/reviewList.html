@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Reviews</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+    <div class="bg-white rounded-3 p-4 shadow-sm">
+        <h3 class="h4 mb-4">리뷰</h3>
+
+        <div th:each="review : ${reviewPage.content}" class="mb-4 pb-4 border-bottom">
+            <div class="d-flex gap-3">
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <strong class="text-dark" th:text="${review.member?.memberName ?: '익명'}">작성자 이름</strong>
+                        <small class="text-muted" th:text="${#temporals.format(review.reviewDate, 'M월 d일')}">날짜</small>
+                    </div>
+                    <div th:if="${review.imagePaths != null and !review.imagePaths.empty}"
+                         class="d-flex gap-2 mb-2">
+                        <img th:each="imagePath : ${review.imagePaths}"
+                             th:src="@{'/uploads/reviews/' + ${imagePath}}"
+                             class="rounded"
+                             style="width: 80px; height: 60px; object-fit: cover;"
+                             alt="리뷰 이미지">
+                    </div>
+                    <!-- Star rating -->
+                    <div class="mb-2">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}"
+                              th:text="'★'"
+                              th:class="${i <= review.rating} ? 'text-warning' : 'text-body-tertiary'">
+                        </span>
+                    </div>
+
+                    <!-- Room type -->
+                    <p class="small text-muted mb-2" th:text="${review.roomName}">객실 타입</p>
+
+                    <!-- Review content -->
+                    <p th:text="${review.content}" class="mb-2 text-dark">리뷰 내용이 여기에 표시됩니다.</p>
+
+                    <!-- Review images (if available) -->
+
+
+                    <!-- More button (if content is long) -->
+                    <button th:if="${#strings.length(review.content) > 100}"
+                            class="btn btn-link p-0 text-muted small"
+                            type="button"
+                            onclick="toggleReviewContent(this)">
+                        더보기 <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav th:if="${reviewPage.totalPages > 1}" aria-label="Review pagination" class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${reviewPage.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/reviewLists(page=${reviewPage.number - 1}, id=${hotelId})}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <li th:each="i : ${#numbers.sequence(0, reviewPage.totalPages - 1)}"
+                    class="page-item"
+                    th:classappend="${i == reviewPage.number} ? 'active'">
+                    <a class="page-link" th:href="@{/reviewLists(page=${i}, id=${hotelId})}" th:text="${i + 1}">1</a>
+                </li>
+
+                <li class="page-item" th:classappend="${reviewPage.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/reviewLists(page=${reviewPage.number + 1}, id=${hotelId})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleReviewContent(button) {
+        const reviewContent = button.previousElementSibling;
+        const icon = button.querySelector('i');
+
+        if (reviewContent.style.maxHeight && reviewContent.style.maxHeight !== 'none') {
+            reviewContent.style.maxHeight = 'none';
+            button.innerHTML = '접기 <i class="fas fa-chevron-up"></i>';
+        } else {
+            reviewContent.style.maxHeight = '4.5em';
+            reviewContent.style.overflow = 'hidden';
+            button.innerHTML = '더보기 <i class="fas fa-chevron-down"></i>';
+        }
+    }
+
+    // Initialize truncated content on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const reviewContents = document.querySelectorAll('p[th\\:text*="review.content"]');
+        reviewContents.forEach(content => {
+            if (content.textContent.length > 100) {
+                content.style.maxHeight = '4.5em';
+                content.style.overflow = 'hidden';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
