@@ -60,7 +60,7 @@ public class BookingController {
 
         // model 세팅
         model.addAttribute("roomIdx", roomIdx);
-        model.addAttribute("hotelImage", bookingInfo.getHotelImage()); // 리스트(첫 이미지 포함)
+        model.addAttribute("hotelImage", bookingInfo.getHotelImage());
         model.addAttribute("hotelName", bookingInfo.getHotelName());
         model.addAttribute("roomName", bookingInfo.getRoomName());
         model.addAttribute("roomNameAndNum", bookingInfo.getRoomName() + " " + bookingInfo.getRoomNumber() + "호");
