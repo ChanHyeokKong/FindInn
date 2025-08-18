@@ -9,4 +9,6 @@ public interface PaymentService {
 
     boolean cancelPaymentByImpUid(String impUid);
 
+    boolean cancelPaymentByMerchantUid(String merchantUid);
+
 }

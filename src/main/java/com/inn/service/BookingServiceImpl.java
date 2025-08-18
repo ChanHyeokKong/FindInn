@@ -17,6 +17,7 @@ import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -57,8 +58,8 @@ public class BookingServiceImpl implements BookingService {
         Rooms room = roomsRepository.findById(roomIdx)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 객실입니다."));
 
-        HotelEntity hotel = hotelRepository.findById(room.getHotel().getIdx())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 호텔입니다."));
+        HotelEntity hotel = Optional.ofNullable(room.getHotel())
+                .orElseThrow(() -> new IllegalArgumentException("호텔 정보를 찾을 수 없습니다."));
 
         RoomTypes roomType = room.getRoomType();
 
@@ -160,6 +161,77 @@ public class BookingServiceImpl implements BookingService {
                 .roomName(room.getRoomType().getTypeName())
                 .roomNumber(room.getRoomNumber())
                 .paidAmount(payment.getPaidAmount())
+                .build();
+    }
+
+    /**
+     * 예약 상세 페이지 조회
+     */
+    @Override
+    public BookingDetailInfo getBookingDetailInfo(String merchantUid) {
+        // 예약 조회
+        BookingEntity booking = bookingRepository.findByMerchantUid(merchantUid)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+
+        // 결제 조회
+        PaymentEntity payment = paymentRepository.findByBookingIdx(booking.getIdx())
+                .orElseThrow(() -> new IllegalArgumentException("결제 정보가 없습니다."));
+
+        // 객실 조회
+        Rooms room = roomsRepository.findById(booking.getRoomIdx())
+                .orElseThrow(() -> new IllegalArgumentException("객실 정보를 찾을 수 없습니다."));
+
+        // 호텔 조회
+        HotelEntity hotel = Optional.ofNullable(room.getHotel())
+                .orElseThrow(() -> new IllegalArgumentException("호텔 정보를 찾을 수 없습니다."));
+
+        // 체크인/체크아웃 요일 계산
+        String checkinDay = getKoreanShortDayOfWeek(booking.getCheckin());
+        String checkoutDay = getKoreanShortDayOfWeek(booking.getCheckout());
+
+        // 비회원 여부
+        boolean isMember = booking.getMemberIdx() != null;
+
+        // 예약 취소 가능 여부 (체크인 하루 전까지)
+        boolean canCancel = LocalDate.now().isBefore(booking.getCheckin());
+
+        // DTO 생성
+        return BookingDetailInfo.builder()
+                // 비회원 여부 설정
+                .isMember(isMember)
+
+                // 예약 취소 가능 여부 설정
+                .canCancel(canCancel)
+
+                // 예약 정보
+                .merchantUid(booking.getMerchantUid())
+                .checkin(booking.getCheckin())
+                .checkout(booking.getCheckout())
+                .checkinDay(checkinDay)
+                .checkoutDay(checkoutDay)
+                .status(booking.getStatus())
+
+                // 예약자 정보
+                .buyerName(payment.getBuyerName())
+                .buyerTel(payment.getBuyerTel())
+
+                // 호텔 정보
+                .hotelName(hotel.getHotelName())
+                .hotelImage(hotel.getHotelImages() != null && !hotel.getHotelImages().isEmpty()
+                        ? hotel.getHotelImages().get(0) : null)
+                .hotelAddress(hotel.getHotelAddress())
+
+                // 객실 정보
+                .roomName(room.getRoomType().getTypeName())
+                .roomNumber(room.getRoomNumber())
+                .roomPrice(room.getRoomType().getPrice())
+                .capacity(room.getRoomType().getCapacity())
+                .description(room.getRoomType().getDescription())
+
+                // 결제 정보
+                .payMethod(payment.getPayMethod())
+                .paidAmount(payment.getPaidAmount())
+                .createdAt(payment.getCreatedAt())
                 .build();
     }
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Persistent;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
 import com.inn.data.hotel.HotelSearchCondition;
 import com.inn.data.hotel.HotelSpecifications;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 public class HotelService {
@@ -84,17 +86,38 @@ public class HotelService {
                 .collect(Collectors.toList());
     }
 
+    public List<HotelDto> searchHotelsWithConditions(String keyword, String category, List<String> tags, LocalDate checkIn, LocalDate checkOut, Long minPrice, Long personCount) {
 
-    public List<HotelDto> searchHotelsWithConditions(String keyword, String category, List<String> tags, LocalDate checkIn, LocalDate checkOut, long safePrice) {
 
         // 1. Start with the base of the query
         StringBuilder sql = new StringBuilder(
-                "SELECT h.* FROM hotel h LEFT JOIN hotel_tags t ON h.idx = t.hotel_idx WHERE 1=1"
-        );
+        		"SELECT h.idx, h.hotel_name, h.member_idx, h.hotel_tel, h.hotel_category, h.hotel_address, h.hotel_image ,rt.min_price FROM hotel h LEFT JOIN hotel_tags t ON h.idx = t.hotel_idx LEFT JOIN( SELECT hotel_id, MIN(price) AS min_price FROM room_types GROUP BY hotel_id) rt ON h.idx = rt.hotel_id WHERE 1=1"
+        		);
 
+        
+        	
+        //price
+        if (minPrice != null && minPrice < 500000) {
+            sql.append(" AND rt.min_price IS NOT NULL AND rt.min_price <= :priceRange");
+        }
+        
+        //인원수
+        if (personCount != null && personCount > 0) {
+            sql.append(" AND h.idx IN (");
+            sql.append(" SELECT r.hotel_id");
+            sql.append(" FROM rooms r");
+            sql.append(" JOIN room_types rt2 ON r.room_type_id = rt2.idx");
+            sql.append(" GROUP BY r.hotel_id");
+            sql.append(" HAVING SUM(rt2.capacity) >= :personCount");
+            sql.append(")");
+        }
+       
+        
+        
         // 2. Add keyword and category conditions if they exist
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql.append(" AND h.hotel_name LIKE :keyword");
+        	sql.append(" AND (h.hotel_name LIKE :keyword OR h.hotel_address LIKE :keyword)");
+           
         }
         if (category != null && !category.trim().isEmpty() && !category.equalsIgnoreCase("all")) {
             sql.append(" AND h.hotel_category LIKE :category");
@@ -108,7 +131,8 @@ public class HotelService {
             List<String> allowedTags = List.of(
                     "sauna", "swimming_pool", "restaurant", "fitness", "golf", "pc",
                     "kitchen", "washing_machine", "parking", "spa", "ski", "in_room_eating",
-                    "breakfast", "smoking", "luggage", "disabled", "pickup"
+                    "breakfast", "smoking", "luggage", "disabled", "pickup","family","waterpool",
+                    "view","beach","nicemeal","coupon","discount"
             );
             for (String tag : tags) {
                 if (allowedTags.contains(tag)) {
@@ -124,13 +148,16 @@ public class HotelService {
         // 4. Add room availability condition if dates are provided
         if (checkIn != null && checkOut != null) {
             sql.append(" AND EXISTS (SELECT 1 FROM rooms r WHERE r.hotel_id = h.idx AND NOT EXISTS (");
-            sql.append(" SELECT 1 FROM reserve res WHERE res.room_id = r.room_id");
-            sql.append(" AND res.check_in < :checkOutDate AND res.check_out > :checkInDate))");
+            sql.append(" SELECT 1 FROM booking b WHERE b.room_idx = r.idx");
+            sql.append(" AND b.checkin < :checkOutDate AND b.checkout > :checkInDate))");
         }
 
         // 5. Create the query and set parameters
-        Query query = entityManager.createNativeQuery(sql.toString(), HotelEntity.class); // Assuming result maps to Hotel entity
-
+        Query query = entityManager.createNativeQuery(sql.toString()); // Assuming result maps to Hotel entity
+        if (minPrice != null && minPrice < 500000) {
+            query.setParameter("priceRange", minPrice);
+        }
+        
         if (keyword != null && !keyword.trim().isEmpty()) {
             query.setParameter("keyword", "%" + keyword + "%");
         }
@@ -141,26 +168,36 @@ public class HotelService {
             query.setParameter("checkInDate", checkIn);
             query.setParameter("checkOutDate", checkOut);
         }
+        
+        if (personCount != null && personCount > 0) {
+            query.setParameter("personCount", personCount);
+        }
+        
+        
 
         // The result needs to be mapped to HotelDto, which can be done after fetching
-        List<HotelEntity> hotels = query.getResultList();
-        return hotels.stream().map(this::convertToDto).collect(Collectors.toList());
-    }
+        List<Object[]> resultList = query.getResultList();
+        System.out.println("🔍 Generated SQL: " + sql.toString());
+        // ✅ DTO로 수동 매핑
+        List<HotelDto> dtos = resultList.stream().map(row -> {
+            HotelDto dto = new HotelDto();
 
-    private HotelDto convertToDto(HotelEntity hotelEntity) {
-        HotelDto dto = new HotelDto();
+            dto.setIdx(((Number) row[0]).longValue());
+            dto.setHotelName((String) row[1]);
+            dto.setMemberIdx(((Number) row[2]).longValue());
+            dto.setHotelTel((String) row[3]);
+            dto.setHotelCategory((String) row[4]);
+            dto.setHotelAddress((String) row[5]);
+            dto.setHotelImage((String) row[6]); 
+            dto.setPriceRange(row[7] != null ? ((Number) row[7]).intValue() : null);
+            
 
-        // 2. Map all corresponding fields from the Entity to the DTO.
-        dto.setIdx(hotelEntity.getIdx());
-        dto.setMemberIdx(hotelEntity.getMemberIdx());
-        dto.setHotelName(hotelEntity.getHotelName());
-        dto.setHotelImages(hotelEntity.getHotelImages());
-        dto.setHotelAddress(hotelEntity.getHotelAddress());
-        dto.setHotelTel(hotelEntity.getHotelTel());
-        dto.setHotelCategory(hotelEntity.getHotelCategory());
-        dto.setHotelTag(hotelEntity.getHotelTag());
 
-        return dto;
+            dto.setHotelTag(null);    // 
+            return dto;
+        }).collect(Collectors.toList());
+
+        return dtos;
     }
 
 

@@ -47,7 +47,8 @@ public class HotelEntity {
 	private String description;
 	
 	@Transient
-	private Integer minPrice;
+	private Integer priceRange;
 	
-
+	@Column(nullable = false)
+	private String hotelImage;
 }

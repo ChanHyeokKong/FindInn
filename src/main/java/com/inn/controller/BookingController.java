@@ -2,6 +2,7 @@ package com.inn.controller;
 
 import com.inn.config.CustomUserDetails;
 import com.inn.data.booking.BookingCompleteInfo;
+import com.inn.data.booking.BookingDetailInfo;
 import com.inn.data.booking.BookingRoomInfo;
 import com.inn.service.BookingService;
 import lombok.RequiredArgsConstructor;
@@ -92,5 +93,19 @@ public class BookingController {
         model.addAttribute("paidAmount", info.getPaidAmount());
 
         return "booking/bookingComplete";
+    }
+
+    // 비회원 예약 조회 페이지
+    @GetMapping("/booking/search")
+    public String bookingSearchPage() {
+        return "booking/bookingSearch";
+    }
+
+    // 예약 상세 페이지
+    @GetMapping("/booking/detail")
+    public String bookingDetailPage(@RequestParam("merchantUid") String merchantUid, Model model) {
+        BookingDetailInfo info = bookingService.getBookingDetailInfo(merchantUid);
+        model.addAttribute("detail", info);
+        return "booking/bookingDetail";
     }
 }

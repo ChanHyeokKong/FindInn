@@ -1,17 +1,27 @@
-/* booking.css */
+/* bookingPage.css */
+
+/* 전체 컨테이너 */
+.booking-page-container {
+    margin: 120px auto;
+    width: 100%;
+    max-width: 1200px; /* 필요에 따라 조정 */
+    box-sizing: border-box;
+}
 
 /* 전체 레이아웃 */
 .booking-wrapper {
     display: flex;
+    justify-content: center;  /* 좌우 중앙 정렬 */
     gap: 40px;
     width: 100%;
-    margin: 0;
     padding: 0 10px;
     box-sizing: border-box;
 }
 
 /* 왼쪽, 오른쪽 영역 */
 .left-section, .right-section {
+    flex: 1 1 45%;       /* flex-grow, flex-shrink, flex-basis */
+    max-width: 45%;       /* 너무 커지지 않도록 제한 */
     background: #fff;
     padding: 25px;
     border-radius: 8px;
@@ -19,7 +29,6 @@
     display: flex;
     flex-direction: column;
     gap: 30px;
-    flex-basis: 48%;
 }
 
 /* 호텔 이미지 */
