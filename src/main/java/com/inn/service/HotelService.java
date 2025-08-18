@@ -86,7 +86,7 @@ public class HotelService {
                 .collect(Collectors.toList());
     }
 
-    public List<HotelDto> searchHotelsWithConditions(String keyword, String category, List<String> tags, LocalDate checkIn, LocalDate checkOut, Long minPrice, Long personCount) {
+    public List<HotelDto> searchHotelsWithConditions(String keyword, String category, List<String> tags, LocalDate checkIn, LocalDate checkOut, Long minPrice, Long personCount, String sort) {
 
 
         // 1. Start with the base of the query
@@ -151,6 +151,30 @@ public class HotelService {
             sql.append(" SELECT 1 FROM booking b WHERE b.room_idx = r.idx");
             sql.append(" AND b.checkin < :checkOutDate AND b.checkout > :checkInDate))");
         }
+        
+        //sort 
+        switch(sort) {
+        case "Score": 
+        	sql.append("");
+        	break;
+        	
+        case "Review": 
+        	sql.append("");
+        	break;
+        	
+        case "lowPrice": 
+        	sql.append(" order by rt.min_price asc");
+        	break;
+        	
+        case "highPrice": 
+        	sql.append(" order by rt.min_price desc");
+        	break;
+        	
+        
+        
+        }
+        
+        
 
         // 5. Create the query and set parameters
         Query query = entityManager.createNativeQuery(sql.toString()); // Assuming result maps to Hotel entity

@@ -21,6 +21,13 @@
 		<br>
 		<button class="btn btn-warning" id="showMap" data-bs-toggle="modal"
 			data-bs-target="#mapModal">지도보기</button>
+			<select style="float:right" id="sortList" name="sort">
+				<option value="Score"  >평점높은순</option>
+				<option value="Review" >리뷰많은순</option>
+				<option value="lowPrice" selected="selected" >낮은가격순</option>
+				<option value="highPrice" >높은가격순</option>
+				
+			</select>
 	</div>
 	<br>
 
@@ -78,7 +85,7 @@
 					<div id="map" style="width: 100%; height: 650px;"></div>
 
 				</div>
-				<script th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoJsKey}}"></script>
+				<script th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoJsKey} + '&libraries=services'}"></script>
 			</div>
 		</div>
 	</div>
