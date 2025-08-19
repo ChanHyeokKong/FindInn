@@ -1,6 +1,7 @@
 package com.inn.service;
 
 
+import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
 import com.inn.data.review.ReviewDto;
 import com.inn.data.rooms.*;
@@ -43,17 +44,19 @@ public class RoomsService {
             return randomRoom;
         }
     }
-    public record RoomHotelDetailsDto(String roomTypeName, String hotelName) {
+    public record RoomHotelDetailsDto(Long roomTypeId, Long hotelId, String hotelImages, String hotelName, String roomName) {
     }
 
-    public RoomHotelDetailsDto getHotelNamebyRoomTypeId(long roomTypeId) {
-        RoomTypes roomType = roomTypesRepository.findById(roomTypeId)
-                .orElseThrow(() -> new EntityNotFoundException("RoomType not found with id: " + roomTypeId));
+    public RoomHotelDetailsDto getHotelNamebyRoomTypeId(long roomId) {
+        Rooms room = roomsRepository.findById(roomId)
+                .orElseThrow(() -> new EntityNotFoundException("룸 타입이 없습니다. " + roomId));
 
-        String typeName = roomType.getTypeName();
-        String hotelName = roomType.getHotel().getHotelName();
-
-        return new RoomHotelDetailsDto(typeName, hotelName);
+        Long type = room.getRoomType().getIdx();
+        Long hotelId = room.getHotel().getIdx();
+        String hotelImages = room.getHotel().getHotelImage();
+        String hotelName = room.getHotel().getHotelName();
+        String roomName = room.getRoomType().getTypeName();
+        return new RoomHotelDetailsDto(type, hotelId, hotelImages, hotelName, roomName);
     }
 
 

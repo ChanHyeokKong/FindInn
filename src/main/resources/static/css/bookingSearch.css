@@ -1,0 +1,129 @@
+/* bookingSearch.css */
+
+/* 전체 레이아웃 */
+.booking-search-container {
+    max-width: 480px;
+    margin: 120px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* 제목 */
+.booking-search-container h2 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #007bff;
+    margin-bottom: 25px;
+}
+
+/* 폼 그룹 */
+.booking-search-container form > div {
+    margin-bottom: 20px;
+}
+
+/* 라벨 */
+.booking-search-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* 입력 필드 */
+.booking-search-container input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* 입력 포커스 효과 */
+.booking-search-container input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+    outline: none;
+}
+
+/* 안내 문구 */
+.booking-search-container p {
+    font-size: 13px;
+    color: #666;
+    margin-top: 6px;
+}
+
+/* 버튼 공통 */
+.booking-search-container button {
+    width: 100%;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+}
+
+/* 인증 관련 버튼 */
+#sendAuthBtn,
+#checkAuthBtn {
+    background-color: #007bff;
+    color: #fff;
+}
+
+#sendAuthBtn:hover,
+#checkAuthBtn:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+/* 비활성화 버튼 */
+#checkAuthBtn:disabled,
+#searchBtn:disabled {
+    background-color: #a9a9a9;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* 예약 조회 버튼 */
+#searchBtn {
+    background-color: #007bff;
+    color: white;
+}
+
+#searchBtn:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+/* 인증 영역 */
+#authSection {
+    margin-top: 15px;
+}
+
+#authSection input {
+    margin-bottom: 10px;
+}
+
+/* 인증 결과 메시지 */
+#authResultMsg {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #d9534f; /* 기본 빨강 (실패 시) */
+}
+
+#authResultMsg.success {
+    color: #28a745; /* 성공 시 초록 */
+}
+
+/* 타이머 */
+#timerText {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ff6b6b;
+}

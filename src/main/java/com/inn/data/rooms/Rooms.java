@@ -14,8 +14,8 @@ public class Rooms {
 
     private Long roomNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "hotel_id", referencedColumnName = "idx")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hotelId", referencedColumnName = "idx")
     private HotelEntity hotel;
 
     @ManyToOne(fetch = FetchType.LAZY)

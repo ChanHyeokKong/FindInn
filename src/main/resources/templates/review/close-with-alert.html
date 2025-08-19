@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Closing...</title>
+</head>
+<body>
+
+<script th:inline="javascript">
+    /* <![CDATA[ */
+    // This function runs as soon as the page loads
+    window.onload = function() {
+        const message = /*[[${message}]]*/ 'An error occurred.';
+        alert(message);
+        window.close();
+    };
+    /* ]]> */
+</script>
+
+</body>
+</html>

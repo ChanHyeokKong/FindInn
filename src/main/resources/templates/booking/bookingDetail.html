@@ -4,7 +4,7 @@
       layout:decorate="~{layout/layout}">
 
 <head>
-    <title>예약 상세 페이지</title>
+    <title>예약 상세</title>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <th:block layout:fragment="head"></th:block>
@@ -46,12 +46,19 @@
         </div>
     </section>
 
+    <hr/>
+
     <!-- 호텔 정보 -->
     <section class="hotel-info">
-        <img th:src="@{${detail.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
+        <img th:src="@{'/hotelImage/' + ${detail.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
         <div class="hotel-details">
             <h3 th:text="${detail.hotelName}"></h3>
-            <p th:text="${detail.hotelAddress}"></p>
+            <div class="address-wrapper">
+                <p class="hotel-address" th:text="${detail.hotelAddress}"></p>
+                <button type="button" class="btn-copy" onclick="copyHotelAddress()">
+                    <i class="fa-regular fa-copy" aria-hidden="true"></i>
+                </button>
+            </div>
         </div>
     </section>
 
@@ -78,7 +85,9 @@
             <dt>예약번호</dt>
             <dd class="booking-number">
                 <span th:text="${detail.merchantUid}" id="merchantUid"></span>
-                <button type="button" class="btn-copy" onclick="copyMerchantUid()">복사</button>
+                <button type="button" class="btn-copy" onclick="copyMerchantUid()">
+                    <i class="fa-regular fa-copy" aria-hidden="true"></i>
+                </button>
             </dd>
 
             <dt>예약자 이름</dt>
@@ -146,4 +155,5 @@
 
 </div>
 </body>
+
 </html>

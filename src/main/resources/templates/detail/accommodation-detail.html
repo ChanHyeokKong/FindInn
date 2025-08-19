@@ -42,8 +42,8 @@
                     <div class="col">
                         <h1 class="h2 mb-1" th:text="${accommodation.name}">강릉 더끌림 펜션</h1>
                         <div class="d-flex align-items-center gap-2 mb-2">
-                            <span class="badge bg-primary">4.5</span>
-                            <small class="text-muted">리뷰 128개</small>
+                            <span class="badge bg-primary" th:text="${#numbers.formatDecimal(rating.rating_avg, 1, 1)}">4.5</span>
+                            <small class="text-muted" th:text="|리뷰 ${rating.rating_count}개|">리뷰 128개</small>
                             <small class="text-muted">|</small>
                             <small class="text-muted" th:text="${accommodation.address}">강원도 강릉시 해안로 123-45</small>
                         </div>
@@ -198,7 +198,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-3 p-4 shadow-sm">
+                    <div class="bg-white rounded-3 p-4 mb-4 shadow-sm">
                         <h3 class="h4 mb-3">위치</h3>
                         <div class="mb-3">
                             <p class="text-muted mb-1" th:text="${accommodation.address}">강원도 강릉시 해안로 123-45</p>
@@ -210,9 +210,75 @@
                              class="rounded-3">
                         </div>
                     </div>
+                    <div class="bg-white rounded-3 p-4 mb-4 shadow-sm">
+                        <div id="review-section" th:fragment="review-fragment">
+                            <div th:each="review : ${reviewPage.content}" class="mb-4 pb-4 border-bottom">
+                                <div class="d-flex gap-3">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <strong class="text-dark" th:text="${review.member?.memberName ?: '익명'}">작성자 이름</strong>
+                                            <small class="text-muted" th:text="${#temporals.format(review.reviewDate, 'M월 d일')}">날짜</small>
+                                        </div>
+
+                                        <div th:if="${review.imagePaths != null and !review.imagePaths.empty}" class="d-flex gap-2 mb-2">
+                                            <img th:each="imagePath : ${review.imagePaths}"
+                                                 th:src="@{'/uploads/reviews/' + ${imagePath}}"
+                                                 class="rounded"
+                                                 style="width: 80px; height: 60px; object-fit: cover;"
+                                                 alt="리뷰 이미지">
+                                        </div>
+
+                                        <div class="mb-2">
+                <span th:each="i : ${#numbers.sequence(1, 5)}"
+                      th:text="'★'"
+                      th:class="${i <= review.rating} ? 'text-warning' : 'text-body-tertiary'">
+                </span>
+                                        </div>
+
+                                        <p class="small text-muted mb-2" th:text="${review.roomName}">객실 타입</p>
+
+                                        <p th:text="${review.content}" class="mb-2 text-dark">리뷰 내용이 여기에 표시됩니다.</p>
+
+                                        <button th:if="${#strings.length(review.content) > 100}"
+                                                class="btn btn-link p-0 text-muted small"
+                                                type="button"
+                                                onclick="toggleReviewContent(this)">
+                                            더보기 <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <nav th:if="${reviewPage.totalPages > 1}" aria-label="Review pagination" class="d-flex justify-content-center mt-4">
+                                <ul class="pagination">
+                                    <li class="page-item" th:classappend="${reviewPage.first} ? 'disabled'">
+                                        <a class="page-link" th:href="@{/domestic-accommodations(page=${reviewPage.number - 1}, id=${hotelId})}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+
+                                    <li th:each="i : ${#numbers.sequence(0, reviewPage.totalPages - 1)}"
+                                        class="page-item"
+                                        th:classappend="${i == reviewPage.number} ? 'active'">
+                                        <a class="page-link" th:href="@{/domestic-accommodations(page=${i}, id=${hotelId})}" th:text="${i + 1}">1</a>
+                                    </li>
+
+                                    <li class="page-item" th:classappend="${reviewPage.last} ? 'disabled'">
+                                        <a class="page-link" th:href="@{/domestic-accommodations(page=${reviewPage.number + 1}, id=${hotelId})}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+
+                        </div>
                 </div>
             </div>
         </div>
+        </div>
+    </div>
+
+
     </div>
 
     <div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
@@ -260,12 +326,132 @@
     </div>
 
     <script th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoApiKey} + '&libraries=services'}"></script>
-    <script src="/javascript/detailMap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script th:if="${message}">
         alert("[[${message}]]");
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
+        let map;
+
+        function initKakaoMap() {
+            const mapContainer = document.getElementById('map');
+            // If the map container doesn't exist on the page, do nothing.
+            if (!mapContainer) return;
+
+            const address = mapContainer.dataset.address;
+            const mapOption = {
+                center: new kakao.maps.LatLng(37.566826, 126.9786567), // Default to Seoul City Hall
+                level: 3
+            };
+
+            map = new kakao.maps.Map(mapContainer, mapOption);
+            const geocoder = new kakao.maps.services.Geocoder();
+
+            geocoder.addressSearch(address, function(result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                    new kakao.maps.Marker({ map: map, position: coords });
+                    map.setCenter(coords);
+                } else {
+                    console.error("Geocoding failed for address:", address);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Initialize the map when the page first loads
+            initKakaoMap();
+
+            // 2. Handle alert messages
+            const message = /*[[${message}]]*/ null;
+            if (message) {
+                alert(message);
+            }
+
+            // 3. Setup AJAX for review pagination
+            const reviewSection = document.getElementById('review-section');
+            if (reviewSection) {
+                reviewSection.addEventListener('click', function(event) {
+                    const targetLink = event.target.closest('.page-link');
+                    if (!targetLink || targetLink.parentElement.classList.contains('disabled')) {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    const url = targetLink.getAttribute('href');
+
+                    fetch(url)
+                        .then(response => {
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            return response.text();
+                        })
+                        .then(html => {
+                            // Create a temporary container to parse the new HTML
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const newReviewContent = doc.getElementById('review-section');
+
+                            // Replace the content if new content is found
+                            if (newReviewContent) {
+                                reviewSection.innerHTML = newReviewContent.innerHTML;
+                            }
+
+                            // **FIX 1: Tell the map to redraw itself**
+                            if (map) {
+                                map.relayout();
+                            }
+
+                            // **FIX 2: The scrollIntoView line is removed to prevent jumping**
+                        })
+                        .catch(error => {
+                            console.error('Error fetching review page:', error);
+                            alert('리뷰를 불러오는 데 실패했습니다.');
+                        });
+                });
+            }
+
+            const galleryModal = document.getElementById('galleryModal');
+            if(galleryModal) {
+                const carouselElement = document.getElementById('imageCarousel');
+                const carousel = new bootstrap.Carousel(carouselElement, { interval: false, wrap: true });
+
+                galleryModal.addEventListener('show.bs.modal', function (event) {
+                    const trigger = event.relatedTarget;
+                    if (!trigger) return;
+                    const slideToIndex = parseInt(trigger.getAttribute('data-thumbnail-index')) || 0;
+                    carousel.to(slideToIndex);
+                });
+            }
+        });
+    </script>
+
+
+    <script>
+        function toggleReviewContent(button) {
+            const reviewContent = button.previousElementSibling;
+            const icon = button.querySelector('i');
+
+            if (reviewContent.style.maxHeight && reviewContent.style.maxHeight !== 'none') {
+                reviewContent.style.maxHeight = 'none';
+                button.innerHTML = '접기 <i class="fas fa-chevron-up"></i>';
+            } else {
+                reviewContent.style.maxHeight = '4.5em';
+                reviewContent.style.overflow = 'hidden';
+                button.innerHTML = '더보기 <i class="fas fa-chevron-down"></i>';
+            }
+        }
+
+        // Initialize truncated content on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const reviewContents = document.querySelectorAll('p[th\\:text*="review.content"]');
+            reviewContents.forEach(content => {
+                if (content.textContent.length > 100) {
+                    content.style.maxHeight = '4.5em';
+                    content.style.overflow = 'hidden';
+                }
+            });
+        });
         document.addEventListener('DOMContentLoaded', function () {
             const galleryModal = document.getElementById('galleryModal');
             const carouselElement = document.getElementById('imageCarousel');

@@ -35,15 +35,42 @@ document.addEventListener("DOMContentLoaded", function() {
 	const tbody = document.querySelector("#hotelTbody");
 	const range = document.querySelector('input[name="priceRange"]');
 	const display = document.getElementById("priceDisplay");
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+    // URL 파라미터 추출 함수
+    function getUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            keyword: params.get("keyword") || "",
+            checkIn: params.get("checkIn") || "",
+            checkOut: params.get("checkOut") || "",
+            personCount: params.get("personCount") || ""
+        };
+    }
+
+    // 초기 검색 실행 (URL 파라미터 있으면 반영)
+    function initSearchFromParams() {
+        const { keyword, checkIn, checkOut, personCount } = getUrlParams();
+
+        let hasParams = keyword || checkIn || checkOut || personCount;
+
+        if (hasParams) {
+            // input, date, personCount 에 값 세팅
+            if (keyword) document.querySelector("input[name='searchKeyword']").value = keyword;
+            if (checkIn) document.getElementById("start").value = checkIn;
+            if (checkOut) {
+                document.getElementById("end").setAttribute("min", checkIn); // end 날짜 min 동기화
+                document.getElementById("end").value = checkOut;
+            }
+            if (personCount) document.getElementById("personCount").value = personCount;
+
+            // URL 파라미터 기준으로 검색 실행
+            searchHotels();
+        } else {
+            // 기본 검색 실행
+            searchHotels();
+        }
+    }
+
 	//가격
 	function updateDisplay(value) {
 		const intVal = parseInt(value);
@@ -483,5 +510,5 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-	searchHotels();
+	initSearchFromParams();
 });

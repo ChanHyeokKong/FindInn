@@ -1,19 +1,17 @@
 package com.inn.data.coupon;
 
-import com.inn.data.coupon.Coupon;
-import com.inn.data.coupon.CouponRepository;
-import com.inn.data.coupon.UserCoupon;
-import com.inn.data.coupon.UserCouponRepository;
 import com.inn.data.member.MemberDto;
 import com.inn.service.CouponService;
-
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserCouponServiceImpl implements UserCouponService {
@@ -24,22 +22,24 @@ public class UserCouponServiceImpl implements UserCouponService {
 
     /* ===================== 발급 ===================== */
 
+    // 5-1) 코드 발급: 대문자 통일 + 코드 기반 중복 체크
     @Transactional
     @Override
     public UserCoupon issueByCode(MemberDto member, String couponCode, String eventCode) {
-        Coupon coupon = couponRepository.findByCode(couponCode)
-                .orElseThrow(() -> new IllegalStateException("쿠폰 코드가 존재하지 않습니다."));
+        String code = (couponCode == null ? "" : couponCode.trim()).toUpperCase(Locale.ROOT);
+
+        Coupon coupon = couponRepository.findByCode(code)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 쿠폰 코드입니다."));
 
         LocalDateTime now = LocalDateTime.now();
-        // 발급 즉시 사용 가능한 기간인지 체크
         if (!couponService.isUsableNow(coupon, now, now)) {
-            throw new IllegalStateException("현재 발급할 수 없는 쿠폰입니다(기간/하드컷/상대만료).");
+            throw new IllegalArgumentException("현재 발급할 수 없는 쿠폰입니다(기간/하드컷/상대만료).");
         }
 
-        // 중복 발급 방지(이미 보유 → 미사용건 우선 반환)
-        if (userCouponRepository.existsByMemberAndCoupon(member, coupon)) {
+        // 코드 기반으로 중복 발급 방지 (엔티티 비교 회피)
+        if (userCouponRepository.existsByMemberAndCoupon_Code(member, code)) {
             return userCouponRepository.findAllByMemberAndUsedFalse(member).stream()
-                    .filter(uc -> uc.getCoupon().getId().equals(coupon.getId()))
+                    .filter(uc -> code.equalsIgnoreCase(uc.getCoupon().getCode()))
                     .findFirst()
                     .orElseThrow(() -> new IllegalStateException("이미 보유했고 사용 완료된 쿠폰입니다."));
         }
@@ -54,22 +54,28 @@ public class UserCouponServiceImpl implements UserCouponService {
         return userCouponRepository.save(uc);
     }
 
+    // 5-2) 트레이트 발급: 리포지토리 쿼리 직행 + 정규화
     @Transactional
     @Override
     public UserCoupon issueByTrait(MemberDto member, String trait, String eventCode) {
-        Coupon coupon = couponRepository.findByApplicableTrait(trait)
-                .orElseThrow(() -> new IllegalStateException("해당 성향 전용 쿠폰이 정의되어 있지 않습니다."));
+        String key  = normalizeTrait(trait);                // 'healing' 등으로 정규화
+        String from = (eventCode == null ? "" : eventCode.trim());
+
+        // DB에서 바로 조회(스트림 필터 제거)
+        Coupon coupon = couponRepository
+                .findTop1ByIssuedFromAndApplicableTraitIgnoreCaseOrderByValidFromDesc(from, key)
+                .orElseThrow(() -> new IllegalArgumentException("해당 성향 전용 쿠폰이 정의되어 있지 않습니다."));
 
         LocalDateTime now = LocalDateTime.now();
         if (!couponService.isUsableNow(coupon, now, now)) {
-            throw new IllegalStateException("현재 발급할 수 없는 쿠폰입니다.");
+            throw new IllegalArgumentException("현재 발급할 수 없는 쿠폰입니다.");
         }
-        // trait 제한
-        if (!couponService.matchTraitIfRequired(coupon, trait)) {
+        if (!couponService.matchTraitIfRequired(coupon, key)) {
             throw new IllegalArgumentException("이 쿠폰은 " + coupon.getApplicableTrait() + " 전용입니다.");
         }
 
-        if (userCouponRepository.existsByMemberAndCoupon(member, coupon)) {
+        // 코드 기반 중복 방지
+        if (userCouponRepository.existsByMemberAndCoupon_Code(member, coupon.getCode())) {
             return userCouponRepository.findAllByMemberAndUsedFalse(member).stream()
                     .filter(uc -> uc.getCoupon().getId().equals(coupon.getId()))
                     .findFirst()
@@ -81,7 +87,7 @@ public class UserCouponServiceImpl implements UserCouponService {
                 .coupon(coupon)
                 .issuedAt(now)
                 .used(false)
-                .relatedEvent(eventCode)
+                .relatedEvent(from)
                 .build();
         return userCouponRepository.save(uc);
     }
@@ -91,15 +97,15 @@ public class UserCouponServiceImpl implements UserCouponService {
     @Override
     public List<UserCoupon> getMyUsableCoupons(MemberDto member, Long hotelId, int price, String userTrait) {
         LocalDateTime now = LocalDateTime.now();
+        String t = normalizeTrait(userTrait);
+
         return userCouponRepository.findAllByMemberAndUsedFalse(member).stream()
                 .filter(uc -> {
                     Coupon c = uc.getCoupon();
-                    // 기간/호텔/금액/trait 모두 통과해야 후보
                     if (!couponService.isUsableNow(c, uc.getIssuedAt(), now)) return false;
                     if (!couponService.isApplicableToHotel(c, hotelId)) return false;
                     if (!couponService.isApplicableToPrice(c, price)) return false;
-                    if (!couponService.matchTraitIfRequired(c, userTrait)) return false;
-                    return true;
+                    return couponService.matchTraitIfRequired(c, t);
                 })
                 .toList();
     }
@@ -114,6 +120,7 @@ public class UserCouponServiceImpl implements UserCouponService {
                                               Long stackUserCouponId,
                                               String userTrait) {
         LocalDateTime now = LocalDateTime.now();
+        String t = normalizeTrait(userTrait);
 
         UserCoupon ucMain  = (mainUserCouponId  != null)
                 ? userCouponRepository.findByIdAndMember(mainUserCouponId, member)
@@ -135,7 +142,7 @@ public class UserCouponServiceImpl implements UserCouponService {
         // 메인 쿠폰 검증
         if (cMain != null) {
             if (ucMain.isUsed()) throw new IllegalStateException("이미 사용한 메인 쿠폰입니다.");
-            ensureUsableInContext(ucMain, cMain, now, hotelId, originalPrice, userTrait, true);
+            ensureUsableInContext(ucMain, cMain, now, hotelId, originalPrice, t, true);
         }
 
         // 스택 쿠폰 검증
@@ -144,10 +151,9 @@ public class UserCouponServiceImpl implements UserCouponService {
             if (!Boolean.TRUE.equals(cStack.getStackable())) {
                 throw new IllegalArgumentException("이 쿠폰은 다른 쿠폰과 중복 사용할 수 없습니다.");
             }
-            ensureUsableInContext(ucStack, cStack, now, hotelId, originalPrice, userTrait, false);
+            ensureUsableInContext(ucStack, cStack, now, hotelId, originalPrice, t, false);
         }
 
-        // 할인 미리보기(퍼센트/메인 먼저 → 스택)
         return couponService.previewFinalPrice(originalPrice, cMain, cStack);
     }
 
@@ -178,5 +184,32 @@ public class UserCouponServiceImpl implements UserCouponService {
         uc.setUsed(true);
         uc.setUsedAt(LocalDateTime.now());
         userCouponRepository.save(uc);
+    }
+
+    /* ===================== 기타 ===================== */
+
+    @Override
+    public List<String> getIssuedCodes(MemberDto member, String issuedFrom) {
+        String from = norm(issuedFrom);
+        return userCouponRepository.findAllByMember(member).stream()
+                .filter(uc -> from.equals(norm(uc.getRelatedEvent())))
+                .map(uc -> uc.getCoupon().getCode())
+                .toList();
+    }
+
+    /* ===================== 내부 헬퍼 ===================== */
+
+    private static String norm(String s) {
+        return s == null ? "" : s.trim();
+    }
+
+    // H01/E01/한글 별칭 등을 서버 키로 정규화
+    private static String normalizeTrait(String s) {
+        String v = norm(s).toLowerCase(Locale.ROOT);
+        if (v.startsWith("heal") || v.contains("힐")) return "healing";
+        if (v.startsWith("emo")  || v.contains("감성") || v.contains("토끼")) return "emotion";
+        if (v.startsWith("acti") || v.contains("액티") || v.contains("병아리")) return "activity";
+        if (v.startsWith("chal") || v.contains("도전") || v.contains("코알라") || v.contains("챌")) return "challenge";
+        return v;
     }
 }

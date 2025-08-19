@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -63,14 +64,8 @@ public class BookingServiceImpl implements BookingService {
 
         RoomTypes roomType = room.getRoomType();
 
-        String firstImage = null;
-        List<String> images = hotel.getHotelImages();
-        if (images != null && !images.isEmpty()) {
-            firstImage = images.get(0);
-        }
-
         return BookingRoomInfo.builder()
-                .hotelImage(firstImage)
+                .hotelImage(hotel.getHotelImage())
                 .hotelName(hotel.getHotelName())
                 .roomName(roomType.getTypeName())
                 .roomNumber(room.getRoomNumber())
@@ -165,6 +160,33 @@ public class BookingServiceImpl implements BookingService {
     }
 
     /**
+     * 1. 회원 예약내역 리스트 조회 (예약확정, 이용완료, 예약취소)
+     * 2. Entity 리스트 -> BookingListInfo 리스트 변환
+     */
+    @Override
+    public List<BookingListInfo> getBookingsByStatus(Long memberIdx, String status) {
+        List<BookingEntity> bookings = bookingRepository.findByMemberIdxAndStatusOrderByCreatedAtDesc(memberIdx, status);
+
+        return bookings.stream()
+                .map(booking -> {
+                    Rooms room = roomsRepository.findById(booking.getRoomIdx())
+                            .orElseThrow(() -> new IllegalArgumentException("객실 정보를 찾을 수 없습니다."));
+                    HotelEntity hotel = Optional.ofNullable(room.getHotel())
+                            .orElseThrow(() -> new IllegalArgumentException("호텔 정보를 찾을 수 없습니다."));
+
+                    return BookingListInfo.builder()
+                            .merchantUid(booking.getMerchantUid())
+                            .status(booking.getStatus())
+                            .hotelName(hotel.getHotelName())
+                            .hotelImage(hotel.getHotelImage())
+                            .roomName(room.getRoomType().getTypeName())
+                            .roomNumber(room.getRoomNumber())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 예약 상세 페이지 조회
      */
     @Override
@@ -217,8 +239,7 @@ public class BookingServiceImpl implements BookingService {
 
                 // 호텔 정보
                 .hotelName(hotel.getHotelName())
-                .hotelImage(hotel.getHotelImages() != null && !hotel.getHotelImages().isEmpty()
-                        ? hotel.getHotelImages().get(0) : null)
+                .hotelImage(hotel.getHotelImage())
                 .hotelAddress(hotel.getHotelAddress())
 
                 // 객실 정보

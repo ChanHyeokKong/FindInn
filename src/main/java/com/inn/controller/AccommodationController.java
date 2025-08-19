@@ -5,11 +5,15 @@ import com.inn.data.chat.ChatDto;
 import com.inn.data.chat.ChatRepository;
 import com.inn.data.detail.AccommodationDto;
 import com.inn.data.hotel.HotelEntity;
+import com.inn.data.review.RatingDto;
+import com.inn.data.review.ReviewDto;
 import com.inn.data.rooms.RoomTypeAvailDto;
 import com.inn.service.HotelService;
+import com.inn.service.ReviewService;
 import com.inn.service.RoomsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +41,8 @@ public class AccommodationController {
 
     @Autowired
     ChatRepository chatRepository;
+    @Autowired
+    private ReviewService reviewService;
 
     @GetMapping("/domestic-accommodations")
     public String accommodationDetail(
@@ -46,7 +53,8 @@ public class AccommodationController {
             Model model,
             RedirectAttributes redirectAttributes,
             @RequestHeader(value = "Referer", required = false) String referer,
-            @AuthenticationPrincipal CustomUserDetails currentUser) {
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @RequestParam(defaultValue = "0") int page) {
         
         AccommodationDto accommodation = new AccommodationDto();
         int numberOfPeople = (personal != null) ? personal : 1;
@@ -64,13 +72,11 @@ public class AccommodationController {
         }
         else{
             accommodation.setHotel(hotel.get());
-            // Add this line to print the hotel ID
-            System.out.println("Hotel ID being set to accommodation: " + hotel.get().getIdx());
         }
         accommodation.setName(hotel.get().getHotelName());
         accommodation.setAddress(hotel.get().getHotelAddress());
-        // 임시 하드코딩
-        List<String> images = hotel.get().getHotelImages();
+        List<String> images = new ArrayList<>();
+        images.add(hotel.get().getHotelImage());
         accommodation.setCheckInTime("15:00");
         accommodation.setCheckOutTime("11:00");
 
@@ -86,6 +92,13 @@ public class AccommodationController {
         model.addAttribute("kakaoApiKey", kakaoApiKey);
         System.out.println(accommodation.getImageGalleries());
         model.addAttribute("currentUser", currentUser);
+        RatingDto rating = reviewService.getRatings(id);
+        model.addAttribute("rating", rating);
+
+        int size = 5; //한번에 리뷰 5개 로드
+        Page<ReviewDto> reviewPage = reviewService.getReviewsByHotels(id, page, size);
+        model.addAttribute("hotelId", id);
+        model.addAttribute("reviewPage", reviewPage);
 
         // Add current user's memberIdx to the model
         if (currentUser != null) {
@@ -95,5 +108,18 @@ public class AccommodationController {
         }
 
         return "detail/accommodation-detail";
+    }
+
+
+    @GetMapping("/reviewLists")
+    public String reviewDetail(@RequestParam("id") Long id,@RequestParam(defaultValue = "0") int page, Model model) {
+        int size = 5; //한번에 리뷰 5개 로드
+        Page<ReviewDto> reviewPage = reviewService.getReviewsByHotels(id, page, size);
+
+
+        System.out.println("Review Page Content: " + reviewPage.getContent());
+        model.addAttribute("reviewPage", reviewPage);
+        model.addAttribute("hotelId", id);
+        return "detail/accommodation-detail :: review-fragment";
     }
 }

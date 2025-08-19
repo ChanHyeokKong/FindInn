@@ -3,7 +3,7 @@
 /* 전체 컨테이너 */
 .booking-detail-container {
     max-width: 800px;
-    margin: 100px auto;
+    margin: 120px auto;
     padding: 30px 25px;
     background-color: #fff;
     border-radius: 12px;
@@ -110,6 +110,24 @@
     margin: 0;
     color: #555;
     font-size: 14px;
+}
+
+.address-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* 주소와 버튼 사이 간격 */
+    font-size: 14px;
+    color: #555;
+}
+
+.address-wrapper .hotel-address {
+    margin: 0; /* 기본 p 마진 제거 */
+    word-break: break-all; /* 긴 주소도 줄바꿈 */
+}
+
+.address-wrapper .btn-copy {
+    padding: 2px 6px;
+    font-size: 12px;
 }
 
 /* 일정 & 객실 정보 */
