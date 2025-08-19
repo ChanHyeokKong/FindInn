@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	registerHotelCardClicks();
 
+	
+	
 
 
 	let hotels = []; // 전역변수로 선언
@@ -11,14 +13,27 @@ document.addEventListener("DOMContentLoaded", function() {
 	const restart = document.querySelector("#restart");
 	//초기화 버튼
 	restart.addEventListener("click", () => {
-		location.reload();
-	})
+	  range.value = 500000;
+	  updateDisplay(range.value);
+
+	  // 카테고리 라디오 초기화
+	  radios.forEach(radio => radio.checked = false);
+	  const allRadio = document.querySelector('input[name="category"][value="all"]');
+	  if (allRadio) allRadio.checked = true;
+
+	  // 태그 체크박스 초기화
+	  selectedTags = [];
+	  checks.forEach(chk => chk.checked = false);
+
+	  // 그리고 검색 실행
+	  searchHotels();
+	});
 
 	const radios = document.querySelectorAll('input[name="category"]');
 	const checks = document.querySelectorAll('input[name="tag"]');
 	const input = document.querySelector("input[name='searchKeyword']");
 	const tbody = document.querySelector("#hotelTbody");
-	const range = document.querySelector('input[name=priceRange]');
+	const range = document.querySelector('input[name="priceRange"]');
 	const display = document.getElementById("priceDisplay");
 
     // URL 파라미터 추출 함수
@@ -65,6 +80,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			display.textContent = "0원 ~ " + intVal.toLocaleString() + "원";
 		}
 	}
+	
+	
 
 	// 최초 로딩 시 값 세팅
 	updateDisplay(range.value);
@@ -97,16 +114,28 @@ document.addEventListener("DOMContentLoaded", function() {
 		const sort = document.getElementById("sortList").value;
 
 
+		const params = new URLSearchParams();
 
+		
+		
+		
 		// tags 파라미터 만들기 (tags=tag1&tags=tag2...)
 		const tagParams = selectedTags
 			.map(tag => `tags=${encodeURIComponent(tag)}`)
 			.join('&');
 
+			if (keyword) params.append("keyword", keyword);
+			if (category && category !== "all") params.append("category", category);
+			if (checkIn) params.append("checkIn", checkIn);
+			if (checkOut) params.append("checkOut", checkOut);
+			if (priceRange) params.append("priceRange", priceRange);
+			if (personCount) params.append("personCount", personCount);
+			if (sort) params.append("sort", sort);
+			
+			
 
-		let url = `/h_search?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(category)}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}
-		&priceRange=${encodeURIComponent(priceRange)}&personCount=${encodeURIComponent(personCount)}&sort=${encodeURIComponent(sort)}`;
-		if (tagParams) url += `&${tagParams}`;
+		selectedTags.forEach(tag => params.append("tags", tag));
+		const url = "/h_search?" + params.toString();
 
 		console.log("완성된 URL:", url);
 
@@ -174,6 +203,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			console.log("선택된 태그들:", selectedTags);
 
 			searchHotels();
+			
 		});
 	});
 
@@ -253,13 +283,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				const checkOut = document.getElementById('end').value;
 				const personCount = document.getElementById('personCount').value;
 
-				if (!checkIn || !checkOut || !personCount) {
-					alert("날짜, 인원수를 모두 입력해주세요.");
-					return;
-				}
-
-				const url = `domestic-accommodations?id=${hotelId}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}&personCount=${encodeURIComponent(personCount)}`;
-				location.href = url;
+				
+ 				const url = `domestic-accommodations?id=${hotelId}&checkIn=${encodeURIComponent(checkIn || '')}&checkOut=${encodeURIComponent(checkOut || '')}&personCount=${encodeURIComponent(personCount || '')}`;				location.href = url;
 			};
 		});
 	}
@@ -335,13 +360,35 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 		displayHotelsOnMap(hotels);
 	});
+	
+	let map = null;               // 지도 전역 변수
+	let markers = [];             // 마커 저장소
 
+	function clearMarkers() {
+	  markers.forEach(marker => marker.setMap(null));
+	  markers = [];
+	}
+	
+	
+	
+	
 	// 호텔 마커 지도에 표시
 	function displayHotelsOnMap(hotels) {
 		if (typeof kakao === 'undefined' || !kakao.maps) {
 			console.error("Kakao 지도 API가 로드되지 않았습니다.");
 			return;
 		}
+		
+		if (!map) {
+		    // 최초 맵 생성 로직
+		  } else {
+		    clearMarkers(); // 기존 마커 제거
+		  }
+		  
+		  if (!hotels || hotels.length === 0) {
+		     console.log("호텔 데이터가 없습니다.");
+		     return;  // 데이터 없으면 마커 표시하지 않고 종료
+		   }
 
 		const mapContainer = document.getElementById('map');
 		const geocoder = new kakao.maps.services.Geocoder();
@@ -354,10 +401,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
 				const mapOption = {
 					center: new kakao.maps.LatLng(lat, lng), // 첫 호텔 위치를 중심으로
-					level: 10
+					level: 13
 				};
 
-				const map = new kakao.maps.Map(mapContainer, mapOption);
+				 map = new kakao.maps.Map(mapContainer, mapOption);
 
 				// 호텔 데이터에 따라 마커 표시
 				hotels.forEach(hotel => {
@@ -367,11 +414,19 @@ document.addEventListener("DOMContentLoaded", function() {
 						if (status === kakao.maps.services.Status.OK) {
 							const lat = result[0].y;
 							const lng = result[0].x;
-							const content = `
-	                    <div style="padding:5px; background:white; border:1px solid #ccc; border-radius:5px; font-size:12px;">
-	                      ${hotel.priceRange}원
-	                        
-	                    </div>`;
+							const content = document.createElement('div');
+							content.style.padding = '5px';
+							content.style.background = 'white';
+							content.style.border = '1px solid #ccc';
+							content.style.borderRadius = '5px';
+							content.style.fontSize = '12px';
+							content.style.cursor = 'pointer';  // 마우스 올렸을 때 포인터로 보이게
+
+							content.textContent = `${hotel.priceRange.toLocaleString()}원`;
+							content.setAttribute('data-hotel-id', hotel.idx);
+							
+						
+						
 
 							const position = new kakao.maps.LatLng(lat, lng);
 							const customOverlay = new kakao.maps.CustomOverlay({
@@ -381,18 +436,71 @@ document.addEventListener("DOMContentLoaded", function() {
 							});
 
 							customOverlay.setMap(map);
+							markers.push(customOverlay);
+							
+							let infoCard = null;
+
+							content.addEventListener('mouseenter', () => {
+							  if (infoCard) return;
+
+							  infoCard = document.createElement('div');
+							  infoCard.style.position = 'absolute';
+							  infoCard.style.minWidth = '200px';
+							  infoCard.style.padding = '10px';
+							  infoCard.style.background = 'white';
+							  infoCard.style.border = '1px solid #999';
+							  infoCard.style.borderRadius = '8px';
+							  infoCard.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+							  infoCard.style.fontSize = '12px';
+							  infoCard.style.zIndex = 2000;
+
+							  infoCard.innerHTML = `
+							  <img src="/hotelImage/${hotel.hotelImage}" alt="호텔 이미지" style="width: 100%; max-height: 100px; object-fit: cover; margin-top: 5px;">	
+							    <strong>${hotel.hotelName}</strong><br>
+							    가격: ${hotel.priceRange.toLocaleString()}원<br>
+							    주소: ${hotel.hotelAddress}<br>
+							    전화: ${hotel.hotelTel}<br>
+							    
+							  `;
+
+							  // content 요소 기준으로 위치 조정 (마우스 위치가 아닌 마커 위치 기준)
+							  content.appendChild(infoCard);
+							});
+
+							content.addEventListener('click', ()=>{
+								
+								const hotelId = content.getAttribute('data-hotel-id', hotel.idx);
+								const checkIn = document.getElementById('start').value;
+								const checkOut = document.getElementById('end').value;
+								const personCount = document.getElementById('personCount').value;
+
+								location.href=`domestic-accommodations?id=${hotelId}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}&personCount=${encodeURIComponent(personCount)}`
+								
+							})
+							
+							content.addEventListener('mouseleave', () => {
+							  if (infoCard) {
+							    infoCard.remove();
+							    infoCard = null;
+							  }
+							  })
 						}
 					});
 				});
 			}
 		});
 	}
+	
+	
 
 	// 모달 열릴 때마다 호텔 표시
 	const mapModal = document.getElementById('mapModal');
 	mapModal.addEventListener('shown.bs.modal', () => {
+		
 		loadKakaoMapScript(() => {
 			displayHotelsOnMap(hotels);
+			
+			
 		});
 	});
 
