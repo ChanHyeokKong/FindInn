@@ -101,6 +101,25 @@ public class BookingController {
         return "booking/bookingSearch";
     }
 
+    // 회원 예약내역 조회 페이지
+    @GetMapping("/booking/list")
+    public String bookingList(@AuthenticationPrincipal CustomUserDetails currentUser,
+                              Model model) {
+
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        Long memberIdx = currentUser.getIdx();
+
+        // 통합된 상태별 조회 메서드 사용
+        model.addAttribute("confirmedList", bookingService.getBookingsByStatus(memberIdx, "CONFIRMED"));
+        model.addAttribute("completedList", bookingService.getBookingsByStatus(memberIdx, "COMPLETED"));
+        model.addAttribute("canceledList", bookingService.getBookingsByStatus(memberIdx, "CANCELED"));
+
+        return "booking/bookingList";
+    }
+
     // 예약 상세 페이지
     @GetMapping("/booking/detail")
     public String bookingDetailPage(@RequestParam("merchantUid") String merchantUid, Model model) {
