@@ -11,7 +11,7 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     Optional<Coupon> findByCode(String code);
 
     /** 심리테스트 trait 전용 쿠폰 조회 (예: "healing") */
-    Optional<Coupon> findByApplicableTrait(String trait);
+    Optional<Coupon> findFirstByApplicableTraitIgnoreCaseAndIssuedFrom(String applicableTrait, String issuedFrom);
 
     /** (선택) 발급 출처로 조회 (운영/관리자 화면에서 유용) */
     List<Coupon> findAllByIssuedFrom(String issuedFrom);
@@ -21,4 +21,8 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
     /** (선택) 스택 가능 쿠폰들 조회 */
     List<Coupon> findAllByStackableTrue();
+    
+    Optional<Coupon> findTop1ByIssuedFromAndApplicableTraitIgnoreCaseOrderByValidFromDesc(
+    	    String issuedFrom, String applicableTrait);
+   
 }
