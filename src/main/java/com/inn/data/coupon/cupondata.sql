@@ -85,4 +85,7 @@ INSERT INTO coupon_allowed_hotels (coupon_id, hotel_id) VALUES
 (201, 21), (201, 22), (201, 23),   -- healing
 (202, 31), (202, 32),              -- emotion
 (203, 41), (203, 42), (203, 43),   -- activity
-(204, 51);                         -- challenge
+(204, 51);              
+-- challenge
+
+UPDATE coupon SET issued_from='august-pack' WHERE code IN ('AUG_7P','AUG_10P');
