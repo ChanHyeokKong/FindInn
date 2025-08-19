@@ -5,6 +5,7 @@ import com.inn.data.chat.ChatDto;
 import com.inn.data.chat.ChatRepository;
 import com.inn.data.detail.AccommodationDto;
 import com.inn.data.hotel.HotelEntity;
+import com.inn.data.review.RatingDto;
 import com.inn.data.review.ReviewDto;
 import com.inn.data.rooms.RoomTypeAvailDto;
 import com.inn.service.HotelService;
@@ -91,6 +92,8 @@ public class AccommodationController {
         model.addAttribute("kakaoApiKey", kakaoApiKey);
         System.out.println(accommodation.getImageGalleries());
         model.addAttribute("currentUser", currentUser);
+        RatingDto rating = reviewService.getRatings(id);
+        model.addAttribute("rating", rating);
 
         int size = 5; //한번에 리뷰 5개 로드
         Page<ReviewDto> reviewPage = reviewService.getReviewsByHotels(id, page, size);
@@ -103,23 +106,6 @@ public class AccommodationController {
         } else {
             model.addAttribute("currentMemberIdx", null); // Or a default value if not logged in
         }
-        if (!reviewPage.isEmpty()) {
-            // Get the first review from the page to inspect it
-            ReviewDto firstReview = reviewPage.getContent().get(0);
-            System.out.println("Review Content: " + firstReview.getContent());
-            System.out.println("Review Rating: " + firstReview.getRating());
-            System.out.println("Review Room Name: " + firstReview.getRoomName());
-
-            // Check the nested member object specifically
-            if (firstReview.getMember() != null) {
-                System.out.println("Member Name: " + firstReview.getMember().getMemberName());
-            } else {
-                System.out.println("Member object is NULL.");
-            }
-        } else {
-            System.out.println("Review page is empty.");
-        }
-        System.out.println("-----------------------------");
 
         return "detail/accommodation-detail";
     }
@@ -131,29 +117,9 @@ public class AccommodationController {
         Page<ReviewDto> reviewPage = reviewService.getReviewsByHotels(id, page, size);
 
 
-        System.out.println("--- DEBUGGING REVIEW DATA ---");
-        if (!reviewPage.isEmpty()) {
-            // Get the first review from the page to inspect it
-            ReviewDto firstReview = reviewPage.getContent().get(0);
-            System.out.println("Review Content: " + firstReview.getContent());
-            System.out.println("Review Rating: " + firstReview.getRating());
-            System.out.println("Review Room Name: " + firstReview.getRoomName());
-
-            // Check the nested member object specifically
-            if (firstReview.getMember() != null) {
-                System.out.println("Member Name: " + firstReview.getMember().getMemberName());
-            } else {
-                System.out.println("Member object is NULL.");
-            }
-        } else {
-            System.out.println("Review page is empty.");
-        }
-        System.out.println("-----------------------------");
-
         System.out.println("Review Page Content: " + reviewPage.getContent());
         model.addAttribute("reviewPage", reviewPage);
         model.addAttribute("hotelId", id);
         return "detail/accommodation-detail :: review-fragment";
-
     }
 }

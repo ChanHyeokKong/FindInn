@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <title>예약 내역</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" th:href="@{/css/bookingList.css}"/>
+</head>
+
+<body>
+<div layout:fragment="content" class="booking-list-container">
+
+    <h1 class="page-title">예약내역</h1>
+
+    <!-- 탭 메뉴 -->
+    <div class="tabs">
+        <button class="tab-button active" data-tab="confirmed">예약확정</button>
+        <button class="tab-button" data-tab="completed">이용완료</button>
+        <button class="tab-button" data-tab="canceled">예약취소</button>
+    </div>
+
+    <!-- 탭 컨텐츠 -->
+    <div class="tab-content active" id="confirmed">
+        <div th:if="${#lists.isEmpty(confirmedList)}" class="empty-message">
+            예정된 예약이 없습니다. <a href="/" class="btn-find">여행지 찾아보기</a>
+        </div>
+        <div th:each="booking : ${confirmedList}" class="booking-item">
+            <img th:src="@{'/hotelImage/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
+            <div class="booking-info">
+                <span class="status confirmed">예약확정</span>
+                <h3 class="hotel-name" th:text="${booking.hotelName}">호텔명</h3>
+                <p class="room-info" th:text="${booking.roomName + ' · ' + booking.roomNumber}">객실명 · 객실번호</p>
+                <div class="booking-buttons">
+                    <button class="btn btn-detail"
+                            th:onclick="|location.href='@{/booking/detail(merchantUid=${booking.merchantUid})}'|">
+                        예약 상세
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="completed">
+        <div th:if="${#lists.isEmpty(completedList)}" class="empty-message">
+            이용 완료된 예약이 없습니다.
+        </div>
+        <div th:each="booking : ${completedList}" class="booking-item">
+            <img th:src="@{'/hotelImage/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
+            <div class="booking-info">
+                <span class="status completed">이용완료</span>
+                <h3 class="hotel-name" th:text="${booking.hotelName}">호텔명</h3>
+                <p class="room-info" th:text="${booking.roomName + ' · ' + booking.roomNumber}">객실명 · 객실번호</p>
+                <div class="booking-buttons">
+                    <button class="btn btn-detail"
+                            th:onclick="|location.href='@{/booking/detail(merchantUid=${booking.merchantUid})}'|">
+                        예약 상세
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="canceled">
+        <div th:if="${#lists.isEmpty(canceledList)}" class="empty-message">
+            취소된 예약이 없습니다.
+        </div>
+        <div th:each="booking : ${canceledList}" class="booking-item">
+            <img th:src="@{'/hotelImage/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
+            <div class="booking-info">
+                <span class="status canceled">예약취소</span>
+                <h3 class="hotel-name" th:text="${booking.hotelName}">호텔명</h3>
+                <p class="room-info" th:text="${booking.roomName + ' · ' + booking.roomNumber}">객실명 · 객실번호</p>
+                <div class="booking-buttons">
+                    <button class="btn btn-detail"
+                            th:onclick="|location.href='@{/booking/detail(merchantUid=${booking.merchantUid})}'|">
+                        예약 상세
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 탭 변경 스크립트 -->
+    <script>
+        const tabs = document.querySelectorAll('.tab-button');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+    </script>
+
+</div>
+</body>
+</html>
