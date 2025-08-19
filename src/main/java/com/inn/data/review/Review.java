@@ -6,9 +6,7 @@ import com.inn.data.member.MemberDto;
 import com.inn.data.rooms.RoomTypes;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,5 +46,6 @@ public class Review {
 
     LocalDateTime reviewDate;
     String content;
+    @Column(nullable = false)
     Long rating;
 }
