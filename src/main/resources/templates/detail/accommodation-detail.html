@@ -42,8 +42,8 @@
                     <div class="col">
                         <h1 class="h2 mb-1" th:text="${accommodation.name}">강릉 더끌림 펜션</h1>
                         <div class="d-flex align-items-center gap-2 mb-2">
-                            <span class="badge bg-primary">4.5</span>
-                            <small class="text-muted">리뷰 128개</small>
+                            <span class="badge bg-primary" th:text="${#numbers.formatDecimal(rating.rating_avg, 1, 1)}">4.5</span>
+                            <small class="text-muted" th:text="|리뷰 ${rating.rating_count}개|">리뷰 128개</small>
                             <small class="text-muted">|</small>
                             <small class="text-muted" th:text="${accommodation.address}">강원도 강릉시 해안로 123-45</small>
                         </div>

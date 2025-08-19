@@ -6,10 +6,7 @@ import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
 import com.inn.data.member.MemberDaoInter;
 import com.inn.data.member.MemberDto;
-import com.inn.data.review.Review;
-import com.inn.data.review.ReviewDto;
-import com.inn.data.review.ReviewFile;
-import com.inn.data.review.ReviewRepository;
+import com.inn.data.review.*;
 import com.inn.data.rooms.RoomTypes;
 import com.inn.data.rooms.RoomTypesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -201,4 +198,7 @@ public class ReviewService {
         return dto;
     }
 
+    public RatingDto getRatings(Long hotel_id){
+        return reviewRepository.findReviewStatsByHotelId(hotel_id);
+    }
 }
