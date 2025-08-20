@@ -1,38 +1,70 @@
 package com.inn.data.coupon;
 
 import com.inn.data.member.MemberDto;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.QueryHint;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
 
-    // ✅ 중복 발급 방지(코드 기반; 엔티티 비교 피해서 안전)
+    // ── 존재/조회 기본 ─────────────────────────────────────────────────────────
     boolean existsByMemberAndCoupon_Code(MemberDto member, String code);
-
-    // (선택) 동일 템플릿 엔티티로 직접 체크 (DTO를 엔티티로 바꾸기 전까진 가급적 위 메서드 사용 권장)
     boolean existsByMemberAndCoupon(MemberDto member, Coupon coupon);
 
-    // 미사용 쿠폰 목록
     List<UserCoupon> findAllByMemberAndUsedFalse(MemberDto member);
+    Page<UserCoupon> findAllByMemberAndUsedFalse(MemberDto member, Pageable pageable);
 
-    // 내 쿠폰 단건 조회(소유자 확인 포함)
     Optional<UserCoupon> findByIdAndMember(Long id, MemberDto member);
-
-    // 내 모든 쿠폰
     List<UserCoupon> findAllByMember(MemberDto member);
 
-    // 이벤트(캠페인)별 내 발급 목록
     List<UserCoupon> findAllByMemberAndRelatedEvent(MemberDto member, String relatedEvent);
-
-    // ✅ 오타 수정 완료: countByMemberAndRelatedEvent
     long countByMemberAndRelatedEvent(MemberDto member, String relatedEvent);
 
-    // (편의) 이벤트별 ‘쿠폰 코드’만 조회 — 컨트롤러/뷰에서 가볍게 쓰기 좋음
-    @Query("select uc.coupon.code from UserCoupon uc where uc.member = :member and uc.relatedEvent = :event")
+    // 이벤트 코드는 입력 편차가 있을 수 있어 lower 비교로 안전장치
+    @Query("select distinct uc.coupon.code " +
+           "from UserCoupon uc " +
+           "where uc.member = :member and lower(uc.relatedEvent) = lower(:event)")
     List<String> findCodesByMemberAndRelatedEvent(@Param("member") MemberDto member,
                                                   @Param("event") String event);
+
+    // ── 사용 확정(원자적) ──────────────────────────────────────────────────────
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("update UserCoupon uc " +
+           "   set uc.used = true, uc.usedAt = :now " +
+           " where uc.id = :id " +
+           "   and uc.member = :member " +   // 소유자 검증
+           "   and uc.used = false")
+    int markUsedIfUnused(@Param("id") Long id,
+                         @Param("member") MemberDto member,
+                         @Param("now") LocalDateTime now);
+
+    // ── 비관적 락 단건 조회 ───────────────────────────────────────────────────
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @org.springframework.data.jpa.repository.QueryHints(
+        @QueryHint(name = "jakarta.persistence.lock.timeout", value = "5000") // 5초 대기 (DB/드라이버에 따라 무시될 수 있음)
+    )
+    @Query("select uc from UserCoupon uc where uc.id = :id and uc.member = :member")
+    Optional<UserCoupon> findForUpdateById(@Param("id") Long id,
+                                           @Param("member") MemberDto member);
+
+    // ── 되돌리기(원자적) ──────────────────────────────────────────────────────
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("update UserCoupon uc " +
+           "   set uc.used = false, uc.usedAt = null " +
+           " where uc.id = :id " +
+           "   and uc.member = :member " +   // 소유자 검증
+           "   and uc.used = true")
+    int revertUseIfUsed(@Param("id") Long id,
+                        @Param("member") MemberDto member);
+
+    // ── 편의 메서드(선택) ─────────────────────────────────────────────────────
+    // 미사용 중인 특정 코드 쿠폰 1개만 바로 얻고 싶을 때(서비스에서 스트림 필터 줄이기)
+    Optional<UserCoupon> findTopByMemberAndCoupon_CodeAndUsedFalseOrderByIdAsc(MemberDto member, String code);
 }
