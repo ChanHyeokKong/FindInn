@@ -28,6 +28,9 @@ public class BookingEntity {
     @Column(name = "member_idx")
     private Long memberIdx;
 
+    @Column(name = "coupon_idx")
+    private Long couponIdx;
+
     @Column(name = "checkin", nullable = false)
     private LocalDate checkin;
 

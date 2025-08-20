@@ -65,6 +65,7 @@ public class BookingServiceImpl implements BookingService {
         RoomTypes roomType = room.getRoomType();
 
         return BookingRoomInfo.builder()
+                .hotelIdx(hotel.getIdx())
                 .hotelImage(hotel.getHotelImage())
                 .hotelName(hotel.getHotelName())
                 .roomName(roomType.getTypeName())
@@ -109,6 +110,7 @@ public class BookingServiceImpl implements BookingService {
                 .merchantUid(dto.getMerchantUid())
                 .roomIdx(dto.getRoomIdx())
                 .memberIdx(dto.getMemberIdx())
+                .couponIdx(dto.getCouponIdx())
                 .checkin(dto.getCheckin())
                 .checkout(dto.getCheckout())
                 .price(dto.getPrice())

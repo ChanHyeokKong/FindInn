@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingRoomInfo {
+    private Long hotelIdx;
     private String hotelImage;
     private String hotelName;
     private String roomName;
