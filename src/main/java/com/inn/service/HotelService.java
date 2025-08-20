@@ -89,14 +89,10 @@ public class HotelService {
     public List<HotelDto> searchHotelsWithConditions(String keyword, String category, List<String> tags, LocalDate checkIn, LocalDate checkOut, Long minPrice, Long personCount, String sort) {
 
 
-        // 1. Start with the base of the query
         StringBuilder sql = new StringBuilder(
         		"SELECT h.idx, h.hotel_name, h.member_idx, h.hotel_tel, h.hotel_category, h.hotel_address, h.hotel_image ,rt.min_price FROM hotel h LEFT JOIN hotel_tags t ON h.idx = t.hotel_idx LEFT JOIN( SELECT hotel_id, MIN(price) AS min_price FROM room_types GROUP BY hotel_id) rt ON h.idx = rt.hotel_id WHERE 1=1"
         		);
 
-        
-        	
-        //price
         if (minPrice != null && minPrice < 500000) {
             sql.append(" AND rt.min_price IS NOT NULL AND rt.min_price <= :priceRange");
         }
@@ -113,8 +109,7 @@ public class HotelService {
         }
        
         
-        
-        // 2. Add keyword and category conditions if they exist
+
         if (keyword != null && !keyword.trim().isEmpty()) {
         	sql.append(" AND (h.hotel_name LIKE :keyword OR h.hotel_address LIKE :keyword)");
            
@@ -123,9 +118,7 @@ public class HotelService {
             sql.append(" AND h.hotel_category LIKE :category");
         }
 
-        // 3. Add tag conditions dynamically
-        // IMPORTANT: This part is vulnerable to SQL injection.
-        // You MUST validate the tag names against a whitelist of allowed column names.
+        // SQL 인젝션 방지
         if (tags != null && !tags.isEmpty()) {
             // Example of a simple whitelist
             List<String> allowedTags = List.of(
@@ -145,7 +138,7 @@ public class HotelService {
             }
         }
 
-        // 4. Add room availability condition if dates are provided
+        // 날짜가 제공되면 공실 체크
         if (checkIn != null && checkOut != null) {
             sql.append(" AND EXISTS (SELECT 1 FROM rooms r WHERE r.hotel_id = h.idx AND NOT EXISTS (");
             sql.append(" SELECT 1 FROM booking b WHERE b.room_idx = r.idx");
@@ -217,7 +210,7 @@ public class HotelService {
             
 
 
-            dto.setHotelTag(null);    // 
+            dto.setHotelTag(null);
             return dto;
         }).collect(Collectors.toList());
 

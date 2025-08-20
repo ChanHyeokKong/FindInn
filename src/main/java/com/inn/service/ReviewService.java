@@ -176,16 +176,13 @@ public class ReviewService {
         dto.setMemberName(review.getMember().getMemberName());
         dto.setBookingId(review.getBooking().getIdx());
         dto.setMemberId(review.getMember().getIdx());
-        dto.setMemberName(review.getMember().getMemberName());
         dto.setHotelId(review.getHotel().getIdx());
         dto.setHotelName(review.getHotel().getHotelName());
         dto.setRoomTypeId(review.getRoomType().getIdx());
         dto.setRoomName(review.getRoomType().getTypeName());
         dto.setReviewDate(review.getReviewDate());
         dto.setRating(review.getRating());
-        dto.setMemberId(review.getMember().getIdx());
         dto.setContent(review.getContent());
-        dto.setRating(review.getRating());
         List<ReviewFile> reviewFiles = review.getReviewFiles();
 
         if (reviewFiles != null && !reviewFiles.isEmpty()) {

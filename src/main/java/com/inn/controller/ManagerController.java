@@ -115,8 +115,6 @@ public class ManagerController {
             List<RoomTypes> roomTypes = service.getRoomTypesByHotelIds(hotelIds);
             model.addAttribute("roomTypes", roomTypes);
             templateContent = hotelService.getHotelDescription(hotelIds.get(0));
-            System.out.println(hotelIds.get(0));
-            System.out.println("hotelIds : " + hotelIds);
         }
         Post postWithTemplate = new Post();
 
