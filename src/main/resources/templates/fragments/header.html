@@ -5,6 +5,9 @@
         </div>
         <div class="header-menu">
             <div class="menu">
+                <div class="menu-item-event">
+                    <a th:href="@{event/eventlist}">이벤트</a>
+                </div>
                 <div class="menu-item-qna">
                     <a sec:authorize="isAnonymous()||hasRole('USER')" th:href="@{/qna}">고객문의</a>
                     <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/qna}">고객문의</a>
@@ -74,7 +77,26 @@
                                         <caption>이름입력</caption>
                                         <li><input type="text" name="memberName" class="form-control"></li>
                                         <caption>전화번호 입력</caption>
-                                        <li><input type="text" name="memberPhone" class="form-control"></li>
+                                        <div class="form-group phone-auth-row">
+                                            <div class="phone-input-wrapper">
+                                                <input type="tel" id="memberPhone" name="memberPhone" class="form-control" placeholder="010-1234-5678"/>
+                                            </div>
+                                            <button type="button" id="sendAuthBtn-signup"
+                                                    class="btn btn-primary auth-btn">
+                                                인증번호 받기
+                                            </button>
+                                        </div>
+
+                                        <div id="authSection-signup" style="display:none;" class="auth-section">
+                                            <label for="authInput-signup">인증번호 입력</label>
+                                            <div class="auth-input-row">
+                                                <input type="text" id="authInput-signup" class="form-control" placeholder="인증번호 입력"/>
+                                                <button type="button" id="checkAuthBtn-signup" class="btn btn-primary auth-btn">확인</button>
+                                            </div>
+                                            <input type="hidden" id="serverAuthCode-signup" value=""/>
+                                            <p id="timerText-signup" style="color: gray;"></p>
+                                        </div>
+                                        <p id="authResultMsg-signup"></p>
                                     </section>
                                 </section>
                                 <button class="btn btn-success" id="login-btn" type="button">로그인</button><br>

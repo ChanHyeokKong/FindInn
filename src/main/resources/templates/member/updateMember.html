@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mypageLayout}">
+
+<head>
+    <title>정보 수정</title>
+    <style>
+        .update-form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background-color: #fff;
+        }
+        .update-form-container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .form-control[readonly] {
+            background-color: #e9ecef;
+        }
+        .btn-container {
+            text-align: right;
+        }
+        .change-section {
+            border: 1px solid #eee;
+            padding: 20px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+        .input-group-btn {
+            display: flex;
+            gap: 5px;
+        }
+    </style>
+</head>
+
+<th:block layout:fragment="modals">
+<!-- Password Confirmation Modal -->
+<div class="modal fade" id="passwordConfirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">비밀번호 확인</h5>
+            </div>
+            <div class="modal-body">
+                <p>정보를 안전하게 보호하기 위해 현재 비밀번호를 입력해주세요.</p>
+                <form id="passwordConfirmForm">
+                    <div class="form-group">
+                        <input type="password" id="currentPassword" class="form-control" required>
+                        <div class="invalid-feedback" style="display: none;">비밀번호가 일치하지 않습니다.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="history.back()">취소</button>
+                <button type="button" id="confirmPasswordBtn" class="btn btn-primary">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+</th:block>
+
+<div id="updateFormContainer" style="display: none;" layout:fragment="content" class="update-form-container">
+    <h1>회원 정보 수정</h1>
+    <form id="updateForm" th:action="@{/mypage/update}" method="post">
+        <input type="hidden" id="memberIdx" name="idx" />
+
+        <div class="form-group">
+            <label for="memberEmail">이메일</label>
+            <input type="email" id="memberEmail" name="memberEmail" class="form-control" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="memberName">이름</label>
+            <input type="text" id="memberName" name="memberName" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="updateMemberPhone">전화번호</label>
+            <div class="input-group-btn">
+                <input type="tel" id="updateMemberPhone" name="memberPhone" class="form-control" required readonly>
+                <button type="button" id="changePhoneBtn" class="btn btn-secondary">변경</button>
+            </div>
+        </div>
+
+        <div id="phoneChangeSection" class="change-section" style="display: none;">
+            <div class="auth-input-row">
+                <button type="button" id="sendAuthBtn-update" class="btn btn-primary auth-btn">인증번호 받기</button>
+                <input type="text" id="authInput-update" class="form-control" placeholder="인증번호 입력"/>
+                <button type="button" id="checkAuthBtn-update" class="btn btn-primary auth-btn">확인</button>
+            </div>
+            <input type="hidden" id="serverAuthCode-update" value=""/>
+            <p id="timerText-update" style="color: gray; margin-top: 5px;"></p>
+            <p id="authResultMsg-update"></p>
+        </div>
+
+        <hr>
+
+        <button type="button" id="changePasswordBtn" class="btn btn-secondary mb-3">비밀번호 변경</button>
+
+        <div id="passwordChangeSection" class="change-section" style="display: none;">
+            <h4>비밀번호 변경</h4>
+            <div class="form-group">
+                <label for="newPassword">새 비밀번호</label>
+                <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="새 비밀번호를 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="newPasswordConfirm">새 비밀번호 확인</label>
+                <input type="password" id="newPasswordConfirm" class="form-control" placeholder="새 비밀번호를 다시 입력하세요">
+            </div>
+        </div>
+
+        <div class="btn-container mt-4">
+            <button type="submit" class="btn btn-primary">정보 수정</button>
+        </div>
+    </form>
+</div>
+
+<th:block layout:fragment="script">
+    <script th:src="@{/javascript/updateMember.js}"></script>
+</th:block>
+
+</body>
+</html>

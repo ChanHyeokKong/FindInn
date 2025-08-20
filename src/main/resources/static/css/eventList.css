@@ -1,0 +1,48 @@
+.event-list-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between cards */
+    justify-content: center; /* Center cards horizontally */
+    padding: 20px;
+}
+
+.event-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Ensures image corners are rounded with card */
+    width: 300px; /* Fixed width for cards, adjust as needed */
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.event-card:hover {
+    transform: translateY(-5px); /* Slight lift effect on hover */
+}
+
+.event-card a {
+    text-decoration: none; /* Remove underline from links */
+    color: inherit; /* Inherit text color */
+    display: block; /* Make the whole card clickable */
+    padding: 15px;
+}
+
+.event-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px; /* Slightly rounded image corners */
+    margin-bottom: 10px;
+}
+
+.event-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.event-description {
+    font-size: 0.9em;
+    color: #666;
+    line-height: 1.4;
+}

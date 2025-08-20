@@ -1,5 +1,11 @@
 package com.inn.service;
 
+import com.inn.data.chat.ChatDto;
+import com.inn.data.chat.ChatRepository;
+import com.inn.data.chat.ChatRoomDto;
+import com.inn.data.chat.ChatRoomRepository;
+import com.inn.data.hotel.HotelEntity;
+import com.inn.data.hotel.HotelRepository;
 import com.inn.data.member.*;
 import com.inn.data.member.manager.ManageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +20,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // Transactional import 추가
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,6 +38,15 @@ public class MemberService implements UserDetailsService {
 
     @Autowired
     SocialMemberRepository socialMemberRepository; // SocialMemberRepository 주입
+
+    @Autowired
+    ChatRoomRepository chatRoomRepository;
+
+    @Autowired
+    ChatRepository chatRepository;
+
+    @Autowired
+    HotelRepository hotelRepository;
 
     PasswordEncoder pe = new BCryptPasswordEncoder();
     @Autowired
@@ -145,5 +162,58 @@ public class MemberService implements UserDetailsService {
             socialMemberRepository.save(newSocialMember);
         }
         return new CustomUserDetails(member);
+    }
+
+    public List<ChatRoomDto> getChatRoomsForMember(Long memberIdx) {
+        // 1. 사용자의 모든 채팅방 조회
+        List<ChatRoomDto> chatRooms = chatRoomRepository.findAllByMemberIdx(memberIdx);
+        List<ChatRoomDto> chatRoomInfos = new ArrayList<>();
+
+        for (ChatRoomDto room : chatRooms) {
+            // 2. 각 채팅방의 마지막 메시지 조회
+            Optional<ChatDto> lastMessageOpt = chatRepository.findTopByChatRoomIdxOrderBySendTimeDesc(room.getIdx());
+
+            // 3. 호텔 이름 조회
+            String hotelName = hotelRepository.findById(room.getHotelIdx()).map(HotelEntity::getHotelName).orElse("알 수 없는 호텔");
+
+            room.setHotelName(hotelName);
+
+            if (lastMessageOpt.isPresent()) {
+                ChatDto lastMessage = lastMessageOpt.get();
+                room.setLastMessage(lastMessage.getMessage());
+                room.setLastMessageTime(lastMessage.getSendTime().toLocalDateTime());
+            } else {
+                room.setLastMessage("메시지가 없습니다.");
+            }
+            chatRoomInfos.add(room);
+        }
+
+        // 마지막 메시지 시간 순으로 정렬 (최신이 위로)
+        chatRoomInfos.sort(Comparator.comparing(ChatRoomDto::getLastMessageTime, Comparator.nullsLast(Comparator.reverseOrder())));
+
+        return chatRoomInfos;
+    }
+
+    // 비밀번호 확인
+    public boolean checkPassword(Long userIdx, String rawPassword) {
+        MemberDto member = memberDao.findById(userIdx).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return pe.matches(rawPassword, member.getMemberPassword());
+    }
+
+    // 회원 정보 수정
+    @Transactional
+    public void updateMember(MemberDto updateDto, String newPassword) {
+        MemberDto member = memberDao.findById(updateDto.getIdx()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // 이름과 전화번호 업데이트
+        member.setMemberName(updateDto.getMemberName());
+        member.setMemberPhone(updateDto.getMemberPhone());
+
+        // 새 비밀번호가 제공되었는지 확인
+        if (newPassword != null && !newPassword.isEmpty()) {
+            member.setMemberPassword(pe.encode(newPassword));
+        }
+
+        memberDao.save(member);
     }
 }

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<div layout:fragment="content">
+  <link rel="stylesheet" href="/css/eventList.css">
+  <div class="event-list-container">
+    <div class="event-card">
+      <a href="/test/questions">
+        <img src="/image/event.png" alt="Event 1">
+        <div class="event-title">나의 여행 부캐 테스트하기</div>
+        <div class="event-description">여행 부캐 테스트하고 쿠폰 받아가세요!</div>
+      </a>
+    </div>
+    <div class="event-card">
+      <a th:href="@{/event/august-pack}">
+        <img src="/image/coupon.png" alt="Event 2">
+        <div class="event-title">8월 한정 쿠폰팩</div>
+        <div class="event-description">8월 여름 휴가 할인받고 떠나세요!</div>
+      </a>
+    </div>
+  </div>
+</div>
+</html>
