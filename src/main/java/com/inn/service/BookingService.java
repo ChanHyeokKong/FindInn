@@ -3,6 +3,7 @@ package com.inn.service;
 import com.inn.data.booking.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface BookingService {
 
@@ -19,6 +20,8 @@ public interface BookingService {
     BookingEntity updateStatusToCanceled(Long idx);
 
     BookingCompleteInfo getBookingCompleteInfo(Long bookingIdx);
+
+    List<BookingListInfo> getBookingsByStatus(Long memberIdx, String status);
 
     BookingDetailInfo getBookingDetailInfo(String merchantUid);
 

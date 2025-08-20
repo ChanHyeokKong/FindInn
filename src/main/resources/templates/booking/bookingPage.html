@@ -4,7 +4,7 @@
       layout:decorate="~{layout/layout}">
 
 <head>
-    <title>예약 확인 및 결제 페이지</title>
+    <title>예약 확인 및 결제</title>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <th:block layout:fragment="head"></th:block>
@@ -82,7 +82,7 @@
             <section class="booking-summary">
                 <h2 th:text="${hotelName}">호텔명</h2>
                 <div style="text-align:center; margin-bottom: 20px;">
-                    <img th:src="@{${hotelImage}}" alt="호텔 이미지"
+                    <img th:src="@{'/hotelImage/' + ${hotelImage}}" alt="호텔 이미지"
                          style="max-width: 100%; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);"/>
                 </div>
 

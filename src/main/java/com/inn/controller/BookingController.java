@@ -60,7 +60,7 @@ public class BookingController {
 
         // model 세팅
         model.addAttribute("roomIdx", roomIdx);
-        model.addAttribute("hotelImage", bookingInfo.getHotelImage()); // 리스트(첫 이미지 포함)
+        model.addAttribute("hotelImage", bookingInfo.getHotelImage());
         model.addAttribute("hotelName", bookingInfo.getHotelName());
         model.addAttribute("roomName", bookingInfo.getRoomName());
         model.addAttribute("roomNameAndNum", bookingInfo.getRoomName() + " " + bookingInfo.getRoomNumber() + "호");
@@ -99,6 +99,25 @@ public class BookingController {
     @GetMapping("/booking/search")
     public String bookingSearchPage() {
         return "booking/bookingSearch";
+    }
+
+    // 회원 예약내역 조회 페이지
+    @GetMapping("/booking/list")
+    public String bookingList(@AuthenticationPrincipal CustomUserDetails currentUser,
+                              Model model) {
+
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        Long memberIdx = currentUser.getIdx();
+
+        // 통합된 상태별 조회 메서드 사용
+        model.addAttribute("confirmedList", bookingService.getBookingsByStatus(memberIdx, "CONFIRMED"));
+        model.addAttribute("completedList", bookingService.getBookingsByStatus(memberIdx, "COMPLETED"));
+        model.addAttribute("canceledList", bookingService.getBookingsByStatus(memberIdx, "CANCELED"));
+
+        return "booking/bookingList";
     }
 
     // 예약 상세 페이지

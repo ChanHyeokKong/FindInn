@@ -3,39 +3,45 @@ package com.inn.data.test;
 import java.time.LocalDateTime;
 
 import com.inn.data.member.MemberDto;
+import jakarta.persistence.*;
 
-import groovy.transform.builder.Builder;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Getter
-@Setter
+@Table(name = "test_result")                 // 테이블명 고정 권장
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder                                     // ✅ Lombok Builder (Groovy 아님!)
+@ToString(exclude = "member")                // 순환참조 방지 (선택)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class TestResult {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long idx;
 
-    @ManyToOne(fetch = FetchType.LAZY) // ✅ 꼭 있어야 함
-    @JoinColumn(name = "member_idx", referencedColumnName = "idx")   // ✅ member 테이블의 PK와 매핑
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "member_idx", referencedColumnName = "idx")   // MemberDto.pk = idx
     private MemberDto member;
 
+    /** 대표 성향: activity / healing / emotion / challenge */
+    @Column(nullable = false, length = 20)
     private String trait;
+
+    /** 세부 점수 */
+    @Column(nullable = true)
+    private Integer activityScore;
+
+    @Column(nullable = true)
+    private Integer healingScore;
+
+    @Column(nullable = true)
+    private Integer emotionScore;
+
+    @Column(nullable = true)
+    private Integer challengeScore;
+
     private LocalDateTime createdAt;
 }
-

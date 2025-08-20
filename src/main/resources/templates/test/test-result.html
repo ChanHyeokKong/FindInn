@@ -1,62 +1,199 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <title>여행 성향 결과</title>
-    <meta charset="UTF-8">
-    <style>
-        body { font-family: sans-serif; text-align: center; padding: 30px; }
-        .card { max-width: 700px; margin: 0 auto; background: #fff8f0; border-radius: 15px; padding: 30px; box-shadow: 0 0 12px rgba(0,0,0,0.1); }
-        .bar-container { width: 80%; background: #eee; height: 20px; border-radius: 10px; margin: 10px auto; }
-        .bar { height: 100%; border-radius: 10px; }
-        .bar.activity { background-color: #ff8c00; }
-        .bar.healing { background-color: #228b22; }
-        .bar.challenge { background-color: #cc3366; }
-        .bar.emotion { background-color: #3399ff; }
-        img { border-radius: 10px; margin-bottom: 20px; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>여행 성향 결과</title>
+
+  <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}">
+
+  <style>
+    :root{
+      --bg:#fbfcfe; --card:#fff; --ink:#0f172a; --muted:#64748b;
+      --shadow:0 16px 40px rgba(15,23,42,.08); --r:18px;
+      --bar-bg:#e9eef5;
+      --act:#f59e0b;      /* Activity: orange */
+      --heal:#10b981;     /* Healing: green  */
+      --chal:#db2777;     /* Challenge: pink */
+      --emo:#3b82f6;      /* Emotion: blue   */
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg);padding:30px;text-align:center}
+    .card{max-width:820px;margin:0 auto;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:32px}
+    h1{margin:0 0 6px;font-size:28px}
+    .subtitle{margin:0 0 18px;color:var(--muted)}
+    .hero{margin:10px 0 14px}
+    .hero img{max-width:260px;border-radius:12px}
+    .desc{margin:8px 0 16px;color:#334155}
+    .section-title{margin:18px 0 10px;font-weight:700}
+    .row{margin:14px 0}
+    .label{display:flex;justify-content:space-between;align-items:center;margin:0 auto 6px;width:82%}
+    .label span:first-child{font-weight:600}
+    .pill{font-size:12px;background:#eef2ff;color:#3730a3;border-radius:999px;padding:4px 8px}
+    .bar-wrap{width:82%;height:14px;background:var(--bar-bg);border-radius:999px;margin:0 auto;overflow:hidden}
+    .bar{height:100%}
+    .bar.activity{background:var(--act)}
+    .bar.healing{background:var(--heal)}
+    .bar.challenge{background:var(--chal)}
+    .bar.emotion{background:var(--emo)}
+    .recos{margin-top:18px}
+    .recos ul{list-style:none;padding:0;margin:6px 0 0}
+    .recos li{margin:6px 0;color:#475569}
+    .ctl{margin-top:16px}
+    .btn{display:inline-block;border:0;background:#2f6bff;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;cursor:pointer}
+
+    /* --- Modal --- */
+    .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+           background:rgba(15,23,42,.45); z-index:1000;}
+    .modal.open{display:flex;}
+    .modal-dialog{background:#fff; border-radius:16px; padding:22px 20px; width:min(92vw,420px);
+                  box-shadow:var(--shadow); text-align:center}
+    .modal-title{margin:0 0 6px; font-size:18px; font-weight:700}
+    .modal-msg{margin:8px 0 14px; color:#334155}
+    .modal-actions{display:flex; justify-content:center; gap:10px}
+    .btn-outline{background:#fff; color:#1f2937; border:1px solid #e5e7eb; border-radius:10px; padding:8px 12px; cursor:pointer}
+  </style>
 </head>
 <body>
+<div class="card"
+     th:with="levels=${levels != null ? levels : {'activity':0,'healing':0,'emotion':0,'challenge':0}}">
+  <h1>🎉 당신의 여행 부캐는?</h1>
+  <p class="subtitle"
+     th:text="${character != null
+               ? (character.name + (character.code != null ? ' (' + character.code + ')' : ''))
+               : (#strings.capitalize(topTrait))}">
+    결과명 (코드)
+  </p>
 
-<div th:if="${errorMessage != null}">
-    <p th:text="${errorMessage}" style="color:red; font-weight: bold;"></p>
-</div>
+  <div class="hero" th:if="${character != null && character.imageUrl != null}">
+    <img th:src="${character.imageUrl}" alt="캐릭터 이미지">
+  </div>
 
-<div class="card" th:if="${character != null}">
-    <h2>🎉 당신의 여행 부캐는?</h2>
-    <h1 th:text="${character.name} + ' (' + ${character.code} + ')'">감성 탐험가 (E02)</h1>
+  <p class="desc"
+     th:text="${character != null && character.description != null ? character.description : '설명이 준비중입니다.'}">
+    설명문구
+  </p>
 
-    <img th:src="${character.imageUrl}" alt="캐릭터 이미지" width="200"/>
+  <h3 class="section-title">📊 능력치</h3>
 
-    <p th:text="${character.description}">
-        도심 속 카페, 인스타 감성에 진심인 여행자!
-    </p>
-
-    <h3>📊 능력치</h3>
-    <div>
-        <p>Activity</p>
-        <div class="bar-container"><div class="bar activity" th:style="'width:' + ${character.activityLevel * 20} + '%'"></div></div>
-
-        <p>Healing</p>
-        <div class="bar-container"><div class="bar healing" th:style="'width:' + ${character.healingLevel * 20} + '%'"></div></div>
-
-        <p>Challenge</p>
-        <div class="bar-container"><div class="bar challenge" th:style="'width:' + ${character.challengeLevel * 20} + '%'"></div></div>
-
-        <p>Emotion</p>
-        <div class="bar-container"><div class="bar emotion" th:style="'width:' + ${character.emotionLevel * 20} + '%'"></div></div>
+  <!-- Activity -->
+  <div class="row">
+    <div class="label">
+      <span>Activity</span>
+      <span class="pill" th:text="${levels['activity']} + '%'">0%</span>
     </div>
+    <div class="bar-wrap">
+      <div class="bar activity" th:style="|width:${levels['activity']?:0}%|"></div>
+    </div>
+  </div>
 
-    <h3>🏨 추천 숙소</h3>
+  <!-- Healing -->
+  <div class="row">
+    <div class="label">
+      <span>Healing</span>
+      <span class="pill" th:text="${levels['healing']} + '%'">0%</span>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar healing" th:style="|width:${levels['healing']?:0}%|"></div>
+    </div>
+  </div>
+
+  <!-- Challenge -->
+  <div class="row">
+    <div class="label">
+      <span>Challenge</span>
+      <span class="pill" th:text="${levels['challenge']} + '%'">0%</span>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar challenge" th:style="|width:${levels['challenge']?:0}%|"></div>
+    </div>
+  </div>
+
+  <!-- Emotion -->
+  <div class="row">
+    <div class="label">
+      <span>Emotion</span>
+      <span class="pill" th:text="${levels['emotion']} + '%'">0%</span>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar emotion" th:style="|width:${levels['emotion']?:0}%|"></div>
+    </div>
+  </div>
+
+  <!-- 추천 숙소 -->
+  <div class="recos"
+       th:if="${character != null && character.recommendedAccommodations != null && !#lists.isEmpty(character.recommendedAccommodations)}">
+    <h3 class="section-title">🏨 추천 숙소</h3>
     <ul>
-        <li th:each="item : ${character.recommendedAccommodations}" th:text="${item}">도심 부티크 호텔</li>
+      <li th:each="acc : ${character.recommendedAccommodations}" th:text="${acc}">숙소</li>
     </ul>
+  </div>
 
-    <!-- (선택) 쿠폰 발급 -->
-    <form th:action="@{/api/coupon/issue}" method="post">
-        <input type="hidden" name="characterCode" th:value="${character.code}" />
-        <button type="submit">🎁 쿠폰 받기</button>
-    </form>
+  <!-- 쿠폰 버튼 (AJAX + 모달) -->
+  <div class="ctl" th:if="${topTrait != null}">
+    <input type="hidden" id="traitVal" th:value="${topTrait}">
+    <button type="button" id="btn-coupon" class="btn">🎁 쿠폰 받기</button>
+  </div>
 </div>
 
+<!-- Modal -->
+<div id="couponModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="couponTitle">
+  <div class="modal-dialog">
+    <h4 id="couponTitle" class="modal-title">쿠폰 발급</h4>
+    <p id="couponMsg" class="modal-msg">처리 중…</p>
+    <div class="modal-actions">
+      <button type="button" id="modalClose" class="btn-outline">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // CSRF
+  const csrfToken  = document.querySelector('meta[name="_csrf"]')?.content || null;
+  const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content || null;
+
+  const $btn   = document.getElementById('btn-coupon');
+  const $modal = document.getElementById('couponModal');
+  const $msg   = document.getElementById('couponMsg');
+  const $close = document.getElementById('modalClose');
+
+  function openModal(text){ $msg.textContent = text; $modal.classList.add('open'); $modal.setAttribute('aria-hidden','false'); }
+  function closeModal(){ $modal.classList.remove('open'); $modal.setAttribute('aria-hidden','true'); }
+  $close?.addEventListener('click', closeModal);
+  $modal?.addEventListener('click', (e)=>{ if(e.target === $modal) closeModal(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+
+  $btn?.addEventListener('click', async () => {
+    const trait = document.getElementById('traitVal')?.value || '';
+    $btn.disabled = true;
+
+    try {
+      const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+      if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
+
+      const res = await fetch('/event/test/issue-coupon', {
+        method: 'POST',
+        headers,
+        body: new URLSearchParams({ trait })
+      });
+
+      if (res.status === 401) { location.href = '/login'; return; }
+
+      let text = '쿠폰 발급이 완료되었습니다 🎁';
+      if (res.ok) {
+        const data = await res.json().catch(()=>null);
+        if (data?.message) text = data.message;
+        if (data?.ok === false && data?.message) text = data.message;
+      } else {
+        text = '쿠폰 발급에 실패했습니다. 잠시 후 다시 시도해주세요.';
+      }
+      openModal(text);
+    } catch (err) {
+      openModal('네트워크 오류로 실패했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      $btn.disabled = false;
+    }
+  });
+</script>
 </body>
 </html>
