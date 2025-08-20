@@ -161,6 +161,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 displayMessage(msg, msg.senderIdx === currentMemberId ? 'sent' : 'received');
                             });
                             connect();
+                            // Scroll to bottom after messages are loaded
+                            chatBox.scrollTop = chatBox.scrollHeight;
                         })
                         .catch(error => console.error('Error loading chat history:', error));
                 } else {
@@ -168,6 +170,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log('No existing chat room. Will create on first message.');
                     chatBox.innerHTML = '';
                     displayMessage({ message: '안녕하세요! 궁금한 점이 있으시면 무엇이든 물어보세요.' }, 'received');
+                    // Scroll to bottom for initial message
+                    chatBox.scrollTop = chatBox.scrollHeight;
                 }
                 // Removed: chatModal.show(); // Let Bootstrap's data-bs-toggle handle this
             })
@@ -175,6 +179,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error checking for existing chat room:', error);
                 alert('채팅방 정보를 불러오는데 실패했습니다.');
             });
+    });
+
+    // Scroll to bottom when modal is shown
+    document.getElementById('chatModal').addEventListener('shown.bs.modal', function () {
+        chatBox.scrollTop = chatBox.scrollHeight;
     });
 
     // Event listeners for sending messages

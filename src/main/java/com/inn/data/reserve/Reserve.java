@@ -21,6 +21,7 @@ public class Reserve {
     private Long price;
     private Long reserveHotelId;
     private Long reserveUserId;
+    private Long status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_type_id", referencedColumnName = "idx")

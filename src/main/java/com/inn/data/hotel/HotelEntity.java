@@ -39,7 +39,7 @@ public class HotelEntity {
 	@Column(name = "hotelTag")
 	private List<String> hotelTag;
 
-	private Long status;
+	private Long status = Long.valueOf(0); // 0...심사중, 1...등록완료, 2...예약불가
 
 	@Lob
 	private String description;

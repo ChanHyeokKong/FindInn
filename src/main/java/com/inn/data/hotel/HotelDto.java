@@ -20,9 +20,11 @@ public class HotelDto {
 	private List<String> hotelTag;
 	private Integer priceRange;
 	private String hotelImage;
+
 	
 	// 호텔 평점
 	private RatingDto ratingDto;
+
 
 	 public HotelDto(Long idx, String hotelName,
                     List<String> hotelImages, Long memberIdx) {

@@ -16,13 +16,11 @@ public interface MemberDaoInter extends JpaRepository<MemberDto, Long> {
     @Query("SELECT m FROM MemberDto m JOIN m.roles r WHERE r.roleName = 'ROLE_MANAGER'")
     List<MemberDto> findAllManager();
 
-    @Query("select new com.inn.data.member.MyPageDto (" +
-            "h.hotelName, h.hotelAddress, rt.typeName, r.roomNumber, rs.checkIn, rs.checkOut, rs.idx, m.memberName) " +
-            "from Reserve rs " +
-            "join HotelEntity h on rs.reserveHotelId = h.idx " +
-            "join rs.room r " +
-            "join rs.roomType rt " +
-            "join MemberDto m on m.idx = :memberIdx " +
-            "where rs.reserveUserId = :memberIdx")
+    @Query("select new com.inn.data.member.MyPageDto(" +
+            "h.hotelName, h.hotelAddress, h.idx, rt.typeName, r.roomNumber, b.checkin, b.checkout, b.idx, m.memberName, b.status) " +
+            "from BookingEntity b, Rooms r, MemberDto m " +
+            "join r.hotel h " +
+            "join r.roomType rt " +
+            "where b.memberIdx = :memberIdx and b.roomIdx = r.idx and b.memberIdx = m.idx")
     List<MyPageDto> findMyReserve(@Param("memberIdx") Long memberIdx);
 }

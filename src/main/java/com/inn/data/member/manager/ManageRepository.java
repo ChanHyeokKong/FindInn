@@ -36,27 +36,23 @@ public interface ManageRepository extends JpaRepository<HotelEntity, Long> {
     @Query("SELECT rt FROM RoomTypes rt WHERE rt.hotel.idx IN :hotelIds")
     List<RoomTypes> findRoomTypesByHotelIdIn(@Param("hotelIds") List<Long> hotelIds);
 
-    @Query("select new com.inn.data.member.MyPageDto (" +
-            "h.hotelName, h.hotelAddress, rt.typeName, r.roomNumber, rs.checkIn, rs.checkOut, rs.idx, m.memberName) " +
-            "from Reserve rs " +
-            "join HotelEntity h on rs.reserveHotelId = h.idx " +
-            "join rs.room r " +
-            "join rs.roomType rt " +
-            "join MemberDto m on m.idx = rs.reserveUserId " +
-            "where rs.reserveHotelId IN :hotelIdxes")
+    @Query("select new com.inn.data.member.MyPageDto(" +
+            "h.hotelName, h.hotelAddress, h.idx, rt.typeName, r.roomNumber, b.checkin, b.checkout, b.idx, m.memberName, b.status) " +
+            "from BookingEntity b, Rooms r, MemberDto m " +
+            "join r.hotel h " +
+            "join r.roomType rt " +
+            "where r.hotel.idx in :hotelIdxes and b.roomIdx = r.idx and b.memberIdx = m.idx")
     List<MyPageDto> findMyHotelReserves(@Param("hotelIdxes") List<Long> hotelIdxes);
 
     @Query("select h.idx from HotelEntity h where h.memberIdx = :memberIdx")
     List<Long> findMyHotelIdxesByMemberIdx(@Param("memberIdx") Long memberIdx);
 
     @Query("SELECT new com.inn.data.member.manager.HotelWithManagerDto(h, m.memberName, " +
-           "  CAST((SUM(CASE WHEN r.idx IS NOT NULL THEN 1 ELSE 0 END) - " +
-           "   SUM(CASE WHEN rs.idx IS NOT NULL AND CURRENT_DATE BETWEEN rs.checkIn AND rs.checkOut THEN 1 ELSE 0 END)) AS long) AS availableRoomCount" +
-           ") " +
+           "  CAST((COUNT(r.idx) - COUNT(b.idx)) AS long)) " +
            "FROM HotelEntity h " +
            "JOIN MemberDto m ON h.memberIdx = m.idx " +
            "LEFT JOIN Rooms r ON r.hotel.idx = h.idx " +
-           "LEFT JOIN Reserve rs ON rs.room = r AND CURRENT_DATE BETWEEN rs.checkIn AND rs.checkOut " +
+           "LEFT JOIN BookingEntity b ON b.roomIdx = r.idx AND CURRENT_DATE BETWEEN b.checkin AND b.checkout " +
            "GROUP BY h.idx, h.hotelName, m.memberName")
     List<HotelWithManagerDto> findAllWithManagerName();
 }

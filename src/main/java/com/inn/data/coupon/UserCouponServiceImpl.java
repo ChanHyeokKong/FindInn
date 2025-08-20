@@ -116,7 +116,7 @@ public class UserCouponServiceImpl implements UserCouponService {
                 })
                 .map(uc -> {
                     final Coupon c = uc.getCoupon();
-                    final long discount = couponService.calcDiscount(c, safeToInt(price)); // ✅ 서비스 로직 재사용
+                    final long discount = couponService.calcDiscount(c, safeToInt(price)); // 서비스 로직 재사용
                     return new PreviewCoupon(
                             uc.getId(),
                             c.getCode(),
@@ -144,7 +144,7 @@ public class UserCouponServiceImpl implements UserCouponService {
         final Coupon c = uc.getCoupon();
 
         ensureUsableInContext(uc, c, now, hotelId, price, t);
-        return couponService.calcDiscount(c, safeToInt(price)); // ✅ 서비스 로직 재사용
+        return couponService.calcDiscount(c, safeToInt(price));
     }
 
     @Override
@@ -179,7 +179,7 @@ public class UserCouponServiceImpl implements UserCouponService {
             ensureUsableInContext(ucStack, cStack, now, hotelId, originalPrice, t);
         }
 
-        // ✅ CouponService 시그니처(int)로 안전 변환
+        // CouponService 시그니처(int)로 안전 변환
         return couponService.previewFinalPrice(safeToInt(originalPrice), cMain, cStack);
     }
 
@@ -191,7 +191,6 @@ public class UserCouponServiceImpl implements UserCouponService {
         userCouponRepository.findByIdAndMember(userCouponId, member)
                 .orElseThrow(() -> new IllegalStateException("쿠폰을 찾을 수 없거나 권한이 없습니다."));
 
-        // ✅ 레포 시그니처에 맞게 member 포함
         final int updated = userCouponRepository.markUsedIfUnused(userCouponId, member, LocalDateTime.now());
         if (updated == 0) {
             log.warn("쿠폰 사용 실패: userCouponId={}, memberId={}", userCouponId, member.getIdx());
@@ -206,7 +205,6 @@ public class UserCouponServiceImpl implements UserCouponService {
         userCouponRepository.findByIdAndMember(userCouponId, member)
                 .orElseThrow(() -> new IllegalStateException("쿠폰을 찾을 수 없거나 권한이 없습니다."));
 
-        // ✅ 원자적 되돌리기 (소유자 검증 포함)
         final int updated = userCouponRepository.revertUseIfUsed(userCouponId, member);
         if (updated == 0) {
             log.warn("쿠폰 반환 실패(경합/상태불일치): userCouponId={}, memberId={}", userCouponId, member.getIdx());
@@ -221,6 +219,41 @@ public class UserCouponServiceImpl implements UserCouponService {
     @Transactional(readOnly = true)
     public List<String> getIssuedCodes(MemberDto member, String issuedFrom) {
         return userCouponRepository.findCodesByMemberAndRelatedEvent(member, norm(issuedFrom));
+    }
+
+    /* ===================== 레거시(호환) ===================== */
+
+    @Deprecated
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserCoupon> getMyUsableCoupons(MemberDto member, Long hotelId, long price, String userTrait) {
+        final LocalDateTime now = LocalDateTime.now();
+        final String t = normalizeTrait(userTrait);
+
+        // 기존 화면에서 엔티티 리스트를 기대하므로, 컨텍스트 조건만 적용해서 반환
+        return userCouponRepository.findAllByMemberAndUsedFalse(member).stream()
+                .filter(uc -> {
+                    final Coupon c = uc.getCoupon();
+                    try {
+                        return couponService.isUsableNow(c, uc.getIssuedAt(), now)
+                                && couponService.isApplicableToHotel(c, hotelId)
+                                && couponService.isApplicableToPrice(c, safeToInt(price))
+                                && couponService.matchTraitIfRequired(c, t);
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Deprecated
+    @Override
+    @Transactional
+    public boolean markUsed(Long userCouponId, MemberDto member) {
+        userCouponRepository.findByIdAndMember(userCouponId, member)
+                .orElseThrow(() -> new IllegalArgumentException("쿠폰을 찾을 수 없거나 권한이 없습니다."));
+        int updated = userCouponRepository.markUsedIfUnused(userCouponId, member, LocalDateTime.now());
+        return updated == 1;
     }
 
     /* ===================== 내부 헬퍼 ===================== */
@@ -260,16 +293,4 @@ public class UserCouponServiceImpl implements UserCouponService {
             throw new IllegalArgumentException("이 쿠폰은 해당 성향 전용입니다.");
         }
     }
-
-	@Override
-	public List<UserCoupon> getMyUsableCoupons(MemberDto member, Long hotelId, long price, String userTrait) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean markUsed(Long userCouponId, MemberDto member) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }
