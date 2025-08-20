@@ -24,9 +24,7 @@ public class HotelEntity {
 	@CollectionTable(name = "hotelImages", joinColumns = @JoinColumn(name = "hotel_idx"))
 	@Column(name = "hotelImages")
 	private List<String> hotelImages;
-	
-	
-	
+
 	@Column(nullable = false)
 	private String hotelAddress;
 	
@@ -47,7 +45,8 @@ public class HotelEntity {
 	private String description;
 	
 	@Transient
-	private Integer minPrice;
+	private Integer priceRange;
 	
-
+	@Column(nullable = false)
+	private String hotelImage;
 }

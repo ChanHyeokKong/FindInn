@@ -55,4 +55,43 @@ public class PaymentServiceImpl implements PaymentService {
             return false;
         }
     }
+
+    /**
+     * merchantUid 기준 결제 취소 및 DB 업데이트
+     */
+    public boolean cancelPaymentByMerchantUid(String merchantUid) {
+        // 1. merchantUid로 결제 정보 조회
+        PaymentEntity payment = paymentRepository.findByMerchantUid(merchantUid)
+                .orElse(null);
+
+        if (payment == null) {
+            System.err.println("❌ 결제 정보가 없습니다. merchantUid: " + merchantUid);
+            return false;
+        }
+
+        String impUid = payment.getImpUid();
+
+        // 2. 결제 취소
+        try {
+            CancelData cancelData = new CancelData(impUid, true); // 전액 취소
+            IamportResponse<Payment> response = iamportClient.cancelPaymentByImpUid(cancelData);
+
+            if (response.getResponse() != null &&
+                    "cancelled".equalsIgnoreCase(response.getResponse().getStatus())) {
+
+                // 3. DB 상태 업데이트
+                payment.setStatus("CANCELED");
+                paymentRepository.save(payment);
+
+                return true;
+            } else {
+                System.err.println("❌ 결제 취소 실패: 상태 불일치");
+                return false;
+            }
+
+        } catch (IamportResponseException | IOException e) {
+            System.err.println("❌ 결제 취소 실패: " + e.getMessage());
+            return false;
+        }
+    }
 }

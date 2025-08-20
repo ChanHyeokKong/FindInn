@@ -34,7 +34,7 @@
 </aside>
 
 <aside th:fragment="hotelSearch-sidebar">
-	<div class="sidebar">
+	<div class="sidebar" style="width: 200px; height: 850px; overflow-y: auto;">
       <span>필터</span>
       <button id="restart">초기화</button> <hr>
       
@@ -43,9 +43,9 @@
       <form id="categoryForm"></form>
       <input name="category" type="radio" value="all" checked="checked"/>전체<br>
       <input name="category" type="radio" value="motel"/>모텔<br>
-      <input name="category" type="radio" value="hotel&resort"/>호텔·리조트<br>
+      <input name="category" type="radio" value="hotel_resort"/>호텔·리조트<br>
       <input name="category" type="radio" value="pension"/>펜션<br>
-      <input name="category" type="radio" value="home&villa"/>홈&빌라<br>
+      <input name="category" type="radio" value="home_villa"/>홈&빌라<br>
       <input name="category" type="radio" value="camping"/>캠핑<br>
       <input name="category" type="radio" value="guesthouse"/>게하·한옥<hr>
       
@@ -109,6 +109,65 @@
             <li><a>뭐 적지</a></li>
         </ul>
     </div>
+</aside>
+
+<aside th:fragment="hotelSearch-mapSidebar">
+	<div class="mapSidebar" style="width:250px; height: 650px; overflow-y: auto;">
+      <span>필터</span>
+      <button id="restart">초기화</button> <hr>
+      
+      <b>숙소유형</b><br>
+      
+      <form id="categoryForm"></form>
+      <input name="category" type="radio" value="all" checked="checked"/>전체<br>
+      <input name="category" type="radio" value="motel"/>모텔<br>
+      <input name="category" type="radio" value="hotel_resort"/>호텔·리조트<br>
+      <input name="category" type="radio" value="pension"/>펜션<br>
+      <input name="category" type="radio" value="home_villa"/>홈&빌라<br>
+      <input name="category" type="radio" value="camping"/>캠핑<br>
+      <input name="category" type="radio" value="guesthouse"/>게하·한옥<hr>
+      
+      <b>가격</b><br>
+      <input type="range" min="50000" max="500000" step="50000" id="priceRange2" name="priceRange2" value="500000"><br>
+      <p id="priceDisplay">500,000원</p>
+      
+      <b>#취향</b><br>
+		<input type="checkbox" name="tag" value="family">#가족여행숙소
+		<input type="checkbox" name="tag" value="waterpool">#온수풀
+		<input type="checkbox" name="tag" value="view">#뷰맛집
+		<input type="checkbox" name="tag" value="beach">#바닷가
+		<input type="checkbox" name="tag" value="nicemeal">#조식맛집
+		<hr>
+		<b>할인혜택</b><br>
+		<input type="checkbox" name="tag" value="coupon">쿠폰할인
+		<input type="checkbox" name="tag" value="discount">할인특가
+		<hr>
+        <b>시설</b><br>
+        <input type="checkbox" name="tag" value="sauna">사우나
+        <input type="checkbox" name="tag" value="swimming_pool">수영장
+        <input type="checkbox" name="tag" value="restaurant">레스토랑
+        <input type="checkbox" name="tag" value="fitness">피트니스
+        <input type="checkbox" name="tag" value="golf">골프장
+        <input type="checkbox" name="tag" value="pc">공용PC
+        <input type="checkbox" name="tag" value="kitchen">주방/식당
+        <input type="checkbox" name="tag" value="washing_machine">세탁기
+        <input type="checkbox" name="tag" value="parking">주차장
+        <input type="checkbox" name="tag" value="spa">온천
+        <input type="checkbox" name="tag" value="ski">스키장
+        <input type="checkbox" name="tag" value="in_room_eating">객실내취사
+        <input type="checkbox" name="tag" value="breakfast">조식제공
+        <input type="checkbox" name="tag" value="smoking">객실내흡연
+        <input type="checkbox" name="tag" value="luggage">짐보관가능
+        <input type="checkbox" name="tag" value="disabled">장애인편의
+        <input type="checkbox" name="tag" value="pickup">픽업서비스
+      <hr>
+      
+      
+    </div>
+
+	
+
+
 </aside>
 
 </html>

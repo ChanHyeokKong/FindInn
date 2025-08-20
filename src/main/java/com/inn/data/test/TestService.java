@@ -1,11 +1,10 @@
+
+
 package com.inn.data.test;
 
-import java.util.Optional;
-
 import com.inn.data.member.MemberDto;
-import com.inn.data.test.AnswerRequest;
-import com.inn.data.test.CharacterType;
 
 public interface TestService {
-	  Optional<CharacterType> calculateCharacterType(AnswerRequest answers, MemberDto member);
+    /** AnswerRequest를 분석해 대표 trait/캐릭터/퍼센트까지 계산해 반환 */
+    TestResultDto calculateCharacterType(AnswerRequest answers, MemberDto member);
 }

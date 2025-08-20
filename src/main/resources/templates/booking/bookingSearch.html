@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <title>비회원 예약조회</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <th:block layout:fragment="head"></th:block>
+    <link rel="stylesheet" th:href="@{/css/bookingSearch.css}"/>
+</head>
+
+<body>
+<div layout:fragment="content" class="booking-search-container">
+    <h2>비회원 예약조회</h2>
+
+    <form id="bookingSearchForm">
+        <!-- 예약번호 -->
+        <div>
+            <label for="merchantUid">예약 번호 <span style="color:red">*</span></label>
+            <input type="text" id="merchantUid" name="merchantUid" placeholder="숫자+영문 조합" required>
+            <p>이메일 또는 알림톡으로 전송된 예약 번호를 기재해주세요.</p>
+        </div>
+
+        <!-- 휴대폰 번호 -->
+        <div>
+            <label for="guestPhone">휴대폰 번호 <span style="color:red">*</span></label>
+            <input type="text" id="guestPhone" name="guestPhone" placeholder="010-1234-5678" required>
+        </div>
+
+        <!-- 인증 버튼 -->
+        <div>
+            <button type="button" id="sendAuthBtn">인증번호 발송</button>
+        </div>
+
+        <!-- 인증번호 입력 영역 -->
+        <div id="authSection" style="display:none;">
+            <input type="text" id="authInput" placeholder="인증번호 입력" disabled>
+            <input type="hidden" id="serverAuthCode">
+            <button type="button" id="checkAuthBtn" disabled>확인</button>
+            <span id="timerText"></span>
+        </div>
+
+        <!-- 메시지 영역 -->
+        <p id="authResultMsg"></p>
+
+        <!-- 예약 조회 버튼 -->
+        <div>
+            <button type="button" id="searchBtn" disabled>예약 조회</button>
+        </div>
+    </form>
+
+    <!-- 전역 변수 -->
+    <script th:inline="javascript">
+        // smsAuth.js에서 사용하는 전역 변수
+        let isPhoneVerified = false;
+    </script>
+
+    <script th:src="@{/javascript/addHyphen.js}"></script>
+    <script th:src="@{/javascript/smsAuth.js}"></script>
+    <script th:src="@{/javascript/bookingSearch.js}"></script>
+
+</div>
+</body>
+
+</html>

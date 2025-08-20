@@ -11,6 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HotelRepository extends JpaRepository<HotelEntity, Long>, JpaSpecificationExecutor<HotelEntity> {
 
+	
+	
+	
+	
 	 List<HotelEntity> findByHotelNameContaining(String keyword);
 
 	 List<HotelEntity> findByHotelNameContainingAndHotelCategory(String keyword, String category);
@@ -23,6 +27,8 @@ public interface HotelRepository extends JpaRepository<HotelEntity, Long>, JpaSp
 			    HAVING COUNT(DISTINCT hotel_tag) = :tagCount
 			    """, nativeQuery = true)
 			List<Long> findHotelIdxByAllTags(@Param("tags") List<String> tags, @Param("tagCount") int tagCount);
+	 
+	 
 
 	 
 	 

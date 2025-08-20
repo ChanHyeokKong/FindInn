@@ -1,7 +1,39 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
 <div layout:fragment="content">
-    <h1>Main Content</h1>
-    <a href="/test/questions">나의 여행 부캐 테스트 하러 가기</a>
+    <div class="input-group" style="max-width: 1200px;">
+        <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" />
+        <input type="date" id="start">
+        <input type="date" id="end">
+        <input type="number" placeholder="인원수" min="1" max="30" id="personCount" />
+        <button type="button" class="btn btn-success" id="btnSearch">검색</button>
+    </div>
+
+    <br>
+    <h1>Main Page</h1>
+    <a href="/test/questions">나의 여행 부캐 테스트 하러 가기</a><br>
+    <a th:href="@{/event/august-pack}">8월 쿠폰팩 이벤트 보러 가기</a>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const btnSearch = document.getElementById("btnSearch");
+
+            btnSearch.addEventListener("click", () => {
+                const keyword = document.getElementById("searchKeyword").value.trim();
+                const checkIn = document.getElementById("start").value;
+                const checkOut = document.getElementById("end").value;
+                const personCount = document.getElementById("personCount").value;
+
+                // URL 파라미터 구성
+                let url = `/h_list?keyword=${encodeURIComponent(keyword)}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}&personCount=${encodeURIComponent(personCount)}`;
+
+                // 페이지 이동
+                location.href = url;
+            });
+        });
+    </script>
 </div>
 </html>

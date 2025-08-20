@@ -12,26 +12,27 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CharacterType {
+	 @Id
+	    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	    private Long idx;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idx;
+	    private String code; // ex) E01, E02
 
-    private String code; // ex) E01, E02
+	    private String name; // ex) 조용한 힐러
+	    private String description; // 결과 페이지 설명용
 
-    private String name; // ex) 조용한 힐러
+	    /** 핵심 키워드: healing, activity, emotion, challenge */
+	    @Column(nullable = false)
+	    private String trait;
 
-    private String description; // 결과 페이지 설명용
+	    // 점수는 int/Integer가 더 자연스러움
+	    private Integer activityLevel;
+	    private Integer healingLevel;
+	    private Integer challengeLevel;
+	    private Integer emotionLevel;
 
-    private String trait; // 핵심 키워드: healing, activity, emotion, challenge
+	    private String imageUrl;
 
-    private Long activityLevel;
-    private Long healingLevel;
-    private Long challengeLevel;
-    private Long emotionLevel;
-
-    private String imageUrl;
-
-    @ElementCollection
-    private List<String> recommendedAccommodations; // 숙소 추천 텍스트
-}
+	    @ElementCollection
+	    private List<String> recommendedAccommodations; // 숙소 추천 텍스트
+	}

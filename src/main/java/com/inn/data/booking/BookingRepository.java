@@ -16,6 +16,9 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
 
     Optional<BookingEntity> findByMerchantUid(String merchantUid);
 
+    // 예약 내역 조회용 ( + 최근 생성된 순서로 정렬 )
+    List<BookingEntity> findByMemberIdxAndStatusOrderByCreatedAtDesc(Long memberIdx, String status);
+    
     // 예약 중복확인 쿼리
     @Query("SELECT b FROM BookingEntity b " +
             "WHERE b.roomIdx = :roomIdx " +

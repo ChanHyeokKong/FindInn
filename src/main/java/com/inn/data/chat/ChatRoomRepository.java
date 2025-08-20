@@ -19,5 +19,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoomDto, Long> {
     List<ChatRoomDto> findAllByMemberIdx(Long memberIdx);
 
     List<ChatRoomDto> findAllByHotelIdxIn(List<Long> hotelIdxes);
+    
+    
 
 }
