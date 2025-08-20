@@ -27,27 +27,23 @@
         </form>
 
         <form action="/manage/changeDesc" th:object="${post}" method="post">
-            <select name="hotelIdx">
+
+            <select name="hotelId" id="hotelSelector">
+
                 <option th:each="hotel : ${hotels}" th:value="${hotel.idx}">
                     [[${hotel.hotelName}]]
                 </option>
             </select>
 
             <textarea id="editor" th:field="*{content}"></textarea>
-            <button type="submit">Save Post</button>
+            <button type="submit">상세정보 수정</button>
         </form>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/froala-editor@4.2.0/js/froala_editor.pkgd.min.js"></script>
 
-        <script>
-            $(function() {
-                new FroalaEditor('#editor', {
-                    // Set the editor height to 400 pixels
-                    height: 400
-                });
-            });
-        </script>
+        <script th:src="@{/javascript/loadDesc.js}"></script>
+
 
     </div>
 </div>

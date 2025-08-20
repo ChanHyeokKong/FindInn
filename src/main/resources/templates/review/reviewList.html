@@ -17,7 +17,7 @@
             <div class="d-flex gap-3">
                 <div class="flex-grow-1">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <strong class="text-dark" th:text="${review.member?.memberName ?: '익명'}">작성자 이름</strong>
+                        <strong class="text-dark" th:text="${review.memberName ?: '익명'}">작성자 이름</strong>
                         <small class="text-muted" th:text="${#temporals.format(review.reviewDate, 'M월 d일')}">날짜</small>
                     </div>
                     <div th:if="${review.imagePaths != null and !review.imagePaths.empty}"

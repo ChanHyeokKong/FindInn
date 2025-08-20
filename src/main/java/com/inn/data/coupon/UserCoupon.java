@@ -9,32 +9,65 @@ import java.time.LocalDateTime;
 @Entity
 @Table(
     name = "user_coupon",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "coupon_id"}) // 중복 발급 방지
+    uniqueConstraints = @UniqueConstraint(name="uk_usercoupon_member_coupon", columnNames = {"member_id", "coupon_id"}),
+    indexes = {
+        @Index(name = "idx_usercoupon_member_used", columnList = "member_id, used"),
+        @Index(name = "idx_usercoupon_event", columnList = "related_event"),
+        @Index(name = "idx_usercoupon_coupon", columnList = "coupon_id")
+    }
 )
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
+@ToString(exclude = {"member", "coupon"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserCoupon {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
-    /** 소유 회원 */
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "member_id", nullable = false)
-    private MemberDto member;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "member_id", nullable = false)
+    private MemberDto member; // ✅ 지금 구조 유지
 
-    /** 참조 쿠폰(마스터) */
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "coupon_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "coupon_id", nullable = false)
     private Coupon coupon;
 
-    /** 발급 시각 */
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime issuedAt;
 
-    /** 사용 여부/시각 */
     @Column(nullable = false)
-    private boolean used;
+    @Builder.Default
+    private boolean used = false;
+
     private LocalDateTime usedAt;
 
-    /** 발급 출처(이벤트 코드 등, 선택) */
-    @Column(length = 100)
+    @Column(name = "related_event", length = 100)
     private String relatedEvent;
+
+    @Version
+    private Long version;
+
+    @PrePersist
+    private void onCreate() {
+        if (issuedAt == null) issuedAt = LocalDateTime.now();
+        if (relatedEvent != null) relatedEvent = relatedEvent.trim();
+    }
+
+    // 비즈니스 메서드
+    public void markUsed(LocalDateTime now) {
+        if (!this.used) {
+            this.used = true;
+            this.usedAt = (now != null ? now : LocalDateTime.now());
+        }
+    }
+    public void revertUse() {
+        if (this.used) {
+            this.used = false;
+            this.usedAt = null;
+        }
+    }
 }
