@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.inn.data.registerHotel.HotelRegistrationDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -18,6 +19,7 @@ import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
 import com.inn.data.hotel.HotelSearchCondition;
 import com.inn.data.hotel.HotelSpecifications;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Service

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>숙소 정보 등록</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/froala-editor@4.2.0/css/froala_editor.pkgd.min.css" rel="stylesheet">
+    <style>
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .image-preview-item img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .room-card {
+            border: 1px solid #dee2e6;
+            border-radius: .375rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa;
+        }
+        /* Common style for clickable upload boxes */
+        .image-upload-box {
+            width: 100%;
+            height: 180px;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            color: #aaa;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .image-upload-box:hover {
+            background-color: #f8f9fa;
+            border-color: #0d6efd;
+        }
+        .image-upload-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <h1 class="mb-4 text-center">숙소 정보 등록</h1>
+
+            <form th:action="@{/manage/registerHotel}" method="post" enctype="multipart/form-data">
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">숙소 대표 사진 등록</label>
+                            <div class="image-upload-box" id="main-upload-box" onclick="document.getElementById('image-files').click();" style="height: 230px;">
+                                <span><i class="fa fa-camera fa-2x"></i><br>클릭하여 대표 사진 추가</span>
+                            </div>
+                            <input class="d-none" type="file" id="image-files" name="imageFiles" accept="image/*" multiple>
+                            <div id="image-preview-container" class="image-preview-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-7">
+                        <div class="mb-3">
+                            <label for="hotel_name" class="form-label">숙소명</label>
+                            <input type="text" class="form-control" id="hotel_name" name="hotel_name"
+                                   placeholder="숙소명을 입력하세요" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">주소</label>
+                            <div class="input-group mb-2">
+                                <input type="text" id="postcode" name="postcode" class="form-control" placeholder="우편번호" readonly>
+                                <button class="btn btn-outline-secondary" type="button" onclick="execDaumPostcode()">우편번호 찾기</button>
+                            </div>
+                            <input type="text" id="address" name="address" class="form-control mb-2" placeholder="주소" readonly>
+                            <input type="text" id="detailAddress" name="detailAddress" class="form-control" placeholder="상세주소">
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">카테고리</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <input type="radio" class="btn-check" name="category" id="cat_motel" value="motel" required><label class="btn btn-outline-primary" for="cat_motel">모텔</label>
+                        <input type="radio" class="btn-check" name="category" id="cat_hotel" value="hotel&resort"><label class="btn btn-outline-primary" for="cat_hotel">호텔·리조트</label>
+                        <input type="radio" class="btn-check" name="category" id="cat_pension" value="pension"><label class="btn btn-outline-primary" for="cat_pension">펜션</label>
+                        <input type="radio" class="btn-check" name="category" id="cat_home" value="home&villa"><label class="btn btn-outline-primary" for="cat_home">홈&빌라</label>
+                        <input type="radio" class="btn-check" name="category" id="cat_camping" value="camping"><label class="btn btn-outline-primary" for="cat_camping">캠핑</label>
+                        <input type="radio" class="btn-check" name="category" id="cat_guesthouse" value="guesthouse"><label class="btn btn-outline-primary" for="cat_guesthouse">게하·한옥</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">#취향</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <input type="checkbox" class="btn-check" id="tag_family" name="tag" value="family"><label class="btn btn-outline-success" for="tag_family">#가족여행숙소</label>
+                        <input type="checkbox" class="btn-check" id="tag_waterpool" name="tag" value="waterpool"><label class="btn btn-outline-success" for="tag_waterpool">#온수풀</label>
+                        <input type="checkbox" class="btn-check" id="tag_view" name="tag" value="view"><label class="btn btn-outline-success" for="tag_view">#뷰맛집</label>
+                        <input type="checkbox" class="btn-check" id="tag_beach" name="tag" value="beach"><label class="btn btn-outline-success" for="tag_beach">#바닷가</label>
+                        <input type="checkbox" class="btn-check" id="tag_nicemeal" name="tag" value="nicemeal"><label class="btn btn-outline-success" for="tag_nicemeal">#조식맛집</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">시설</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <input type="checkbox" class="btn-check" id="fac_sauna" name="tag" value="sauna"><label class="btn btn-outline-secondary" for="fac_sauna">사우나</label>
+                        <input type="checkbox" class="btn-check" id="fac_swimming_pool" name="tag" value="swimming_pool"><label class="btn btn-outline-secondary" for="fac_swimming_pool">수영장</label>
+                        <input type="checkbox" class="btn-check" id="fac_restaurant" name="tag" value="restaurant"><label class="btn btn-outline-secondary" for="fac_restaurant">레스토랑</label>
+                        <input type="checkbox" class="btn-check" id="fac_fitness" name="tag" value="fitness"><label class="btn btn-outline-secondary" for="fac_fitness">피트니스</label>
+                        <input type="checkbox" class="btn-check" id="fac_golf" name="tag" value="golf"><label class="btn btn-outline-secondary" for="fac_golf">골프장</label>
+                        <input type="checkbox" class="btn-check" id="fac_pc" name="tag" value="pc"><label class="btn btn-outline-secondary" for="fac_pc">공용PC</label>
+                        <input type="checkbox" class="btn-check" id="fac_kitchen" name="tag" value="kitchen"><label class="btn btn-outline-secondary" for="fac_kitchen">주방/식당</label>
+                        <input type="checkbox" class="btn-check" id="fac_washing_machine" name="tag" value="washing_machine"><label class="btn btn-outline-secondary" for="fac_washing_machine">세탁기</label>
+                        <input type="checkbox" class="btn-check" id="fac_parking" name="tag" value="parking"><label class="btn btn-outline-secondary" for="fac_parking">주차장</label>
+                        <input type="checkbox" class="btn-check" id="fac_spa" name="tag" value="spa"><label class="btn btn-outline-secondary" for="fac_spa">온천</label>
+                        <input type="checkbox" class="btn-check" id="fac_ski" name="tag" value="ski"><label class="btn btn-outline-secondary" for="fac_ski">스키장</label>
+                        <input type="checkbox" class="btn-check" id="fac_in_room_eating" name="tag" value="in_room_eating"><label class="btn btn-outline-secondary" for="fac_in_room_eating">객실내취사</label>
+                        <input type="checkbox" class="btn-check" id="fac_breakfast" name="tag" value="breakfast"><label class="btn btn-outline-secondary" for="fac_breakfast">조식제공</label>
+                        <input type="checkbox" class="btn-check" id="fac_smoking" name="tag" value="smoking"><label class="btn btn-outline-secondary" for="fac_smoking">객실내흡연</label>
+                        <input type="checkbox" class="btn-check" id="fac_luggage" name="tag" value="luggage"><label class="btn btn-outline-secondary" for="fac_luggage">짐보관가능</label>
+                        <input type="checkbox" class="btn-check" id="fac_disabled" name="tag" value="disabled"><label class="btn btn-outline-secondary" for="fac_disabled">장애인편의</label>
+                        <input type="checkbox" class="btn-check" id="fac_pickup" name="tag" value="pickup"><label class="btn btn-outline-secondary" for="fac_pickup">픽업서비스</label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5>객실 타입 추가</h5>
+                        <button type="button" class="btn btn-success" onclick="addRoomCard()">
+                            <i class="fa fa-plus"></i> 추가
+                        </button>
+                    </div>
+                    <div id="room-cards-container">
+                    </div>
+                </div>
+                <hr>
+
+                <div class="mb-4">
+                    <h5 class="mb-2">숙소 소개</h5>
+                </div>
+                <textarea id="desc" name="desc"></textarea>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">등록하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/froala-editor@4.2.0/js/froala_editor.pkgd.min.js"></script>
+<script>
+    // Daum Postcode
+    function execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = (data.userSelectedType === 'R') ? data.roadAddress : data.jibunAddress;
+                document.getElementById('postcode').value = data.zonecode;
+                document.getElementById("address").value = addr;
+                document.getElementById("detailAddress").focus();
+            }
+        }).open();
+    }
+    // Froala Editor
+    new FroalaEditor('#desc', { height: 400});
+
+    // Main Image Preview
+    document.getElementById('image-files').addEventListener('change', function(event) {
+        const mainUploadBox = document.getElementById('main-upload-box');
+        const previewContainer = document.getElementById('image-preview-container');
+
+        // Always clear the previous previews
+        previewContainer.innerHTML = '';
+
+        const files = event.target.files;
+
+        // If no files are selected (or selection is cancelled), reset the main box
+        if (files.length === 0) {
+            mainUploadBox.style.display = 'flex'; // Restore flex for centering
+            mainUploadBox.style.padding = '';
+            mainUploadBox.innerHTML = '<span><i class="fa fa-camera fa-2x"></i><br>클릭하여 대표 사진 추가</span>';
+            return;
+        }
+
+        // --- New logic to fill the main upload box with the first image ---
+        const firstFile = files[0];
+        if (firstFile) {
+            const readerForMain = new FileReader();
+            readerForMain.onload = function(e) {
+                mainUploadBox.style.display = 'block'; // Change display
+                mainUploadBox.style.padding = '0';   // Remove padding
+                // Use an img tag that fills the container
+                mainUploadBox.innerHTML = `<img src="${e.target.result}" alt="대표 사진 프리뷰" style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">`;
+            };
+            readerForMain.readAsDataURL(firstFile);
+        }
+    });
+
+
+    // --- Dynamic Room Card Logic ---
+    let roomIndex = 0;
+    const roomCardsContainer = document.getElementById('room-cards-container');
+
+    // Function to add a new room card
+    function addRoomCard() {
+        const cardId = `room-card-${roomIndex}`;
+        const imageInputId = `room-image-input-${roomIndex}`;
+        const imagePreviewId = `room-image-preview-${roomIndex}`;
+
+        const cardHtml = `
+            <div class="room-card" id="${cardId}">
+                <div class="d-flex justify-content-end mb-2">
+                    <button type="button" class="btn-close" aria-label="Close" onclick="deleteRoomCard('${cardId}')"></button>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="${imageInputId}" class="form-label">객실 사진</label>
+                        <input type="file" class="form-control d-none" id="${imageInputId}" name="rooms[${roomIndex}].imageFile" accept="image/*" onchange="previewRoomImage(event, '${imagePreviewId}')">
+                        <div id="${imagePreviewId}" class="image-upload-box" onclick="document.getElementById('${imageInputId}').click();">
+                           <span><i class='fa fa-image'></i><br>클릭하여 사진 추가</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label class="form-label">객실명</label>
+                            <input type="text" class="form-control" name="rooms[${roomIndex}].typeName" placeholder="예: 디럭스 더블룸" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">객실 설명</label>
+                            <textarea class="form-control" name="rooms[${roomIndex}].description" rows="2" placeholder="예: 오션뷰, 킹사이즈 베드"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <label class="form-label">가격 (1박)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" name="rooms[${roomIndex}].price" placeholder="숫자만 입력" required>
+                                    <span class="input-group-text">원</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <label class="form-label">최대 인원</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" name="rooms[${roomIndex}].maxCapacity" placeholder="숫자만 입력" required>
+                                     <span class="input-group-text">명</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        roomCardsContainer.insertAdjacentHTML('beforeend', cardHtml);
+        roomIndex++; // Increment index for the next card
+    }
+
+    // Function to delete a room card
+    function deleteRoomCard(cardId) {
+        const card = document.getElementById(cardId);
+        if (card) {
+            card.remove();
+        }
+    }
+
+    // Function to preview the image for a specific room card
+    function previewRoomImage(event, previewId) {
+        const previewContainer = document.getElementById(previewId);
+        const file = event.target.files[0];
+
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewContainer.innerHTML = `<img src="${e.target.result}" alt="Room image preview"/>`;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.innerHTML = "<span><i class='fa fa-image'></i><br>클릭하여 사진 추가</span>";
+        }
+    }
+
+    // Add one room card by default when the page loads
+    window.onload = function() {
+        addRoomCard();
+    };
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

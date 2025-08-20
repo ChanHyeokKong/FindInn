@@ -26,7 +26,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         //url로 컴퓨터의 경로 안에 있는 파일 접근
         registry.addResourceHandler("/uploads/reviews/**")
-                .addResourceLocations("file:" + uploadDir + "/");
+                .addResourceLocations("file:" + uploadDir + "/")
+                .addResourceLocations("file:" + uploadDir + "/reviews/");
     }
 
 }

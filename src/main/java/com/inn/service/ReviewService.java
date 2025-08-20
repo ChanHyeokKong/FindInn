@@ -42,7 +42,7 @@ public class ReviewService {
     @Autowired
     private RoomTypesRepository roomTypesRepository;
 
-    @Value("${file.upload-dir}")
+    @Value("#{'${file.upload-dir}' + '/reviews'}")
     private String uploadDir;
     @Autowired
     private HotelRepository hotelRepository;
@@ -128,7 +128,7 @@ public class ReviewService {
         if (files != null && !files.isEmpty()) {
             File storageDir = new File(uploadDir);
             if (!storageDir.exists()) {
-                storageDir.mkdirs(); // Create directory if it doesn't exist
+                storageDir.mkdirs();
             }
 
             for (MultipartFile file : files) {
@@ -138,15 +138,12 @@ public class ReviewService {
                     String storedFileName = UUID.randomUUID() + "_" + originalFileName;
                     String storedFilePath = uploadDir + File.separator + storedFileName;
 
-                    // Save the actual file to the disk
                     file.transferTo(new File(storedFilePath));
 
-                    // Create the metadata entity
                     ReviewFile reviewFile = new ReviewFile();
                     reviewFile.setOriginalFileName(originalFileName);
                     reviewFile.setStoredFilePath(storedFilePath);
 
-                    // Add the file to the review using our helper method
                     review.addReviewFile(reviewFile);
                 }
             }
