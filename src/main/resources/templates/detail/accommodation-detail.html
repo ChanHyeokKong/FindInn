@@ -64,7 +64,7 @@
                     <div class="col-md-6">
                         <div class="position-relative">
                             <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="0">
-                                <img th:src="@{'/hotelImage/' + ${accommodation.imageGalleries[0]}}"
+                                <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[0]}}"
                                      class="img-fluid rounded-3 w-100"
                                      style="height: 350px; object-fit: cover; cursor: pointer;"
                                      alt="대표 이미지">
@@ -75,7 +75,7 @@
                         <div class="row g-2 h-100">
                             <div class="col-6" th:if="${accommodation.imageGalleries.size() > 1}">
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="1">
-                                    <img th:src="@{'/hotelImage/' + ${accommodation.imageGalleries[1]}}"
+                                    <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[1]}}"
                                          class="img-fluid rounded-3 w-100"
                                          style="height: 170px; object-fit: cover; cursor: pointer;"
                                          alt="서브 이미지 1">
@@ -83,7 +83,7 @@
                             </div>
                             <div class="col-6" th:if="${accommodation.imageGalleries.size() > 2}">
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="2">
-                                    <img th:src="@{'/hotelImage/' + ${accommodation.imageGalleries[2]}}"
+                                    <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[2]}}"
                                          class="img-fluid rounded-3 w-100"
                                          style="height: 170px; object-fit: cover; cursor: pointer;"
                                          alt="서브 이미지 2">
@@ -92,7 +92,7 @@
                             <div class="col-12">
                                 <div class="position-relative">
                                     <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="3" th:if="${accommodation.imageGalleries.size() > 3}">
-                                        <img th:src="@{'/hotelImage/' + ${accommodation.imageGalleries[3]}}"
+                                        <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[3]}}"
                                              class="img-fluid rounded-3 w-100"
                                              style="height: 170px; object-fit: cover; cursor: pointer;"
                                              alt="서브 이미지 3">
@@ -119,7 +119,7 @@
                         <div th:each="room : ${accommodation.roomTypes}" class="border rounded-3 p-3 mb-3">
                             <div class="row g-3">
                                 <div class="col-md-4">
-                                    <img th:src="@{'/hotelImage/' + ${room.imageUrl}}"
+                                    <img th:src="@{'/uploads/hotels/' + ${room.imageUrl}}"
                                          class="img-fluid rounded-3 w-100"
                                          style="height: 150px; object-fit: cover;"
                                          alt="객실 이미지">
@@ -304,7 +304,7 @@
                             <div th:each="image, status : ${accommodation.imageGalleries}"
                                  th:class="${status.index == 0} ? 'carousel-item active' : 'carousel-item'">
                                 <div class="d-flex align-items-center justify-content-center h-100">
-                                    <img th:src="@{'/hotelImage/' + ${image}}"
+                                    <img th:src="@{'/uploads/hotels/' + ${image}}"
                                          class="img-fluid"
                                          alt="Gallery Image">
                                 </div>

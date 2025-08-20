@@ -1,5 +1,8 @@
 package com.inn.data.hotel;
 
+import com.inn.data.rooms.RoomTypes;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -49,4 +52,24 @@ public class HotelEntity {
 	
 	@Column(nullable = false)
 	private String hotelImage;
+
+	@OneToMany(
+			mappedBy = "hotel",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true
+	)
+	private List<RoomTypes> roomTypes = new ArrayList<>();
+
+	@OneToOne(
+			mappedBy = "hotel",
+			cascade = CascadeType.ALL
+	)
+	private TagEntity tag;
+
+	public void addRoomType(RoomTypes roomType) {
+		roomTypes.add(roomType);
+		roomType.setHotel(this); // Set the parent (this Hotel instance) on the child
+	}
+
+
 }

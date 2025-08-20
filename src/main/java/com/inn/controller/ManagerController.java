@@ -11,6 +11,7 @@ import com.inn.data.member.MyPageDto;
 import com.inn.data.member.manager.HotelRoomTypeSummaryDto;
 import com.inn.data.member.manager.HotelWithManagerDto;
 import com.inn.data.post.Post;
+import com.inn.data.registerHotel.HotelRegistrationDto;
 import com.inn.data.rooms.Rooms;
 import com.inn.data.rooms.RoomsRepository;
 import com.inn.data.rooms.RoomTypes;
@@ -122,6 +123,22 @@ public class ManagerController {
         return "member/manager/addhotel";
     }
 
+
+
+    @GetMapping("manage/addnewhotel")
+    public String addNewHotel(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
+        return "member/manager/addnewhotel";
+    }
+
+    @PostMapping("manage/registerHotel")
+    public String registerHotel(@AuthenticationPrincipal CustomUserDetails currentUser, @ModelAttribute HotelRegistrationDto hotelRegistrationDto){
+        System.out.println("Hotel Name: " + hotelRegistrationDto.getHotel_name());
+        System.out.println("Address: " + hotelRegistrationDto.getAddress() + " " + hotelRegistrationDto.getDetailAddress());
+        System.out.println("Category: " + hotelRegistrationDto.getCategory());
+        hotelService.registerHotel(hotelRegistrationDto, currentUser.getIdx());
+        return "member/manager/addnewHotel";
+
+    }
 
     @PostMapping("manage/changeDesc")
     public String changeDescription(@AuthenticationPrincipal CustomUserDetails currentUser, @ModelAttribute DescriptionDto post){

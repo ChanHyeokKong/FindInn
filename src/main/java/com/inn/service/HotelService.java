@@ -5,21 +5,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.inn.data.hotel.*;
+import com.inn.data.registerHotel.HotelRegistrationDto;
+import com.inn.data.registerHotel.RoomRegistrationDto;
+import com.inn.data.rooms.RoomTypes;
 import com.inn.data.review.RatingDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.Persistent;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import com.inn.data.hotel.HotelDto;
-import com.inn.data.hotel.HotelEntity;
-import com.inn.data.hotel.HotelRepository;
-import com.inn.data.hotel.HotelSearchCondition;
-import com.inn.data.hotel.HotelSpecifications;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class HotelService {
@@ -29,6 +27,9 @@ public class HotelService {
     @Autowired
     private HotelRepository hotelRepository;
 
+    @Autowired
+    private FileStorageService fileStorageService;
+  
     @Autowired
     private ReviewService reviewService;
 
@@ -235,6 +236,85 @@ public class HotelService {
         }
     }
 
+
+    @Transactional
+    public HotelEntity registerHotel(HotelRegistrationDto dto, Long mem_idx) {
+        HotelEntity hotel = new HotelEntity();
+        hotel.setHotelName(dto.getHotel_name());
+        hotel.setHotelAddress(dto.getAddress());
+        hotel.setDescription(dto.getDesc());
+        hotel.setHotelCategory(dto.getCategory());
+        hotel.setStatus(0L);
+        hotel.setHotelTel(dto.getPhone_number());
+        hotel.setMemberIdx(mem_idx);
+
+        if (dto.getTag() != null && !dto.getTag().isEmpty()) {
+            // 2. Create a new TagEntity instance
+            TagEntity tagEntity = new TagEntity();
+
+            // 3. Loop through the list of tag strings from the DTO
+            for (String tagValue : dto.getTag()) {
+                // 4. Use a switch to set the correct boolean field to true
+                switch (tagValue) {
+                    case "sauna": tagEntity.setSauna(true); break;
+                    case "swimming_pool": tagEntity.setSwimming_pool(true); break;
+                    case "restaurant": tagEntity.setRestaurant(true); break;
+                    case "fitness": tagEntity.setFitness(true); break;
+                    case "golf": tagEntity.setGolf(true); break;
+                    case "pc": tagEntity.setPc(true); break;
+                    case "kitchen": tagEntity.setKitchen(true); break;
+                    case "washing_machine": tagEntity.setWashing_Machine(true); break;
+                    case "parking": tagEntity.setParking(true); break;
+                    case "spa": tagEntity.setSpa(true); break;
+                    case "ski": tagEntity.setSki(true); break;
+                    case "in_room_eating": tagEntity.setIn_Room_Eating(true); break;
+                    case "breakfast": tagEntity.setBreakfast(true); break;
+                    case "smoking": tagEntity.setSmoking(true); break;
+                    case "luggage": tagEntity.setLuggage(true); break;
+                    case "disabled": tagEntity.setDisabled(true); break;
+                    case "pickup": tagEntity.setPickup(true); break;
+                    // Tags from "#취향"
+                    case "family": tagEntity.setFamily(true); break;
+                    case "waterpool": tagEntity.setWaterpool(true); break;
+                    case "view": tagEntity.setView(true); break;
+                    case "beach": tagEntity.setBeach(true); break;
+                    case "nicemeal": tagEntity.setNicemeal(true); break;
+                }
+            }
+
+            // 5. Establish the bidirectional relationship
+            hotel.setTag(tagEntity);
+            tagEntity.setHotel(hotel);
+        }
+
+        if (dto.getImageFiles()!=null && !dto.getImageFiles().isEmpty()) {
+            List<String> imageNames = dto.getImageFiles().stream()
+                    .filter(file -> !file.isEmpty())
+                    .map(file -> fileStorageService.store(file, "hotels"))
+                    .collect(Collectors.toList());
+            hotel.setHotelImage(imageNames.get(0));
+        }
+
+        if (dto.getRooms() != null) {
+            for (RoomRegistrationDto roomDto : dto.getRooms()) {
+                RoomTypes roomTypes = new RoomTypes();
+                roomTypes.setTypeName(roomDto.getTypeName());
+                roomTypes.setDescription(roomDto.getDescription());
+                roomTypes.setPrice(roomDto.getPrice());
+                roomTypes.setCapacity(roomDto.getMaxCapacity());
+                hotel.addRoomType(roomTypes);
+                if (roomDto.getImageFile()!=null && !roomDto.getImageFile().isEmpty()) {
+                    String uniqueImageName = fileStorageService.store(roomDto.getImageFile(), "hotels");
+                    roomTypes.setImageUrl(uniqueImageName);
+                }
+            }
+        }
+        return hotelRepository.save(hotel);
+    }
+}
+
+
+
     // 엔티티 to Dto 변환 메서드 (/h_list 용)
     public List<HotelDto> getAllHotelDtos() {
         return hotelRepository.findAll()
@@ -256,4 +336,3 @@ public class HotelService {
                 .collect(Collectors.toList());
     }
 
-}
