@@ -33,7 +33,7 @@ public interface ManageRepository extends JpaRepository<HotelEntity, Long> {
     @Query("select h from HotelEntity h where h.memberIdx = :memberIdx")
     List<HotelEntity> findHotelByMemberIdx(@Param("memberIdx") Long memberIdx);
 
-    @Query("select rt from RoomTypes rt WHERE rt.hotel.idx = :hotelId")
+    @Query("SELECT rt FROM RoomTypes rt WHERE rt.hotel.idx IN :hotelIds")
     List<RoomTypes> findRoomTypesByHotelIdIn(@Param("hotelIds") List<Long> hotelIds);
 
     @Query("select new com.inn.data.member.MyPageDto (" +
