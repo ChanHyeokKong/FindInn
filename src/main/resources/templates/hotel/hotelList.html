@@ -36,38 +36,47 @@
 		<tbody id="hotelTbody">
 			<tr th:each="hotel : ${hotels}">
 				<td>
-					<div class="card hotel-card" th:attr="data-hotel-id=${hotel.idx}"
-						style="display: flex; flex-direction: row; height: 200px;">
-
+					<div class="card hotel-card"
+						 th:attr="data-hotel-id=${hotel.idx}"
+						 style="display: flex; flex-direction: row; height: 200px;">
 
 						<!-- 왼쪽 이미지 영역 -->
-						<div
-							style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-
-							<img
-								th:if="${hotel.hotelImage != null and !#lists.isEmpty(hotel.hotelImage)}"
-								th:src="@{'/hotelImage/' + ${hotel.hotelImage}}" alt="호텔 이미지"
-								style="height: 200px;" />
-
+						<div style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+							<img th:if="${hotel.hotelImage != null}"
+								 th:src="@{'/hotelImage/' + ${hotel.hotelImage}}"
+								 alt="호텔 이미지"
+								 style="height: 200px; width: 100%; object-fit: cover;" />
 						</div>
 
 						<!-- 오른쪽 정보 영역 -->
-						<div class="card-body" style="flex: 1;">
+						<div class="card-body" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 15px;">
+
+							<!-- 호텔명 -->
 							<h5 class="card-title" th:text="${hotel.hotelName}">호텔명</h5>
-							<p class="card-text">
 
-								<strong>hotel_idx:</strong> <span th:text="${hotel.idx}"></span><br>
-
-								<strong>member_idx:</strong> <span th:text="${hotel.memberIdx}"></span><br>
-								<strong>min_price:</strong> <span th:text="${hotel.priceRange}"></span><br>
-								<strong>address:</strong> <span th:text="${hotel.hotelAddress}"></span><br>
-								<strong>Tel:</strong> <span th:text="${hotel.hotelTel}"></span><br>
-
-
-
+							<!-- 주소 -->
+							<p class="card-text" style="margin: 5px 0;">
+								<span th:text="${hotel.hotelAddress}">호텔 주소</span>
 							</p>
-						</div>
 
+							<!-- 평점 정보 -->
+							<p class="card-text" style="margin: 5px 0;">
+								<span th:if="${hotel.ratingDto != null}">
+									⭐ <span th:text="${hotel.ratingDto.rating_avg}"></span>
+									(<span th:text="${hotel.ratingDto.rating_count}"></span> 리뷰)
+								</span>
+								<span th:unless="${hotel.ratingDto != null}">
+									⭐ 0.0 (0 리뷰)
+								</span>
+							</p>
+
+							<!-- 금액 (오른쪽 하단 정렬) -->
+							<div style="display: flex; justify-content: flex-end; align-items: flex-end; flex-grow: 1;">
+						<span style="font-weight: bold; font-size: 18px; color: #007bff;">
+							₩ <span th:text="${hotel.priceRange}">0</span>
+						</span>
+							</div>
+						</div>
 					</div>
 				</td>
 			</tr>

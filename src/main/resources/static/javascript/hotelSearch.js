@@ -209,66 +209,57 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	// 호텔 목록 렌더링 함수
 	function renderHotels(data) {
-		tbody.innerHTML = "";
+        tbody.innerHTML = "";
 
-		if (data.length === 0) {
-			const row = document.createElement("tr");
-			const cell = document.createElement("td");
-			cell.colSpan = 1;
-			cell.textContent = "검색 결과가 없습니다.";
-			row.appendChild(cell);
-			tbody.appendChild(row);
-			return;
-		}
+        if (!data || data.length === 0) {
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+            cell.colSpan = 1;
+            cell.textContent = "검색 결과가 없습니다.";
+            row.appendChild(cell);
+            tbody.appendChild(row);
+            return;
+        }
 
-		data.forEach(hotel => {
+        data.forEach(hotel => {
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
 
-			console.log("hotel.idx:", hotel.idx, "hotelImage:", hotel.hotelImage);
-			let imgTag = "";
-			if (hotel.hotelImage) {
-				imgTag = `<img src="/hotelImage/${hotel.hotelImage}" alt="호텔 이미지" style="height: 200px; display: block;" />`;
-			} else {
-				console.log(`호텔 idx ${hotel.idx}에 이미지 없음`);
-			}
+            const imgTag = hotel.hotelImage
+                ? `<img src="/hotelImage/${hotel.hotelImage}" alt="호텔 이미지" style="height: 200px; width: 100%; object-fit: cover;" />`
+                : "";
 
-			const row = document.createElement("tr");
-			const cell = document.createElement("td");
+            const ratingHtml = hotel.ratingDto
+                ? `⭐ ${hotel.ratingDto.rating_avg} (${hotel.ratingDto.rating_count} 리뷰)`
+                : `⭐ 0.0 (0 리뷰)`;
 
-			//let imgTag = "";
-			if (hotel.hotelImage) {
-				imgTag = `<img src="/hotelImage/${hotel.hotelImage}" alt="호텔 이미지" style="height: 200px; display: block;" />`;
-			}
+            cell.innerHTML = `
+            <div class="card hotel-card" data-hotel-id="${hotel.idx}" style="display: flex; flex-direction: row; height: 200px;">
+                <!-- 왼쪽 이미지 -->
+                <div style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    ${imgTag}
+                </div>
 
+                <!-- 오른쪽 정보 -->
+                <div class="card-body" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 15px;">
+                    <h5 class="card-title">${hotel.hotelName}</h5>
+                    <p class="card-text" style="margin: 5px 0;">${hotel.hotelAddress}</p>
+                    <p class="card-text" style="margin: 5px 0;">${ratingHtml}</p>
+                    <div style="display: flex; justify-content: flex-end; align-items: flex-end; flex-grow: 1;">
+                        <span style="font-weight: bold; font-size: 18px; color: #007bff;">
+                            ₩ ${hotel.priceRange.toLocaleString()}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            `;
 
-			cell.innerHTML = `
-			  <div class="card hotel-card" data-hotel-id="${hotel.idx}">
-			    <div class="image-container">
-			      ${imgTag}
-			    </div>
-				<div class="card-body" style="flex: 1;">
-				              <h5 class="card-title">${hotel.hotelName}</h5>
-				              <p class="card-text">
-				                <strong>hotel_idx:</strong> <span>${hotel.idx}</span><br>
-				                <strong>member_idx:</strong> <span>${hotel.memberIdx}</span><br>
-				                <strong>min_price:</strong> <span>${hotel.priceRange}</span><br>
-				                <strong>address:</strong> <span>${hotel.hotelAddress}</span><br>
-				                <strong>Tel:</strong> <span>${hotel.hotelTel}</span><br>
-				              </p>
-				            </div>
-			  </div>
-			`;
+            row.appendChild(cell);
+            tbody.appendChild(row);
+        });
 
-			row.appendChild(cell);
-			tbody.appendChild(row);
-		});
-
-		registerHotelCardClicks();
-	}
-
-
-
-
-
+        registerHotelCardClicks();
+    }
 
 
 	// 호텔 카드 클릭 이벤트 등록 함수

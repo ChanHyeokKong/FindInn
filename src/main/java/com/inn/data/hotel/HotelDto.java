@@ -3,6 +3,7 @@ package com.inn.data.hotel;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.inn.data.review.RatingDto;
 import jakarta.persistence.Lob;
 import lombok.Data;
 
@@ -19,7 +20,10 @@ public class HotelDto {
 	private List<String> hotelTag;
 	private Integer priceRange;
 	private String hotelImage;
-	private Long status;
+
+	
+	// 호텔 평점
+	private RatingDto ratingDto;
 
 
 	 public HotelDto(Long idx, String hotelName,
