@@ -173,4 +173,9 @@ public class EventController {
         }
         return "redirect:/event/august-pack";
     }
+
+    @GetMapping("/eventlist")
+    public String eventList(){
+        return "event/eventList";
+    }
 }

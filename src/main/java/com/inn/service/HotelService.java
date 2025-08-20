@@ -9,6 +9,7 @@ import com.inn.data.hotel.*;
 import com.inn.data.registerHotel.HotelRegistrationDto;
 import com.inn.data.registerHotel.RoomRegistrationDto;
 import com.inn.data.rooms.RoomTypes;
+import com.inn.data.review.RatingDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -28,6 +29,10 @@ public class HotelService {
 
     @Autowired
     private FileStorageService fileStorageService;
+  
+    @Autowired
+    private ReviewService reviewService;
+
     // 전체 조회
     public List<HotelEntity> getAllHotelData() {
         return hotelRepository.findAll();        
@@ -199,7 +204,8 @@ public class HotelService {
         List<HotelDto> dtos = resultList.stream().map(row -> {
             HotelDto dto = new HotelDto();
 
-            dto.setIdx(((Number) row[0]).longValue());
+            Long hotelId = ((Number) row[0]).longValue();
+            dto.setIdx(hotelId);
             dto.setHotelName((String) row[1]);
             dto.setMemberIdx(((Number) row[2]).longValue());
             dto.setHotelTel((String) row[3]);
@@ -207,8 +213,10 @@ public class HotelService {
             dto.setHotelAddress((String) row[5]);
             dto.setHotelImage((String) row[6]); 
             dto.setPriceRange(row[7] != null ? ((Number) row[7]).intValue() : null);
-            
 
+            // ✅ 호텔 평점 세팅
+            RatingDto rating = reviewService.getRatings(hotelId);
+            dto.setRatingDto(rating);
 
             dto.setHotelTag(null);
             return dto;
@@ -227,6 +235,7 @@ public class HotelService {
             return "";
         }
     }
+
 
     @Transactional
     public HotelEntity registerHotel(HotelRegistrationDto dto, Long mem_idx) {
@@ -305,4 +314,25 @@ public class HotelService {
 }
 
 
+
+    // 엔티티 to Dto 변환 메서드 (/h_list 용)
+    public List<HotelDto> getAllHotelDtos() {
+        return hotelRepository.findAll()
+                .stream()
+                .map(hotel -> {
+                    HotelDto dto = new HotelDto(
+                            hotel.getIdx(),
+                            hotel.getHotelName(),
+                            hotel.getHotelImages(),
+                            hotel.getMemberIdx()
+                    );
+                    dto.setHotelTel(hotel.getHotelTel());
+                    dto.setHotelCategory(hotel.getHotelCategory());
+                    dto.setHotelAddress(hotel.getHotelAddress());
+                    dto.setHotelImage(hotel.getHotelImage());
+                    dto.setRatingDto(reviewService.getRatings(hotel.getIdx())); // ✅ 평점 세팅
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 

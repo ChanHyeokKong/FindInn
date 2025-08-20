@@ -50,7 +50,7 @@
                     </div>
                     <div class="col-auto">
                         <div class="d-flex gap-2">
-                            <button class="btn btn-outline-secondary btn-sm">
+                            <button id="chat-button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#chatModal" th:data-hotel-idx="${accommodation.hotel.idx}">
                                 <i class="bi bi-chat-dots"></i> 문의하기
                             </button>
                             <button class="btn btn-outline-secondary btn-sm">
@@ -331,6 +331,33 @@
         alert("[[${message}]]");
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js}"></script>
+    <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js}"></script>
+    <script th:src="@{/javascript/chat.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
+    <input type="hidden" id="currentMemberIdx" th:value="${currentMemberIdx}" />
+
+    <!-- Chat Modal -->
+    <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="chatModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body chat-box" id="chat-box" style="height: 400px; overflow-y: auto;">
+                    <!-- Chat messages will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <div class="input-group">
+                        <input type="text" id="chat-input" class="form-control" placeholder="메시지를 입력하세요...">
+                        <button id="send-button" class="btn btn-primary">전송</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let map;
 

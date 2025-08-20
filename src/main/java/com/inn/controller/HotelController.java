@@ -28,19 +28,12 @@ public class HotelController {
 	
 	@org.springframework.beans.factory.annotation.Value("${kakao.map.javascript-key}")
 	private String kakaoJsKey;
-	
-	
+
 	@GetMapping("/h_list")
-	public String hotelList (Model model) {
-		List<HotelEntity> hotels;
-		
-		
-		
-			hotels = hotelService.getAllHotelData();
-			
-		
-		model.addAttribute("kakaoJsKey",kakaoJsKey);
-		model.addAttribute("hotels", hotels);	
+	public String hotelList(Model model) {
+		List<HotelDto> hotels = hotelService.getAllHotelDtos(); // 새 메서드 작성
+		model.addAttribute("kakaoJsKey", kakaoJsKey);
+		model.addAttribute("hotels", hotels);
 		return "/hotel/hotelList";
 	}
 	

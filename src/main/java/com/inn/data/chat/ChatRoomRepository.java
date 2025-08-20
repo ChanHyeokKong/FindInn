@@ -16,6 +16,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoomDto, Long> {
     @Query("SELECT cr.idx FROM ChatRoomDto cr WHERE cr.memberIdx = :memberIdx AND cr.hotelIdx = :hotelIdx")
     Long findIdxByMemberIdxAndHotelIdx(@Param("memberIdx") Long memberIdx, @Param("hotelIdx") Long hotelIdx);
 
+    List<ChatRoomDto> findAllByMemberIdx(Long memberIdx);
+
     List<ChatRoomDto> findAllByHotelIdxIn(List<Long> hotelIdxes);
     
     
