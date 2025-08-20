@@ -63,6 +63,31 @@
                 </form>
             </section>
 
+            <!-- 할인 적용 (로그인 상태일 때만 표시) -->
+            <section th:if="${isLogined}">
+                <h2>할인 적용</h2>
+
+                <div class="coupon-section">
+                    <label for="discountAmount">쿠폰</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="text" id="discountAmount" name="discountAmount" value="0" readonly style="width: 100px;"/>
+                        <button type="button" id="couponBtn" class="btn btn-secondary">쿠폰 조회</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 쿠폰 모달 -->
+            <div id="couponModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>사용 가능한 쿠폰</h3>
+                        <button id="closeCouponModal" class="close-btn">&times;</button>
+                    </div>
+                    <ul id="couponList"></ul>
+                    <button id="applyCouponBtn">선택 적용</button>
+                </div>
+            </div>
+
             <!-- 결제 수단 -->
             <section>
                 <h2>결제 수단</h2>
@@ -99,17 +124,31 @@
             <!-- 결제 정보 -->
             <section class="booking-summary">
                 <h2>결제 정보</h2>
-                <p>
-                    객실 가격(<span th:text="${nights}">?</span>박):
+
+                <!-- 객실 가격 -->
+                <div class="price-row">
+                    <span>객실 가격 (<span th:text="${nights}">?</span>박)</span>
                     <span th:text="${#numbers.formatInteger(price * nights, 0, 'COMMA')} + '원'">?원</span>
-                </p>
-                <p>
-                    <strong>총 결제 금액:</strong>
-                    <strong th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')} + '원'">?원</strong>
-                </p>
-                <p>
+                </div>
+
+                <!-- 할인 적용 영역 -->
+                <div class="discount-row" id="discountRow" style="display:none;">
+                    <span>쿠폰 할인</span>
+                    <span id="discountPrice">0원</span>
+                </div>
+
+                <hr>
+
+                <!-- 총 결제 금액 -->
+                <div class="total-row">
+                    <strong>총 결제 금액</strong>
+                    <strong id="totalPrice" th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')} + '원'">?원</strong>
+                </div>
+
+                <!-- 결제 버튼 -->
+                <div class="pay-btn-row">
                     <button id="payBtn" class="btn btn-primary btn-pay">결제하기</button>
-                </p>
+                </div>
             </section>
 
         </div>
@@ -124,6 +163,10 @@
         // sms 인증
         let isPhoneVerified = false;
 
+        // 쿠폰 할인
+        let selectedCouponId = null;  // 선택된 쿠폰 ID
+        let disCount = 0;             // 현재 적용된 쿠폰 할인액
+
         // 결제 수단
         let payMethod = 'tosspay';  // 초기값
 
@@ -133,6 +176,7 @@
 
         // 객실 및 예약 정보
         const roomIdx = [[${roomIdx}]];
+        const hotelIdx = [[${hotelIdx}]];
         const hotelImage = [[${hotelImage}]];
         const hotelName = [[${hotelName}]];
         const roomName = [[${roomName}]];
@@ -155,6 +199,7 @@
     <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
     <script th:src="@{/javascript/addHyphen.js}"></script>
     <script th:src="@{/javascript/smsAuth.js}"></script>
+    <script th:src="@{/javascript/couponModal.js}"></script>
     <script th:src="@{/javascript/payMethod.js}"></script>
     <script th:src="@{/javascript/payment.js}"></script>
 

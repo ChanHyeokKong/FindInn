@@ -38,7 +38,7 @@ public class BookingController {
         if (currentUser != null) {
             model.addAttribute("memberIdx", currentUser.getIdx());
             model.addAttribute("memberEmail", currentUser.getUsername());
-            model.addAttribute("isLogined", false);
+            model.addAttribute("isLogined", true);
         } else {
             model.addAttribute("memberIdx", null);
             model.addAttribute("memberEmail", "test@example.com");
@@ -60,6 +60,7 @@ public class BookingController {
 
         // model 세팅
         model.addAttribute("roomIdx", roomIdx);
+        model.addAttribute("hotelIdx", bookingInfo.getHotelIdx());
         model.addAttribute("hotelImage", bookingInfo.getHotelImage());
         model.addAttribute("hotelName", bookingInfo.getHotelName());
         model.addAttribute("roomName", bookingInfo.getRoomName());

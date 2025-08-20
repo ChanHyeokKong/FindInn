@@ -45,9 +45,10 @@ document.getElementById('payBtn').addEventListener('click', function () {
                             merchantUid: merchantUid,
                             roomIdx: roomIdx,
                             memberIdx: memberIdx,
+                            couponIdx: selectedCouponId,
                             checkin: checkin,
                             checkout: checkout,
-                            price: totalPrice
+                            price: totalPrice - disCount
                         }),
                         success: function (response) {
                             console.log("✅ 예약 저장 완료");
@@ -62,7 +63,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                 pay_method: payMethod,
                                 merchant_uid: merchantUid,
                                 name: "호텔 예약 결제",
-                                amount: totalPrice,
+                                amount: totalPrice - disCount,
                                 buyer_name: name,
                                 buyer_email: memberEmail,
                                 buyer_tel: phone
