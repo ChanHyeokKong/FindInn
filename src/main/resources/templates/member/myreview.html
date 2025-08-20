@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/mypageLayout}">
+<div layout:fragment="content">
+    <div class="manager-content">
+        <h3>내 리뷰 목록</h3>
+        <!-- Check if reviews list is empty -->
+        <div th:if="${reviews.isEmpty()}">
+            <p>작성한 리뷰가 없습니다.</p>
+        </div>
+        <!-- Loop through reviews if not empty -->
+        <div th:unless="${reviews.isEmpty()}" class="review-list-container">
+            <div th:each="review : ${reviews}" class="mb-4 pb-4 border-bottom">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                     <h5 th:text="${review.hotel.hotelName}">호텔 이름</h5>
+                     <small class="text-muted" th:text="${#temporals.format(review.reviewDate, 'yyyy-MM-dd')}">날짜</small>
+                </div>
+                <div class="d-flex gap-3">
+                    <div class="flex-grow-1">
+                        <div class="mb-2">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="'★'" th:class="${i <= review.rating} ? 'text-warning' : 'text-body-tertiary'"></span>
+                        </div>
+                        <p class="small text-muted mb-2" th:text="${review.roomType.typeName}">객실 타입</p>
+                        <p th:text="${review.content}" class="mb-2 text-dark">리뷰 내용입니다.</p>
+                        <!-- Optional: Add review images if they exist -->
+                        <div th:if="${review.reviewFiles != null and !review.reviewFiles.isEmpty()}" class="d-flex gap-2 mt-2">
+                             <img th:each="file : ${review.reviewFiles}" th:src="@{'/uploads/reviews/' + ${file.storedFilePath}}" class="rounded" style="width: 80px; height: 60px; object-fit: cover;" alt="리뷰 이미지">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

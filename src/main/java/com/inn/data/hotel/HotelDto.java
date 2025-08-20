@@ -19,6 +19,7 @@ public class HotelDto {
 	private List<String> hotelTag;
 	private Integer priceRange;
 	private String hotelImage;
+	private Long status;
 
 
 	 public HotelDto(Long idx, String hotelName,

@@ -1,11 +1,14 @@
 package com.inn.controller;
 
 import com.inn.config.CustomUserDetails;
+import com.inn.data.chat.ChatRoomDto;
 import com.inn.data.member.MemberDaoInter;
 import com.inn.data.member.MemberDto;
 import com.inn.data.member.MyPageDto;
 import com.inn.data.member.QnaDto;
 import com.inn.data.member.QnaRepository;
+import com.inn.data.review.ReviewDto;
+import com.inn.data.review.ReviewRepository;
 import com.inn.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +18,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.userdetails.UserDetails; // UserDetails import 추가
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken; // UsernamePasswordAuthenticationToken import 추가
 import org.springframework.security.core.context.SecurityContextHolder; // SecurityContextHolder import 추가
@@ -35,6 +41,9 @@ public class MemberController {
 
     @Autowired
     QnaRepository qnaRepository;
+
+    @Autowired
+    ReviewRepository reviewRepository;
 
     @PostMapping("/isMember")
     public ResponseEntity<MemberDto> isMember(MemberDto dto) {
@@ -65,6 +74,33 @@ public class MemberController {
         return "member/myreserve";
     }
 
+    @GetMapping("/mypage/update")
+    public String updatePage() {
+        return "member/updateMember";
+    }
+
+    @PostMapping("/mypage/check-password-and-get-data")
+    public ResponseEntity<MemberDto> checkPasswordAndGetData(@AuthenticationPrincipal CustomUserDetails currentUser, @RequestBody Map<String, String> payload) {
+        String password = payload.get("password");
+        if (service.checkPassword(currentUser.getIdx(), password)) {
+            MemberDto member = service.getMemberByEmail(currentUser.getUsername());
+            return ResponseEntity.ok(member);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @PostMapping("/mypage/update")
+    public String updateMember(MemberDto dto, @RequestParam(required = false) String newPassword, @AuthenticationPrincipal CustomUserDetails currentUser, RedirectAttributes redirectAttributes) {
+        if (currentUser == null || !currentUser.getIdx().equals(dto.getIdx())) {
+            return "redirect:/"; // Or show an error
+        }
+
+        service.updateMember(dto, newPassword);
+        redirectAttributes.addFlashAttribute("successMessage", "회원 정보가 성공적으로 수정되었습니다.");
+        return "redirect:/mypage/update";
+    }
+
     @GetMapping("/qna")
     public String qna(Model model) {
         List<QnaDto> qnaList = qnaRepository.findAll();
@@ -83,10 +119,22 @@ public class MemberController {
             return "redirect:/?login=false";
         }
         Long memberIdx = currentUser.getIdx();
-        List<com.inn.data.chat.ChatRoomDto> chatRooms = service.getChatRoomsForMember(memberIdx);
+        List<ChatRoomDto> chatRooms = service.getChatRoomsForMember(memberIdx);
         model.addAttribute("chatRooms", chatRooms);
         model.addAttribute("currentMemberIdx", memberIdx);
         return "member/myqna";
     }
+
+    @GetMapping("/mypage/review")
+    public String myReviewPage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model) {
+        if (currentUser == null) {
+            return "redirect:/?login=false";
+        }
+        Long memberIdx = currentUser.getIdx();
+        List<com.inn.data.review.Review> reviews = reviewRepository.findByMember_Idx(memberIdx);
+        model.addAttribute("reviews", reviews);
+        return "member/myreview";
+    }
+
 
 }

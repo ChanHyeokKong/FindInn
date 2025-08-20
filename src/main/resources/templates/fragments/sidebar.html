@@ -9,7 +9,6 @@
             <li><a href="/admin/managerlist">매니저 관리</a></li>
             <li><a>고객 문의</a></li>
             <li><a>승인 심사</a></li>
-            <li><a>이벤트</a></li>
         </ul>
     </div>
 </aside>
@@ -28,7 +27,6 @@
             <li><a th:href="@{/manage/reserve}">예약 관리</a></li>
             <li><a th:href="@{/manage/room}">방 관리</a></li>
             <li><a th:href="@{/manage/qna}">문의 확인</a></li>
-            <li><a>이벤트</a></li>
         </ul>
     </div>
 </aside>
@@ -103,10 +101,10 @@
         <span>이메일 :   </span><span sec:authentication="name"></span>
         <ul>
             <li><a href="/mypage/reserve">나의 예약 내역</a></li>
-            <li><a href="#">정보 수정</a></li>
-            <li><a href="#">내 리뷰</a></li>
+            <li><a href="/mypage/update">정보 수정</a></li>
+            <li><a href="/mypage/review">내 리뷰</a></li>
             <li><a href="/mypage/qna">내 문의</a></li>
-            <li><a>뭐 적지</a></li>
+
         </ul>
     </div>
 </aside>

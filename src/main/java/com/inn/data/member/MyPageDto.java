@@ -13,11 +13,13 @@ public class MyPageDto {
 
     String hotelName;
     String hotelAddress;
+    Long hotelIdx;
     String roomName;
     Long roomNumber;
     LocalDate checkIn;
     LocalDate checkOut;
     Long reserveIdx;
     String memberName;
+    String status;
 
 }

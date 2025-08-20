@@ -1,12 +1,16 @@
-function errCheck(){
-    return true;
-}
-
 $(".header-login").find(".btn-info").on("click", function () {
+    // Reset form to login state
     $(".modal-body").children().addClass("d-none");
     $(".modal-body").children(".login-selector").removeClass("d-none");
     $("#login-btn").attr("type", "button").text("로그인");
-    $("#sign-form").attr("action", "/login");
+    const signForm = $("#sign-form");
+    signForm.attr("action", "/login").off("submit");
+
+    // Remove required attributes from signup fields
+    signForm.find('input[name="memberName"]').prop('required', false);
+    signForm.find('#password').prop('required', false);
+    signForm.find('#password-repeat').prop('required', false);
+    signForm.find('#memberPhone').prop('required', false);
 })
 
 $(".header-login").find(".btn-danger").on("click", function () {
@@ -29,19 +33,27 @@ $("#login-btn").on("click", function () {
         },
         dataType: "json",
         success: function (result) {
-            //성공시 코드
+            // --- LOGIN PATH ---
             $(".form-group .after-click").removeClass("d-none");
             $("#login-btn").attr("type", "submit");
+            // Ensure signup fields are not required
+            $('#password').prop('required', true);
+            $('input[name="memberName"]').prop('required', false);
+            $('#password-repeat').prop('required', false);
+            $('#memberPhone').prop('required', false);
         },
         error: function (xhr, status, error) {
             if(xhr.status === 404) {
-                //없는 이메일 코드
+                // --- SIGNUP PATH ---
                 $(".form-group .after-click").removeClass("d-none");
                 $(".after-click .signin-form").removeClass("d-none");
-                $("#sign-form").attr("action", "/signin").on("submit", errCheck);
+                $("#sign-form").attr("action", "/signin").on("submit", validateSignupForm);
                 $("#login-btn").attr("type", "submit").text("회원가입");
-
-
+                // Set required attributes for signup fields
+                $('#password').prop('required', true);
+                $('input[name="memberName"]').prop('required', true);
+                $('#password-repeat').prop('required', true);
+                $('#memberPhone').prop('required', true);
             } else {
                 console.error("AJAX Error: ", status, error);
                 alert("로그인 중 오류가 발생했습니다.");
@@ -75,3 +87,100 @@ $(document).ready(function() {
         }
     }
 });
+
+// Signup phone authentication
+let isPhoneVerifiedInSignup = false;
+let timerInSignup = null;
+let remainingInSignup = 180;
+
+$('#sendAuthBtn-signup').on('click', function () {
+    const phone = $('#memberPhone').val().replace(/-/g, '');
+    if (!phone) {
+        alert("휴대폰 번호를 입력하세요.");
+        return;
+    }
+
+    $.ajax({
+        url: '/sms/auth',
+        method: 'GET',
+        data: { guestPhone: phone },
+        success: function (data) {
+            if (data !== 'bad') {
+                alert("인증번호가 전송되었습니다!");
+                $('#serverAuthCode-signup').val(data);
+
+                $('#authSection-signup').show();
+                $('#authInput-signup').prop('disabled', false);
+                $('#checkAuthBtn-signup').prop('disabled', false);
+                $('#authInput-signup').val('');
+                $('#authResultMsg-signup').text('');
+                $('#timerText-signup').text('');
+
+                startTimerInSignup();
+            } else {
+                alert("전송 실패. 다시 시도하세요.");
+            }
+        },
+        error: function () {
+            alert("오류가 발생했습니다.");
+        }
+    });
+});
+
+$('#checkAuthBtn-signup').on('click', function () {
+    const inputCode = $('#authInput-signup').val();
+    const serverCode = $('#serverAuthCode-signup').val();
+
+    if (!serverCode) {
+        $('#authResultMsg-signup').text("먼저 인증번호를 받아주세요.").css('color', 'red');
+        return;
+    }
+
+    if (!inputCode) {
+        $('#authResultMsg-signup').text("인증번호를 입력하세요.").css('color', 'red');
+        return;
+    }
+
+    if (inputCode === serverCode) {
+        clearInterval(timerInSignup);
+        isPhoneVerifiedInSignup = true;
+
+        $('#authResultMsg-signup').text("휴대폰 인증이 완료되었습니다.").css('color', 'green');
+        $('#authSection-signup').hide();
+        $('#sendAuthBtn-signup').hide();
+        $('#memberPhone').prop('readonly', true);
+    } else {
+        $('#authResultMsg-signup').text("인증번호가 올바르지 않습니다.").css('color', 'red');
+    }
+});
+
+function startTimerInSignup() {
+    clearInterval(timerInSignup);
+    remainingInSignup = 180;
+
+    timerInSignup = setInterval(() => {
+        remainingInSignup--;
+
+        if (remainingInSignup < 0) {
+            clearInterval(timerInSignup);
+            $('#authResultMsg-signup').text("⏰ 인증 시간이 만료되었습니다. 다시 시도해주세요.").css('color', 'red');
+            $('#authInput-signup').prop('disabled', true);
+            $('#checkAuthBtn-signup').prop('disabled', true);
+            $('#timerText-signup').text("남은 시간: 0:00");
+            return;
+        }
+
+        const minutes = Math.floor(remainingInSignup / 60);
+        const seconds = remainingInSignup % 60;
+        $('#timerText-signup').text(`남은 시간: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`);
+    }, 1000);
+}
+
+// Validation function for signup form
+function validateSignupForm(){
+    if (!isPhoneVerifiedInSignup) {
+        alert("휴대폰 인증을 완료해주세요.");
+        return false;
+    }
+    return true;
+}

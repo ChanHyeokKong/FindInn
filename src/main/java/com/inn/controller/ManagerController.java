@@ -145,14 +145,14 @@ public class ManagerController {
 
 
     @PostMapping("manage/addhotel/action")
-    public String addHotelAction(@RequestParam Long hotelId,
+    public String addHotelAction(@RequestParam Long hotelIdx,
                                @RequestParam String description,
                                @RequestParam String typeName,
                                @RequestParam long price,
                                @RequestParam long capacity) {
         RoomTypes newRoomType = new RoomTypes();
-        HotelEntity hotel = hotelRepository.findById(hotelId)
-                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with ID: " + hotelId));
+        HotelEntity hotel = hotelRepository.findById(hotelIdx)
+                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with ID: " + hotelIdx));
         newRoomType.setHotel(hotel);
         newRoomType.setDescription(description);
         newRoomType.setTypeName(typeName);
@@ -180,13 +180,13 @@ public class ManagerController {
     }
 
     @PostMapping("manage/addroom/action")
-    public String addRoomAction(@RequestParam Long hotelId,
+    public String addRoomAction(@RequestParam Long hotelIdx,
                                 @RequestParam Long roomTypeIdx,
                                 @RequestParam long roomNumber) {
 
         Rooms newRoom = new Rooms();
-        HotelEntity hotel = hotelRepository.findById(hotelId)
-                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with ID: " + hotelId));
+        HotelEntity hotel = hotelRepository.findById(hotelIdx)
+                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with ID: " + hotelIdx));
         newRoom.setHotel(hotel);
         newRoom.setRoomNumber(roomNumber);
 

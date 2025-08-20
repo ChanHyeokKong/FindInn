@@ -9,7 +9,7 @@
         <form action="/manage/addhotel/action" method="post">
             <div class="form-group">
                 <caption>호텔 이름</caption><br>
-                <select name="hotelId">
+                <select name="hotelIdx">
                     <option th:each="hotel : ${hotels}" th:value="${hotel.idx}">
                         [[${hotel.hotelName}]]
                     </option>
@@ -27,7 +27,7 @@
         </form>
 
         <form action="/manage/changeDesc" th:object="${post}" method="post">
-            <select name="hotelId">
+            <select name="hotelIdx">
                 <option th:each="hotel : ${hotels}" th:value="${hotel.idx}">
                     [[${hotel.hotelName}]]
                 </option>

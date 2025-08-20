@@ -193,4 +193,27 @@ public class MemberService implements UserDetailsService {
 
         return chatRoomInfos;
     }
+
+    // 비밀번호 확인
+    public boolean checkPassword(Long userIdx, String rawPassword) {
+        MemberDto member = memberDao.findById(userIdx).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return pe.matches(rawPassword, member.getMemberPassword());
+    }
+
+    // 회원 정보 수정
+    @Transactional
+    public void updateMember(MemberDto updateDto, String newPassword) {
+        MemberDto member = memberDao.findById(updateDto.getIdx()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // 이름과 전화번호 업데이트
+        member.setMemberName(updateDto.getMemberName());
+        member.setMemberPhone(updateDto.getMemberPhone());
+
+        // 새 비밀번호가 제공되었는지 확인
+        if (newPassword != null && !newPassword.isEmpty()) {
+            member.setMemberPassword(pe.encode(newPassword));
+        }
+
+        memberDao.save(member);
+    }
 }
