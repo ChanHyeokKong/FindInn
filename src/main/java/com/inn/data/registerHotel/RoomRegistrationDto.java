@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class RoomRegistrationDto {
     private String typeName;
     private String description;
-    private Integer price;
-    private Integer maxCapacity;
+    private Long price;
+    private Long maxCapacity;
     private MultipartFile imageFile;
 }

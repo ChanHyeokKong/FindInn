@@ -127,7 +127,6 @@ public class ManagerController {
 
     @GetMapping("manage/addnewhotel")
     public String addNewHotel(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
-
         return "member/manager/addnewhotel";
     }
 
@@ -136,6 +135,7 @@ public class ManagerController {
         System.out.println("Hotel Name: " + hotelRegistrationDto.getHotel_name());
         System.out.println("Address: " + hotelRegistrationDto.getAddress() + " " + hotelRegistrationDto.getDetailAddress());
         System.out.println("Category: " + hotelRegistrationDto.getCategory());
+        hotelService.registerHotel(hotelRegistrationDto, currentUser.getIdx());
         return "member/manager/addnewHotel";
 
     }

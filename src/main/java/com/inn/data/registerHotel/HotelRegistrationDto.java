@@ -12,10 +12,9 @@ public class HotelRegistrationDto {
     private String detailAddress;
     private String category;
     private String desc;
-
+    private String phone_number;
     private List<MultipartFile> imageFiles;
     private List<String> tag;
 
     private List<RoomRegistrationDto> rooms;
-
 }

@@ -54,10 +54,22 @@ public class HotelEntity {
 	private String hotelImage;
 
 	@OneToMany(
-			mappedBy = "hotel", // **IMPORTANT**: Tells JPA to look at the "hotel" field in the RoomTypes class to find the foreign key configuration.
-			cascade = CascadeType.ALL, // Ensures that if you save a hotel, its rooms are also saved. If you delete a hotel, its rooms are also deleted.
-			orphanRemoval = true // Removes RoomTypes from the database if they are removed from this list.
+			mappedBy = "hotel",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true
 	)
 	private List<RoomTypes> roomTypes = new ArrayList<>();
+
+	@OneToOne(
+			mappedBy = "hotel",
+			cascade = CascadeType.ALL
+	)
+	private TagEntity tag;
+
+	public void addRoomType(RoomTypes roomType) {
+		roomTypes.add(roomType);
+		roomType.setHotel(this); // Set the parent (this Hotel instance) on the child
+	}
+
 
 }
