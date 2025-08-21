@@ -77,7 +77,10 @@ public class SecurityConfig {
                                 "/h_list",
                                 "/sms/auth",
                                 "/domestic-accommodations",
-                                "/event/eventlist"
+                                "/event/eventlist",
+                                "/booking/**",
+                                "/uploads/**",
+                                "/reserve"
                         ).permitAll() // 이 경로들은 인증 없이 접근 허용
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )
