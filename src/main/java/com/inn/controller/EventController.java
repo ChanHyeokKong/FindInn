@@ -212,7 +212,7 @@ public class EventController {
 
     @GetMapping("/eventlist")
     public String eventList(){
-        return "event/eventList";
+        return "/event/eventList";
     }
 }
 

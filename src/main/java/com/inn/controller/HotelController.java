@@ -30,8 +30,29 @@ public class HotelController {
 	private String kakaoJsKey;
 
 	@GetMapping("/h_list")
-	public String hotelList(Model model) {
-		List<HotelDto> hotels = hotelService.getAllHotelDtos(); // 새 메서드 작성
+	public String hotelList(
+			@RequestParam(value = "keyword", required = false) String keyword,
+			@RequestParam(value = "category", required = false) String category,
+			@RequestParam(value = "tags", required = false) List<String> tags,
+			@RequestParam(value = "checkIn", required = false) LocalDate checkIn,
+			@RequestParam(value = "checkOut", required = false) LocalDate checkOut,
+			@RequestParam(value = "personCount", required = false) Long personCount,
+			@RequestParam(value = "maxPrice", required = false) Long maxPrice,
+			Model model) {
+		
+		List<HotelDto> hotels;
+		
+		// 필터 파라미터가 있으면 검색, 없으면 전체 목록
+		if ((keyword != null && !keyword.trim().isEmpty()) || 
+			(category != null && !category.equals("all")) || 
+			(tags != null && !tags.isEmpty()) || 
+			maxPrice != null) {
+			
+			hotels = hotelService.searchHotelsWithConditions(keyword, category, tags, checkIn, checkOut, maxPrice, personCount, "lowPrice");
+		} else {
+			hotels = hotelService.getAllHotelDtos();
+		}
+		
 		model.addAttribute("kakaoJsKey", kakaoJsKey);
 		model.addAttribute("hotels", hotels);
 		return "/hotel/hotelList";

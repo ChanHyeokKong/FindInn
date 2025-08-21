@@ -19,6 +19,7 @@ public class BookingDetailInfo {
 
     // 예약 정보
     private String merchantUid;
+    private Long couponIdx;
     private LocalDate checkin;
     private LocalDate checkout;
     private String checkinDay;

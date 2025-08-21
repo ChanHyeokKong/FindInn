@@ -1,259 +1,287 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
-<head>
-  <meta charset="UTF-8"/>
-  <title>8월 쿠폰팩 이벤트</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}"
+	lang="ko">
 
-  <!-- ✅ CSRF (스프링 보안 사용 시) -->
-  <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}">
-  <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}">
+<th:block layout:fragment="head">
+	<style>
+		:root{
+			--bg:#fbfcfe; --card:#ffffff; --ink:#0f172a; --muted:#667085;
+			--coral:#ff4d57; --coral-200:#ffd7db; --blue:#2f6bff; --blue-200:#e7eeff;
+			--shadow:0 16px 40px rgba(15,23,42,.08); --r:20px;
+		}
+		
+		body{
+			margin:0;
+			font-family: var(--font-family-base);
+			color:var(--ink);
+			background:var(--bg);
+			font-size: var(--font-size-base);
+		}
+		
+		.wrap{
+			max-width:1040px;
+			margin:28px auto;
+			padding:0 16px
+		}
 
-  <style>
-    :root{
-      --bg:#fbfcfe; --card:#ffffff; --ink:#0f172a; --muted:#667085;
-      --coral:#ff4d57; --coral-200:#ffd7db; --blue:#2f6bff; --blue-200:#e7eeff;
-      --shadow:0 16px 40px rgba(15,23,42,.08); --r:20px;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:ui-sans-serif,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg)}
-    .wrap{max-width:1040px;margin:28px auto;padding:0 16px}
+		/* Hero */
+		.hero{
+			border-radius:28px;
+			box-shadow:var(--shadow);
+			overflow:hidden;
+			background:linear-gradient(120deg,var(--blue-200),#fff);
+			padding:26px 22px;
+			display:flex;
+			align-items:center;
+			justify-content:space-between;
+			gap:16px
+		}
+		.ribbon{
+			display:inline-block;
+			background:var(--coral);
+			color:#fff;
+			border-radius:999px;
+			padding:8px 14px;
+			font-weight:900;
+			font-size: 12px;
+		}
+		.hero h1{
+			margin:10px 0 6px;
+			font-size: 28px;
+			line-height:1.08;
+			letter-spacing:-.4px;
+			font-weight:900
+		}
+		.count{
+			font-size: 12px;
+			color:#b42318;
+			font-weight:800;
+			margin-top:6px
+		}
+		.btn{
+			border:0;
+			padding:12px 18px;
+			border-radius:14px;
+			font-weight:900;
+			cursor:pointer;
+			font-size: var(--font-size-sm);
+		}
+		.btn-primary{
+			background:var(--coral);
+			color:#fff;
+			box-shadow:0 10px 18px rgba(255,77,87,.22)
+		}
+		.btn[disabled]{
+			background:#e5e7eb;
+			color:#94a3b8;
+			cursor:not-allowed
+		}
 
-    /* Hero */
-    .hero{border-radius:28px;box-shadow:var(--shadow);overflow:hidden;background:linear-gradient(120deg,var(--blue-200),#fff);padding:26px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .ribbon{display:inline-block;background:var(--coral);color:#fff;border-radius:999px;padding:8px 14px;font-weight:900;font-size:13px}
-    .hero h1{margin:10px 0 6px;font-size:34px;line-height:1.08;letter-spacing:-.4px;font-weight:900}
-    .count{font-size:13px;color:#b42318;font-weight:800;margin-top:6px}
-    .btn{border:0;padding:12px 18px;border-radius:14px;font-weight:900;cursor:pointer}
-    .btn-primary{background:var(--coral);color:#fff;box-shadow:0 10px 18px rgba(255,77,87,.22)}
-    .btn[disabled]{background:#e5e7eb;color:#94a3b8;cursor:not-allowed}
+		/* Banner */
+		.banner{
+			display:grid;
+			grid-template-columns:140px 1fr auto;
+			gap:18px;
+			background:var(--card);
+			border-radius:24px;
+			box-shadow:var(--shadow);
+			padding:20px 22px;
+			margin-top:16px;
+			align-items:center
+		}
+		@media(max-width:820px){
+			.banner{
+				grid-template-columns:120px 1fr;
+				grid-auto-rows:auto
+			}
+			.banner form{
+				grid-column:1/-1;
+				justify-self:end
+			}
+		}
+		.bignum{
+			width:140px;
+			height:86px;
+			border:2px dashed var(--coral-200);
+			border-radius:16px;
+			background:#fff;
+			display:flex;
+			align-items:center;
+			justify-content:center;
+			font-weight:1000;
+			font-size: 38px;
+			letter-spacing:-.8px;
+			background-clip:text;
+			-webkit-background-clip:text;
+			color:transparent;
+			background-image:linear-gradient(180deg,var(--coral),var(--blue));
+			text-shadow:0 1px 0 rgba(0,0,0,.06);
+			line-height:1
+		}
+		/* 긴 텍스트(₩5,000) 대비 */
+		.bignum--won{
+			font-size: 28px;
+			letter-spacing:-.4px;
+			padding:0 6px
+		}
+		.line1{
+			font-weight:900;
+			font-size: 16px;
+		}
+		.line2,.line3{
+			color:var(--muted);
+			font-size: 12px;
+			line-height:1.45;
+			margin-top:3px
+		}
+		.tag{
+			display:inline-flex;
+			align-items:center;
+			gap:6px;
+			background:#eaffef;
+			border:1px solid #22c55e;
+			color:#137a37;
+			padding:2px 8px;
+			border-radius:999px;
+			font-weight:800;
+			font-size: 10px;
+			margin-left:6px
+		}
 
-    /* Banner */
-    .banner{display:grid;grid-template-columns:140px 1fr auto;gap:18px;background:var(--card);border-radius:24px;box-shadow:var(--shadow);padding:20px 22px;margin-top:16px;align-items:center}
-    @media(max-width:820px){.banner{grid-template-columns:120px 1fr;grid-auto-rows:auto}.banner form{grid-column:1/-1;justify-self:end}}
-    .bignum{width:140px;height:86px;border:2px dashed var(--coral-200);border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:1000;font-size:46px;letter-spacing:-.8px;background-clip:text;-webkit-background-clip:text;color:transparent;background-image:linear-gradient(180deg,var(--coral),var(--blue));text-shadow:0 1px 0 rgba(0,0,0,.06);line-height:1}
-    /* 긴 텍스트(₩5,000) 대비 */
-    .bignum--won{font-size:34px;letter-spacing:-.4px;padding:0 6px}
-    .line1{font-weight:900;font-size:18px}
-    .line2,.line3{color:var(--muted);font-size:13px;line-height:1.45;margin-top:3px}
-    .tag{display:inline-flex;align-items:center;gap:6px;background:#eaffef;border:1px solid #22c55e;color:#137a37;padding:2px 8px;border-radius:999px;font-weight:800;font-size:11px;margin-left:6px}
+		.sep{
+			height:1px;
+			background:linear-gradient(90deg,transparent,#e6e9ef,transparent);
+			margin:22px 0
+		}
 
-    .sep{height:1px;background:linear-gradient(90deg,transparent,#e6e9ef,transparent);margin:22px 0}
+		/* 호텔 카드 (분리 배너) */
+		.hotel{
+			display:flex;
+			gap:18px;
+			align-items:center;
+			background:#f3f8ff;
+			border-radius:24px;
+			box-shadow:var(--shadow);
+			padding:18px;
+			margin-top:16px
+		}
+		.hotel img{
+			width:48%;
+			max-height:240px;
+			object-fit:cover;
+			border-radius:16px
+		}
+		.hotel .info{
+			flex:1
+		}
+		.pill{
+			display:inline-flex;
+			align-items:center;
+			gap:6px;
+			background:#eef3ff;
+			color:#2c6cff;
+			padding:6px 10px;
+			border-radius:999px;
+			font-weight:800;
+			font-size: 11px;
+		}
+	</style>
+</th:block>
 
-    /* 호텔 카드 (분리 배너) */
-    .hotel{display:flex;gap:18px;align-items:center;background:#f3f8ff;border-radius:24px;box-shadow:var(--shadow);padding:18px;margin-top:16px}
-    .hotel img{width:48%;max-height:240px;object-fit:cover;border-radius:16px}
-    .hotel .info{flex:1}
-    .pill{display:inline-flex;align-items:center;gap:6px;background:#eef3ff;color:#2c6cff;padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px}
-  </style>
-</head>
-<body>
-<div class="wrap">
+<div layout:fragment="content">
+	<div class="wrap">
+		<!-- HERO -->
+		<section class="hero">
+			<div>
+				<span class="ribbon">8월까지 쭉 숙소 최대할인! ✈️</span>
+				<h1>숙소 <span style="color:var(--coral)">최대 10%</span> 쿠폰팩 🏖️</h1>
+				<div class="foot" style="color:var(--muted);font-size:11px">쿠폰 혜택은 숙소/체크인 기간/적용 시점에 따라 달라질 수 있습니다.</div>
+				<div class="count" th:text="'현재 발급 : ' + (${issuedCount}?:0) + ' / 3'">현재 발급 : 0 / 3</div>
+			</div>
+			<form th:action="@{/event/coupon/issue-by-code}" method="post">
+				<input type="hidden" name="code" value="AUG_7P"/>
+				<div th:if="${_csrf} != null">
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+				</div>
+				<button class="btn btn-primary" type="submit">쿠폰팩 다운받기 📥</button>
+			</form>
+		</section>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div>
-      <span class="ribbon">8월까지 쭉 숙소 최대할인! ✈️</span>
-      <h1>숙소 <span style="color:var(--coral)">최대 10%</span> 쿠폰팩 🏖️</h1>
-      <div class="foot" style="color:var(--muted);font-size:12px">쿠폰 혜택은 숙소/체크인 기간/적용 시점에 따라 달라질 수 있습니다.</div>
-      <div class="count" id="issue-count" th:text="'현재 발급 : ' + (${issuedCount}?:0) + ' / 3'">현재 발급 : 0 / 3</div>
-    </div>
-    <!-- 기본 폼은 보존(프로그레시브)하지만 JS가 가로채서 JSON 호출 -->
-    <form class="coupon-form" th:action="@{/event/coupon/issue-by-code}" method="post" data-code="AUG_7P">
-      <input type="hidden" name="code" value="AUG_7P"/>
-      <div th:if="${_csrf} != null">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-      </div>
-      <button class="btn btn-primary" type="submit"
-              th:disabled="${issuedCodes?.contains('AUG_7P') or ((issuedCount ?: 0) >= 3)}"
-              th:text="${issuedCodes?.contains('AUG_7P')} ? '발급 완료 ✅' : '쿠폰팩 다운받기 📥'">쿠폰팩 다운받기 📥</button>
-    </form>
-  </section>
+		<!-- 7% -->
+		<article class="banner">
+			<div class="bignum">7%</div>
+			<div>
+				<div class="line1">숙소 7% 할인 🎉</div>
+				<div class="line2">8만원 이상 · 최대 20,000원</div>
+				<div class="line3">사용기간: 발급일로부터 10일 (8/31 만료)</div>
+			</div>
+			<form th:action="@{/event/coupon/issue-by-code}" method="post">
+				<input type="hidden" name="code" value="AUG_7P"/>
+				<div th:if="${_csrf} != null">
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+				</div>
+				<button class="btn btn-primary" type="submit"
+						th:disabled="${issuedCodes?.contains('AUG_7P') or ((issuedCount ?: 0) >= 3)}"
+						th:text="${issuedCodes?.contains('AUG_7P')} ? '발급 완료 ✅' : '발급받기'">발급받기</button>
+			</form>
+		</article>
 
-  <!-- 7% -->
-  <article class="banner">
-    <div class="bignum">7%</div>
-    <div>
-      <div class="line1">숙소 7% 할인 🎉</div>
-      <div class="line2">8만원 이상 · 최대 20,000원</div>
-      <div class="line3">사용기간: 발급일로부터 10일 (8/31 만료)</div>
-    </div>
-    <form class="coupon-form" th:action="@{/event/coupon/issue-by-code}" method="post" data-code="AUG_7P">
-      <input type="hidden" name="code" value="AUG_7P"/>
-      <div th:if="${_csrf} != null">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-      </div>
-      <button class="btn btn-primary" type="submit"
-              th:disabled="${issuedCodes?.contains('AUG_7P') or ((issuedCount ?: 0) >= 3)}"
-              th:text="${issuedCodes?.contains('AUG_7P')} ? '발급 완료 ✅' : '발급받기'">발급받기</button>
-    </form>
-  </article>
+		<!-- 10% -->
+		<article class="banner">
+			<div class="bignum" style="background-image:linear-gradient(180deg,var(--blue),#6aa2ff)">10%</div>
+			<div>
+				<div class="line1">숙소 10% 할인 🚀</div>
+				<div class="line2">12만원 이상 · 최대 40,000원</div>
+				<div class="line3">사용기간: 발급일로부터 10일 (8/31 만료)</div>
+			</div>
+			<form th:action="@{/event/coupon/issue-by-code}" method="post">
+				<input type="hidden" name="code" value="AUG_10P"/>
+				<div th:if="${_csrf} != null">
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+				</div>
+				<button class="btn btn-primary" type="submit"
+						th:disabled="${issuedCodes?.contains('AUG_10P') or ((issuedCount ?: 0) >= 3)}"
+						th:text="${issuedCodes?.contains('AUG_10P')} ? '발급 완료 ✅' : '발급받기'">발급받기</button>
+			</form>
+		</article>
 
-  <!-- 10% -->
-  <article class="banner">
-    <div class="bignum" style="background-image:linear-gradient(180deg,var(--blue),#6aa2ff)">10%</div>
-    <div>
-      <div class="line1">숙소 10% 할인 🚀</div>
-      <div class="line2">12만원 이상 · 최대 40,000원</div>
-      <div class="line3">사용기간: 발급일로부터 10일 (8/31 만료)</div>
-    </div>
-    <form class="coupon-form" th:action="@{/event/coupon/issue-by-code}" method="post" data-code="AUG_10P">
-      <input type="hidden" name="code" value="AUG_10P"/>
-      <div th:if="${_csrf} != null">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-      </div>
-      <button class="btn btn-primary" type="submit"
-              th:disabled="${issuedCodes?.contains('AUG_10P') or ((issuedCount ?: 0) >= 3)}"
-              th:text="${issuedCodes?.contains('AUG_10P')} ? '발급 완료 ✅' : '발급받기'">발급받기</button>
-    </form>
-  </article>
+		<!-- 5% -->
+		<article class="banner">
+			<div class="bignum bignum--won">₩5,000</div>
+			<div>
+				<div class="line1">숙소 5,000원 할인 <span class="tag">신규</span></div>
+				<div class="line2">5만원 이상 · 최대 5,000원</div>
+				<div class="line3">사용기간: 발급일로부터 10일 (8/31 만료)</div>
+			</div>
+			<form th:action="@{/event/coupon/issue-by-code}" method="post">
+				<input type="hidden" name="code" value="AUG_5K"/>
+				<div th:if="${_csrf} != null">
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+				</div>
+				<button class="btn btn-primary" type="submit"
+						th:disabled="${issuedCodes?.contains('AUG_5K') or ((issuedCount ?: 0) >= 3)}"
+						th:text="${issuedCodes?.contains('AUG_5K')} ? '발급 완료 ✅' : '발급받기'">발급받기</button>
+			</form>
+		</article>
 
-  <!-- 5,000원 -->
-  <article class="banner">
-    <div class="bignum bignum--won">₩5,000</div>
-    <div>
-      <div class="line1">여름휴가 지원금 🌴 <span class="tag">STACK 가능</span></div>
-      <div class="line2">전호텔 사용</div>
-      <div class="line3">다른 쿠폰과 중복 사용 가능</div>
-    </div>
-    <form class="coupon-form" th:action="@{/event/coupon/issue-by-code}" method="post" data-code="SUMMER_5K">
-      <input type="hidden" name="code" value="SUMMER_5K"/>
-      <div th:if="${_csrf} != null">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-      </div>
-      <button class="btn btn-primary" type="submit"
-              th:disabled="${issuedCodes?.contains('SUMMER_5K') or ((issuedCount ?: 0) >= 3)}"
-              th:text="${issuedCodes?.contains('SUMMER_5K')} ? '발급 완료 ✅' : '발급받기'">발급받기</button>
-    </form>
-  </article>
+		<div class="sep"></div>
 
-  <div class="sep"></div>
-
-  <!-- 지정 호텔 20% -->
-  <article class="banner" style="background:linear-gradient(120deg,#fff,var(--blue-200))">
-    <div class="bignum" style="background-image:linear-gradient(180deg,#1b51ff,#73a2ff)">20%</div>
-    <div>
-      <div class="line1">지정 호텔 20% 할인 🏨</div>
-      <div class="line2">지정 호텔 한정 · 중복 적용 불가</div>
-      <div class="line3">사용기간: 발급일로부터 10일 (8/31 만료)</div>
-    </div>
-    <form class="coupon-form" th:action="@{/event/coupon/issue-by-code}" method="post" data-code="HOTEL_20P">
-      <input type="hidden" name="code" value="HOTEL_20P"/>
-      <div th:if="${_csrf} != null">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-      </div>
-      <button class="btn btn-primary" type="submit"
-              th:disabled="${issuedCodes?.contains('HOTEL_20P') or ((issuedCount ?: 0) >= 3)}"
-              th:text="${issuedCodes?.contains('HOTEL_20P')} ? '발급 완료 ✅' : '발급받기'">발급받기</button>
-    </form>
-  </article>
-
-  <!-- 호텔 카드 (분리) -->
-  <div class="hotel">
-    <img src="https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?q=80&w=1600&auto=format&fit=crop" alt="호텔아쿠라펠리스 이미지">
-    <div class="info">
-      <h3 style="margin:0 0 6px">호텔아쿠라펠리스</h3>
-      <span class="pill">📍 부산 · 20% OFF</span>
-      <ul style="margin:10px 0 0 18px;padding:0;color:#334155;font-size:14px">
-        <li>아늑한 객실과 편안한 침구</li>
-        <li>도심 접근성 좋은 위치</li>
-      </ul>
-      <div style="margin-top:12px">
-        <a class="btn" style="background:#2f6bff;color:#fff;text-decoration:none" th:href="@{/hotel/{id}(id=${hotelId}?:123)}">호텔 바로보기 &gt;</a>
-      </div>
-    </div>
-  </div>
+		<!-- 추천 숙소 -->
+		<article class="hotel">
+			<img src="/image/KakaoTalk_20250801_104804478.webp" alt="추천 숙소">
+			<div class="info">
+				<div class="pill">
+					<i class="fas fa-star"></i>
+					추천 숙소
+				</div>
+				<h3 style="margin: 8px 0 4px; font-size: 18px; font-weight: 900;">서울 강남 프리미엄 호텔</h3>
+				<p style="margin: 0; color: var(--muted); font-size: 12px; line-height: 1.4;">
+					강남역 도보 5분, 비즈니스 여행객에게 최적화된 프리미엄 호텔입니다.<br>
+					최신 시설과 편리한 접근성으로 만족도 높은 숙박 경험을 제공합니다.
+				</p>
+			</div>
+		</article>
+	</div>
 </div>
-
-<!-- ✅ AJAX 처리 스크립트 -->
-<script>
-(function(){
-  const EVENT_CODE = 'august-pack'; // 서버 컨트롤러 상수와 일치
-  const csrfToken = document.querySelector('meta[name="_csrf"]')?.content ?? '';
-  const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content ?? 'X-CSRF-TOKEN';
-  const $count = document.getElementById('issue-count');
-
-  // 간단 토스트 (프로젝트의 모달/토스트로 교체해도 됨)
-  function toast(msg){ alert(msg); }
-
-  // 버튼 잠그기 + 텍스트 변경
-  function lockButton(btn){
-    btn.disabled = true;
-    btn.textContent = '발급 완료 ✅';
-  }
-
-  // 카운트 +1 (최대 3)
-  function bumpCount(){
-    if (!$count) return;
-    const m = $count.textContent.match(/현재 발급\s*:\s*(\d+)\s*\/\s*3/);
-    if (!m) return;
-    let n = parseInt(m[1] || '0', 10);
-    if (n < 3) n++;
-    $count.textContent = `현재 발급 : ${n} / 3`;
-  }
-
-  // 페이지 진입 시 서버와 1회 동기화 (다른 기기에서 이미 받았을 수 있으므로)
-  (async function syncIssued(){
-    try{
-      const r = await fetch(`/event/coupon/issued?eventCode=${encodeURIComponent(EVENT_CODE)}`, {
-        headers: { [csrfHeader]: csrfToken }
-      });
-      if (!r.ok) return;
-      const { issued } = await r.json();
-      if (issued) {
-        // 이미 발급된 쿠폰들의 버튼을 SSR이 disabled로 처리했을 것이므로 추가 조치는 불필요.
-        // (필요하면 여기서도 버튼 상태를 다시 스캔해 잠글 수 있음)
-      }
-    }catch(e){ /* ignore */ }
-  })();
-
-  // 모든 쿠폰 폼을 AJAX로 가로채기
-  document.querySelectorAll('form.coupon-form').forEach(form=>{
-    form.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-
-      const btn = form.querySelector('button[type="submit"]');
-      if (!btn || btn.disabled) return;
-
-      const code = form.dataset.code || form.querySelector('input[name="code"]')?.value || '';
-      if (!code) return;
-
-      // 서버 JSON 엔드포인트 호출
-      try{
-        btn.disabled = true; // 중복 클릭 방지
-        const r = await fetch('/event/coupon/issue-by-code.json', {
-          method: 'POST',
-          headers: {
-            'Content-Type':'application/x-www-form-urlencoded',
-            [csrfHeader]: csrfToken
-          },
-          body: new URLSearchParams({ code })
-        });
-
-        const res = await r.json().catch(()=> ({}));
-
-        if (r.ok && res.ok){
-          lockButton(btn);
-          bumpCount();
-          toast(res.message || '쿠폰이 발급되었습니다 🎁');
-        } else {
-          // 컨트롤러에서 ALREADY_ISSUED 를 내려주도록 수정해둔 상태
-          if (res.code === 'ALREADY_ISSUED' || /이미.*발급/.test(res.message || '')) {
-            lockButton(btn);
-            toast('이미 쿠폰을 발급받았습니다 🎁');
-          } else {
-            // 실패 시 버튼 복구
-            btn.disabled = false;
-            toast(res.message || '쿠폰 발급에 실패했습니다.');
-          }
-        }
-      } catch(err){
-        btn.disabled = false;
-        toast('네트워크 오류로 발급에 실패했습니다.');
-      }
-    });
-  });
-})();
-</script>
-</body>
-</html>

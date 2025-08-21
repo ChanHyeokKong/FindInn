@@ -3,69 +3,274 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/mypageLayout}">
 
-<head>
-    <title>정보 수정</title>
+<th:block layout:fragment="head">
+    <title>회원정보 수정 - FindInn</title>
     <style>
         .update-form-container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            background-color: #fff;
+            max-width: 700px;
+            margin: var(--spacing-xl) auto;
+            padding: var(--spacing-2xl);
+            border-radius: var(--border-radius-2xl);
+            box-shadow: var(--shadow-xl);
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            position: relative;
+            overflow: hidden;
         }
+        
+        .update-form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        }
+        
         .update-form-container h1 {
             text-align: center;
-            margin-bottom: 30px;
-            font-weight: 600;
+            margin-bottom: var(--spacing-2xl);
+            font-weight: var(--font-weight-extrabold);
+            color: var(--gray-900);
+            font-size: var(--font-size-3xl);
+            position: relative;
         }
+        
+        .update-form-container h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border-radius: var(--border-radius-sm);
+        }
+        
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: var(--spacing-xl);
+            position: relative;
         }
+        
         .form-group label {
-            font-weight: 500;
-            margin-bottom: 8px;
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--spacing-sm);
             display: block;
+            color: var(--gray-800);
+            font-size: var(--font-size-base);
         }
+        
+        .form-control {
+            height: 48px;
+            padding: 0 var(--spacing-md);
+            border: 2px solid var(--gray-300);
+            border-radius: var(--border-radius-lg);
+            transition: all var(--transition-fast);
+            font-size: var(--font-size-base);
+            background: var(--white);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+            transform: translateY(-1px);
+        }
+        
         .form-control[readonly] {
-            background-color: #e9ecef;
+            background-color: var(--gray-100);
+            border-color: var(--gray-300);
+            color: var(--gray-600);
         }
+        
         .btn-container {
-            text-align: right;
+            text-align: center;
+            margin-top: var(--spacing-2xl);
         }
+        
         .change-section {
-            border: 1px solid #eee;
-            padding: 20px;
-            margin-top: 10px;
-            border-radius: 8px;
+            border: 2px solid var(--primary-light);
+            background: var(--primary-lighter);
+            padding: var(--spacing-xl);
+            margin-top: var(--spacing-lg);
+            border-radius: var(--border-radius-xl);
+            position: relative;
         }
+        
+        .change-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
+        }
+        
+        .change-section h4 {
+            color: var(--primary-dark);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+        }
+        
+        .change-section h4::before {
+            content: '🔒';
+            margin-right: var(--spacing-sm);
+        }
+        
         .input-group-btn {
             display: flex;
-            gap: 5px;
+            gap: var(--spacing-sm);
+            align-items: end;
+        }
+        
+        .input-group-btn .form-control {
+            flex: 1;
+        }
+        
+        .auth-input-row {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .auth-btn {
+            height: 48px;
+            padding: 0 var(--spacing-lg);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            color: var(--white);
+            font-weight: var(--font-weight-semibold);
+            border-radius: var(--border-radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .auth-btn:hover {
+            background: linear-gradient(135deg, var(--primary-dark), #003d82);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            padding: var(--spacing-md) var(--spacing-2xl);
+            border-radius: var(--border-radius-lg);
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-lg);
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), #003d82);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-600);
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--border-radius-md);
+            font-weight: var(--font-weight-medium);
+            transition: all var(--transition-fast);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gray-700);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .modal-content {
+            border-radius: var(--border-radius-2xl);
+            box-shadow: var(--shadow-2xl);
+            border: none;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--white);
+            border-radius: var(--border-radius-2xl) var(--border-radius-2xl) 0 0;
+            padding: var(--spacing-xl);
+        }
+        
+        .modal-body {
+            padding: var(--spacing-2xl);
+        }
+        
+        .modal-footer {
+            padding: var(--spacing-xl) var(--spacing-2xl);
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .alert-message {
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            margin-top: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+        }
+        
+        .alert-success {
+            background: var(--success-light);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+        
+        .alert-danger {
+            background: var(--danger-light);
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
         }
     </style>
-</head>
+</th:block>
 
 <th:block layout:fragment="modals">
-<!-- Password Confirmation Modal -->
+<!-- Enhanced Password Confirmation Modal -->
 <div class="modal fade" id="passwordConfirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">비밀번호 확인</h5>
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-shield-alt me-2"></i>보안 인증
+                </h5>
             </div>
             <div class="modal-body">
-                <p>정보를 안전하게 보호하기 위해 현재 비밀번호를 입력해주세요.</p>
+                <div class="text-center mb-4">
+                    <div class="security-icon bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="fas fa-lock fa-2x text-primary"></i>
+                    </div>
+                </div>
+                <p class="text-center text-muted mb-4">정보를 안전하게 보호하기 위해<br>현재 비밀번호를 입력해주세요.</p>
                 <form id="passwordConfirmForm">
                     <div class="form-group">
-                        <input type="password" id="currentPassword" class="form-control" required>
+                        <label for="currentPassword" class="form-label">현재 비밀번호</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-key text-muted"></i>
+                            </span>
+                            <input type="password" id="currentPassword" class="form-control" placeholder="현재 비밀번호를 입력하세요" required>
+                        </div>
                         <div class="invalid-feedback" style="display: none;">비밀번호가 일치하지 않습니다.</div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="history.back()">취소</button>
-                <button type="button" id="confirmPasswordBtn" class="btn btn-primary">확인</button>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-secondary" onclick="history.back()">
+                    <i class="fas fa-times me-2"></i>취소
+                </button>
+                <button type="button" id="confirmPasswordBtn" class="btn btn-primary">
+                    <i class="fas fa-check me-2"></i>확인
+                </button>
             </div>
         </div>
     </div>
@@ -73,60 +278,146 @@
 </th:block>
 
 <div id="updateFormContainer" style="display: none;" layout:fragment="content" class="update-form-container">
-    <h1>회원 정보 수정</h1>
+    <h1><i class="fas fa-user-edit me-3"></i>회원 정보 수정</h1>
     <form id="updateForm" th:action="@{/mypage/update}" method="post">
         <input type="hidden" id="memberIdx" name="idx" />
 
         <div class="form-group">
-            <label for="memberEmail">이메일</label>
-            <input type="email" id="memberEmail" name="memberEmail" class="form-control" readonly>
+            <label for="memberEmail">
+                <i class="fas fa-envelope text-primary me-2"></i>이메일 주소
+            </label>
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-envelope text-muted"></i>
+                </span>
+                <input type="email" id="memberEmail" name="memberEmail" class="form-control" readonly>
+                <span class="input-group-text">
+                    <i class="fas fa-lock text-muted" title="변경 불가"></i>
+                </span>
+            </div>
+            <small class="text-muted">이메일 주소는 변경할 수 없습니다.</small>
         </div>
 
         <div class="form-group">
-            <label for="memberName">이름</label>
-            <input type="text" id="memberName" name="memberName" class="form-control" required>
+            <label for="memberName">
+                <i class="fas fa-user text-primary me-2"></i>이름
+            </label>
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-user text-muted"></i>
+                </span>
+                <input type="text" id="memberName" name="memberName" class="form-control" placeholder="이름을 입력하세요" required>
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="updateMemberPhone">전화번호</label>
+            <label for="updateMemberPhone">
+                <i class="fas fa-phone text-primary me-2"></i>전화번호
+            </label>
             <div class="input-group-btn">
-                <input type="tel" id="updateMemberPhone" name="memberPhone" class="form-control" required readonly>
-                <button type="button" id="changePhoneBtn" class="btn btn-secondary">변경</button>
+                <div class="input-group flex-grow-1">
+                    <span class="input-group-text">
+                        <i class="fas fa-phone text-muted"></i>
+                    </span>
+                    <input type="tel" id="updateMemberPhone" name="memberPhone" class="form-control" placeholder="010-1234-5678" required readonly>
+                </div>
+                <button type="button" id="changePhoneBtn" class="btn btn-secondary">
+                    <i class="fas fa-edit me-2"></i>변경
+                </button>
             </div>
         </div>
 
         <div id="phoneChangeSection" class="change-section" style="display: none;">
+            <h5 class="mb-3">
+                <i class="fas fa-mobile-alt text-primary me-2"></i>전화번호 인증
+            </h5>
             <div class="auth-input-row">
-                <button type="button" id="sendAuthBtn-update" class="btn btn-primary auth-btn">인증번호 받기</button>
-                <input type="text" id="authInput-update" class="form-control" placeholder="인증번호 입력"/>
-                <button type="button" id="checkAuthBtn-update" class="btn btn-primary auth-btn">확인</button>
+                <button type="button" id="sendAuthBtn-update" class="auth-btn">
+                    <i class="fas fa-paper-plane me-2"></i>인증번호 받기
+                </button>
+                <div class="input-group flex-grow-1">
+                    <span class="input-group-text">
+                        <i class="fas fa-key text-muted"></i>
+                    </span>
+                    <input type="text" id="authInput-update" class="form-control" placeholder="인증번호 6자리 입력" maxlength="6"/>
+                </div>
+                <button type="button" id="checkAuthBtn-update" class="auth-btn">
+                    <i class="fas fa-check me-2"></i>확인
+                </button>
             </div>
             <input type="hidden" id="serverAuthCode-update" value=""/>
-            <p id="timerText-update" style="color: gray; margin-top: 5px;"></p>
-            <p id="authResultMsg-update"></p>
+            <div id="timerText-update" class="text-muted mt-2" style="font-size: 0.9em;"></div>
+            <div id="authResultMsg-update" class="alert-message mt-2"></div>
         </div>
 
-        <hr>
+        <div class="divider my-4">
+            <hr class="border-2">
+        </div>
 
-        <button type="button" id="changePasswordBtn" class="btn btn-secondary mb-3">비밀번호 변경</button>
+        <div class="text-center mb-3">
+            <button type="button" id="changePasswordBtn" class="btn btn-outline-primary">
+                <i class="fas fa-key me-2"></i>비밀번호 변경
+            </button>
+        </div>
 
         <div id="passwordChangeSection" class="change-section" style="display: none;">
             <h4>비밀번호 변경</h4>
             <div class="form-group">
-                <label for="newPassword">새 비밀번호</label>
-                <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="새 비밀번호를 입력하세요">
+                <label for="newPassword">
+                    <i class="fas fa-lock text-primary me-2"></i>새 비밀번호
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-lock text-muted"></i>
+                    </span>
+                    <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="8자 이상의 새 비밀번호를 입력하세요">
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('newPassword')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <small class="text-muted">영문, 숫자, 특수문자를 포함하여 8자 이상 입력하세요.</small>
             </div>
             <div class="form-group">
-                <label for="newPasswordConfirm">새 비밀번호 확인</label>
-                <input type="password" id="newPasswordConfirm" class="form-control" placeholder="새 비밀번호를 다시 입력하세요">
+                <label for="newPasswordConfirm">
+                    <i class="fas fa-lock-open text-primary me-2"></i>새 비밀번호 확인
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-lock text-muted"></i>
+                    </span>
+                    <input type="password" id="newPasswordConfirm" class="form-control" placeholder="새 비밀번호를 다시 입력하세요">
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('newPasswordConfirm')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="btn-container mt-4">
-            <button type="submit" class="btn btn-primary">정보 수정</button>
+        <div class="btn-container">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-save me-2"></i>정보 수정 완료
+            </button>
         </div>
     </form>
 </div>
+
+<script>
+function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    const button = input.nextElementSibling;
+    const icon = button.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+</script>
 
 <th:block layout:fragment="script">
     <script th:src="@{/javascript/updateMember.js}"></script>
