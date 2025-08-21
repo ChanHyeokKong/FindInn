@@ -16,7 +16,7 @@
 
     <!-- 헤더: 뒤로가기 + 제목 -->
     <header class="booking-header">
-        <button type="button" class="btn-back" onclick="history.back()">
+        <button type="button" class="btn-back" onclick="location.href=document.referrer">
             <i class="fas fa-arrow-left" aria-hidden="true"></i>
             <span class="sr-only">뒤로가기</span>
         </button>
@@ -116,6 +116,12 @@
             <dt>숙박 일수</dt>
             <dd th:text="${#numbers.formatInteger(T(java.time.temporal.ChronoUnit).DAYS.between(detail.checkin, detail.checkout), 0)} + '박'"></dd>
 
+            <!-- 쿠폰 할인 -->
+            <th:block th:if="${detail.couponIdx != null}">
+                <dt>쿠폰 할인</dt>
+                <dd th:text="${#numbers.formatInteger((detail.roomPrice * T(java.time.temporal.ChronoUnit).DAYS.between(detail.checkin, detail.checkout)) - detail.paidAmount, 0, 'COMMA')} + '원'"></dd>
+            </th:block>
+
             <dt>결제 금액</dt>
             <dd th:text="${#numbers.formatInteger(detail.paidAmount, 0, 'COMMA')} + '원'"></dd>
         </dl>
@@ -148,6 +154,9 @@
 
         // 예약번호
         const merchantUid = [[${detail.merchantUid}]];
+
+        // 쿠폰번호
+        const couponIdx = [[${detail.couponIdx}]];
 
     </script>
 

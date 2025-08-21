@@ -1,6 +1,6 @@
 // ✅ 결제 버튼
 document.getElementById('payBtn').addEventListener('click', function () {
-    // 예약자 정보
+    // 예약자 정보 확인
     const name = document.getElementById('guestName').value;
     const phone = document.getElementById('guestPhone').value.replace(/-/g, '');
     if (!name || !phone) {
@@ -14,7 +14,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
         return;
     }
 
-    // 1. 고유 merchant_uid 먼저 요청
+    // 1. 고유 merchant_uid 발급
     $.ajax({
         url: "/booking/merchantUid",
         type: "GET",
@@ -80,6 +80,7 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                             merchant_uid: rsp.merchant_uid
                                         },
                                         success: function () {
+
                                             // 6. 결제 정보 저장
                                             $.ajax({
                                                 url: "/payment/insert",
@@ -98,7 +99,23 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                                 success: function () {
                                                     alert("🎉 결제가 완료되었습니다!");
 
-                                                    // 7. 예약 확인 문자 발송
+                                                    // 7. 쿠폰 사용시 사용처리
+                                                    if (selectedCouponId) {
+                                                        $.ajax({
+                                                            url: "/api/user-coupons/use/" + selectedCouponId,
+                                                            type: "POST",
+                                                            success: function(res) {
+                                                                console.log("✅ 쿠폰 사용 확정 완료:", res);
+                                                            },
+                                                            error: function(xhr) {
+                                                                const res = xhr.responseJSON;
+                                                                const message = res?.message || "쿠폰 사용 처리 중 오류 발생";
+                                                                alert("❌ 쿠폰 확정 실패: " + message);
+                                                            }
+                                                        });
+                                                    }
+
+                                                    // 8. 예약 확인 문자 발송
                                                     $.ajax({
                                                         url: "/sms/booking-confirm",
                                                         type: "POST",
@@ -115,36 +132,36 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                                         }),
                                                         success: function () {
                                                             console.log("📨 예약완료 문자 전송 완료");
-                                                            // 8. 예약 확인 페이지로 이동
+
+                                                            // 9. 예약 확인 페이지 이동
                                                             window.location.href = "/booking/complete?bookingIdx=" + encodeURIComponent(bookingIdx);
                                                         },
                                                         error: function (xhr) {
                                                             const res = xhr.responseJSON;
-                                                            const message = res?.message || "결제 정보 저장 중 오류가 발생했습니다.";
-                                                            alert("❌ 결제 저장 실패: " + message);
-
-                                                            alert("❌ 예약이 취소되었습니다");
-
-                                                            // 예약 상태 취소로 업데이트
-                                                            $.ajax({
-                                                                url: "/booking/update/cancel/" + bookingIdx,  // 실제 API 경로 맞게 조정
-                                                                type: 'PUT',
-                                                                success: function() {
-                                                                    console.log("❌ 예약 취소 완료");
-                                                                },
-                                                                error: function(xhr) {
-                                                                    const res = xhr.responseJSON;
-                                                                    const message = res?.message || '예약 취소 중 오류가 발생했습니다.';
-                                                                    alert('❌ 예약 취소 실패: ' + message);
-                                                                }
-                                                            });
+                                                            const message = res?.message || "문자 전송 중 오류가 발생했습니다.";
+                                                            console.error("❌ 문자 전송 실패: " + message);
                                                         }
                                                     });
                                                 },
                                                 error: function (xhr) {
                                                     const res = xhr.responseJSON;
-                                                    const message = res?.message || "예약 저장 중 오류가 발생했습니다.";
-                                                    alert("❌ 예약 저장 실패: " + message);
+                                                    const message = res?.message || "결제 정보 저장 중 오류가 발생했습니다.";
+                                                    alert("❌ 결제 저장 실패: " + message);
+                                                    alert("❌ 예약이 취소되었습니다");
+
+                                                    // 예약 상태 취소 업데이트
+                                                    $.ajax({
+                                                        url: "/booking/update/cancel/" + bookingIdx,
+                                                        type: 'PUT',
+                                                        success: function () {
+                                                            console.log("❌ 예약 취소 완료");
+                                                        },
+                                                        error: function (xhr) {
+                                                            const res = xhr.responseJSON;
+                                                            const message = res?.message || '예약 취소 중 오류가 발생했습니다.';
+                                                            alert('❌ 예약 취소 실패: ' + message);
+                                                        }
+                                                    });
                                                 }
                                             });
                                         },
@@ -152,17 +169,16 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                             const res = xhr.responseJSON;
                                             const message = res?.message || "결제 검증 중 오류가 발생했습니다.";
                                             alert("❌ 결제 검증 실패: " + message);
-
                                             alert("❌ 예약이 취소되었습니다");
 
-                                            // 예약 상태 취소로 업데이트
+                                            // 예약 상태 취소 업데이트
                                             $.ajax({
-                                                url: "/booking/update/cancel/" + bookingIdx,  // 실제 API 경로 맞게 조정
+                                                url: "/booking/update/cancel/" + bookingIdx,
                                                 type: 'PUT',
-                                                success: function() {
+                                                success: function () {
                                                     console.log("❌ 예약 취소 완료");
                                                 },
-                                                error: function(xhr) {
+                                                error: function (xhr) {
                                                     const res = xhr.responseJSON;
                                                     const message = res?.message || '예약 취소 중 오류가 발생했습니다.';
                                                     alert('❌ 예약 취소 실패: ' + message);
@@ -172,17 +188,16 @@ document.getElementById('payBtn').addEventListener('click', function () {
                                     });
                                 } else {
                                     alert("❌ 결제 실패: " + rsp.error_msg);
-
                                     alert("❌ 예약이 취소되었습니다");
 
-                                    // 예약 상태 취소로 업데이트
+                                    // 예약 상태 취소 업데이트
                                     $.ajax({
-                                        url: "/booking/update/cancel/" + bookingIdx,  // 실제 API 경로 맞게 조정
+                                        url: "/booking/update/cancel/" + bookingIdx,
                                         type: 'PUT',
-                                        success: function() {
+                                        success: function () {
                                             console.log("❌ 예약 취소 완료");
                                         },
-                                        error: function(xhr) {
+                                        error: function (xhr) {
                                             const res = xhr.responseJSON;
                                             const message = res?.message || '예약 취소 중 오류가 발생했습니다.';
                                             alert('❌ 예약 취소 실패: ' + message);
