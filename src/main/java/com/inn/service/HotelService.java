@@ -64,7 +64,7 @@ public class HotelService {
 
 
     // ⚠️ 수정된 searchHotels 메서드
-    public List<HotelDto> searchHotels(HotelSearchCondition condition) {
+    /*public List<HotelDto> searchHotels(HotelSearchCondition condition) {
         String keyword = condition.getKeyword();
         String category = condition.getCategory();
         List<String> tags = condition.getTags();
@@ -89,7 +89,7 @@ public class HotelService {
                         hotel.getHotelImages(),
                         hotel.getMemberIdx()))
                 .collect(Collectors.toList());
-    }
+    }*/
 
     public List<HotelDto> searchHotelsWithConditions(String keyword, String category, List<String> tags, LocalDate checkIn, LocalDate checkOut, Long minPrice, Long personCount, String sort) {
 
@@ -216,6 +216,7 @@ public class HotelService {
 
             // ✅ 호텔 평점 세팅
             RatingDto rating = reviewService.getRatings(hotelId);
+            
             dto.setRatingDto(rating);
 
             dto.setHotelTag(null);
@@ -311,7 +312,7 @@ public class HotelService {
         }
         return hotelRepository.save(hotel);
     }
-}
+
 
 
 
@@ -336,3 +337,4 @@ public class HotelService {
                 .collect(Collectors.toList());
     }
 
+}

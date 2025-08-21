@@ -90,6 +90,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	range.addEventListener("input", function() {
 		updateDisplay(this.value);
 		searchHotels();  // 슬라이더 조작 시 검색 실행
+		console.log("🔄 슬라이더 변경됨:", this.value);
 	});
 
 
@@ -104,9 +105,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		const keyword = input.value.trim();
 		const categoryRadio = Array.from(radios).find(r => r.checked);
 		const category = categoryRadio ? categoryRadio.value : 'all';
-		const priceRangeInput = document.querySelector('input[name="priceRange"]');
-		const priceRange = priceRangeInput ? priceRangeInput.value : '';
-
+		/*const priceRangeInput = document.querySelector('input[name="priceRange"]');
+		const priceRange = priceRangeInput ? priceRangeInput.value : '';*/
+		const priceRange = range.value;  // 여기 변경한 부분
+		   console.log("슬라이더에서 가져온 priceRange 값:", priceRange); // 
 
 		const checkIn = document.getElementById("start").value;
 		const checkOut = document.getElementById("end").value;
@@ -126,10 +128,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
 			if (keyword) params.append("keyword", keyword);
 			if (category && category !== "all") params.append("category", category);
-			if (checkIn) params.append("checkIn", checkIn);
-			if (checkOut) params.append("checkOut", checkOut);
+			if (checkIn && checkIn.trim() !== "") params.append("checkIn", checkIn);
+			if (checkOut && checkOut.trim() !== "") params.append("checkOut", checkOut);
 			if (priceRange) params.append("priceRange", priceRange);
-			if (personCount) params.append("personCount", personCount);
+			if (personCount && personCount.trim() !== "") params.append("personCount", personCount);
 			if (sort) params.append("sort", sort);
 			
 			
@@ -275,7 +277,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				const personCount = document.getElementById('personCount').value;
 
 				
- 				const url = `domestic-accommodations?id=${hotelId}&checkIn=${encodeURIComponent(checkIn || '')}&checkOut=${encodeURIComponent(checkOut || '')}&personCount=${encodeURIComponent(personCount || '')}`;				location.href = url;
+ 				const url = `domestic-accommodations?id=${hotelId}&checkIn=${encodeURIComponent(checkIn || '')}&checkOut=${encodeURIComponent(checkOut || '')}&personCount=${encodeURIComponent(personCount || '')}`;				
+				location.href = url;
 			};
 		});
 	}
