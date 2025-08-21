@@ -4,6 +4,9 @@ import com.inn.data.hotel.HotelEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Entity
 public class RoomTypes {
@@ -14,10 +17,20 @@ public class RoomTypes {
     String description;
     private Long price;
     private Long capacity;
+    String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", referencedColumnName = "idx")
     private HotelEntity hotel;
 
-    String imageUrl;
+    @OneToMany(
+            mappedBy = "roomType",
+            cascade = CascadeType.ALL
+    )
+    List<Rooms> rooms = new ArrayList<>();
+
+    public void addRoom(Rooms room) {
+        rooms.add(room);
+        room.setRoomType(this);
+    }
 }
