@@ -38,7 +38,6 @@ public class HotelService {
     public List<HotelEntity> getAllHotelData() {
         return hotelRepository.findAll();
     }
-    
 
 
     // 호텔 ID로 조회
@@ -347,15 +346,15 @@ public class HotelService {
                 roomTypes.setPrice(roomDto.getPrice());
                 roomTypes.setCapacity(roomDto.getMaxCapacity());
 
-                for (int i=0; i<5; i++){
+                for (int i = 0; i < 5; i++) {
                     Rooms rooms = new Rooms();
-                    rooms.setRoomNumber(roomnum+floornum*100L);
+                    rooms.setRoomNumber(roomnum + floornum * 100L);
                     rooms.setRoomType(roomTypes);
                     rooms.setHotel(hotel);
                     roomTypes.addRoom(rooms);
                     roomnum++;
-                    if (roomnum>10){
-                        roomnum=1;
+                    if (roomnum > 10) {
+                        roomnum = 1;
                         floornum++;
                     }
                 }
@@ -384,18 +383,17 @@ public class HotelService {
                     dto.setHotelCategory(hotel.getHotelCategory());
                     dto.setHotelAddress(hotel.getHotelAddress());
                     dto.setHotelImage(hotel.getHotelImage());
-                    
+
                     // 최저 가격 조회 추가
                     String priceQuery = "SELECT MIN(price) FROM room_types WHERE hotel_id = ?1";
                     Query query = entityManager.createNativeQuery(priceQuery);
                     query.setParameter(1, hotel.getIdx());
                     Object priceResult = query.getSingleResult();
                     dto.setPriceRange(priceResult != null ? ((Number) priceResult).intValue() : null);
-                    
+
                     dto.setRatingDto(reviewService.getRatings(hotel.getIdx())); // ✅ 평점 세팅
                     return dto;
                 })
                 .collect(Collectors.toList());
     }
-
 }
