@@ -232,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function() {
             colDiv.className = "col-12";
 
             const imgTag = hotel.hotelImage
-                ? `<img src="/hotelImage/${hotel.hotelImage}" alt="호텔 이미지" loading="lazy" />`
+                ? `<img src="/uploads/hotels/${hotel.hotelImage}" alt="호텔 이미지" loading="lazy" />`
                 : `<div class="d-flex align-items-center justify-content-center bg-light h-100">
                     <i class="fas fa-hotel fa-3x text-muted"></i>
                    </div>`;
