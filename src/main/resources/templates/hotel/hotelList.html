@@ -244,7 +244,7 @@
 						<!-- Hotel Image -->
 						<div class="hotel-image">
 							<img th:if="${hotel.hotelImage != null}"
-								 th:src="@{'/hotelImage/' + ${hotel.hotelImage}}"
+								 th:src="@{'/uploads/hotels/' + ${hotel.hotelImage}}"
 								 alt="호텔 이미지"
 								 loading="lazy" />
 							<div th:unless="${hotel.hotelImage != null}" 
