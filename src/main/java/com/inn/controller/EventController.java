@@ -84,6 +84,19 @@ public class EventController {
         return "event/test-result"; // 템플릿 파일 존재해야 함
     }
 
+    /* ===================== 동기화 체크 API ===================== */
+
+    /** (프론트 초기 동기화) 이 이벤트에서 이미 쿠폰을 보유했는지 여부 */
+    @GetMapping(value = "/coupon/issued", produces = "application/json")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public Map<String, Object> checkIssued(@RequestParam("eventCode") String eventCode) {
+        MemberDto me = currentUserOrThrow();
+        List<String> codes = userCouponService.getIssuedCodes(me, eventCode);
+        boolean issued = codes != null && !codes.isEmpty();
+        return Map.of("issued", issued);
+    }
+
     /* ===================== API (발급) ===================== */
 
     /** 결과(부캐) 맞춤 쿠폰 — JSON (페이지 이동 없음) */
@@ -95,6 +108,11 @@ public class EventController {
             userCouponService.issueByTrait(currentUserOrThrow(), trait, CAMPAIGN_TEST);
             return ResponseEntity.ok(Map.of("ok", true, "message", "부캐 전용 쿠폰이 발급되었습니다 🎁"));
         } catch (IllegalArgumentException | IllegalStateException ex) {
+            if ("ALREADY_ISSUED".equals(ex.getMessage())) {
+                return ResponseEntity.badRequest().body(
+                        Map.of("ok", false, "code", "ALREADY_ISSUED", "message", "이미 쿠폰을 발급받았습니다.")
+                );
+            }
             return ResponseEntity.badRequest().body(Map.of("ok", false, "message", ex.getMessage()));
         } catch (Exception ex) {
             log.error("issueTrait error", ex);
@@ -112,6 +130,11 @@ public class EventController {
             userCouponService.issueByCode(currentUserOrThrow(), "GLOBAL_5P", CAMPAIGN_TEST);
             return ResponseEntity.ok(Map.of("ok", true, "message", "전 호텔 5% 쿠폰이 발급되었습니다 🎁"));
         } catch (IllegalStateException ex) {
+            if ("ALREADY_ISSUED".equals(ex.getMessage())) {
+                return ResponseEntity.badRequest().body(
+                        Map.of("ok", false, "code", "ALREADY_ISSUED", "message", "이미 쿠폰을 발급받았습니다.")
+                );
+            }
             return ResponseEntity.badRequest().body(Map.of("ok", false, "message", ex.getMessage()));
         } catch (Exception ex) {
             log.error("issueGlobalJson error", ex);
@@ -128,7 +151,11 @@ public class EventController {
             userCouponService.issueByCode(currentUserOrThrow(), code, CAMPAIGN_AUG);
             ra.addFlashAttribute("toast", "쿠폰이 발급되었습니다 🎁");
         } catch (IllegalStateException ex) {
-            ra.addFlashAttribute("toast", ex.getMessage());
+            if ("ALREADY_ISSUED".equals(ex.getMessage())) {
+                ra.addFlashAttribute("toast", "이미 쿠폰을 발급받았습니다.");
+            } else {
+                ra.addFlashAttribute("toast", ex.getMessage());
+            }
         } catch (Exception ex) {
             log.error("issueByCode error", ex);
             ra.addFlashAttribute("toast", "처리 중 오류가 발생했습니다.");
@@ -145,6 +172,11 @@ public class EventController {
             userCouponService.issueByCode(currentUserOrThrow(), code, CAMPAIGN_AUG);
             return ResponseEntity.ok(Map.of("ok", true, "message", "쿠폰이 발급되었습니다 🎁"));
         } catch (IllegalStateException ex) {
+            if ("ALREADY_ISSUED".equals(ex.getMessage())) {
+                return ResponseEntity.badRequest().body(
+                        Map.of("ok", false, "code", "ALREADY_ISSUED", "message", "이미 쿠폰을 발급받았습니다.")
+                );
+            }
             return ResponseEntity.badRequest().body(Map.of("ok", false, "message", ex.getMessage()));
         } catch (Exception ex) {
             log.error("issueByCodeJson error", ex);
@@ -166,7 +198,11 @@ public class EventController {
             userCouponService.issueByCode(currentUserOrThrow(), code, event);
             ra.addFlashAttribute("toast", "쿠폰이 발급되었습니다 🎁");
         } catch (IllegalStateException ex) {
-            ra.addFlashAttribute("toast", ex.getMessage());
+            if ("ALREADY_ISSUED".equals(ex.getMessage())) {
+                ra.addFlashAttribute("toast", "이미 쿠폰을 발급받았습니다.");
+            } else {
+                ra.addFlashAttribute("toast", ex.getMessage());
+            }
         } catch (Exception ex) {
             log.error("legacyIssueApi error", ex);
             ra.addFlashAttribute("toast", "처리 중 오류가 발생했습니다.");
@@ -179,3 +215,4 @@ public class EventController {
         return "event/eventList";
     }
 }
+

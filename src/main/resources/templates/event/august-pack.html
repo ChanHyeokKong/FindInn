@@ -4,6 +4,11 @@
   <meta charset="UTF-8"/>
   <title>8월 쿠폰팩 이벤트</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+  <!-- ✅ CSRF (스프링 보안 사용 시) -->
+  <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}">
+
   <style>
     :root{
       --bg:#fbfcfe; --card:#ffffff; --ink:#0f172a; --muted:#667085;
@@ -51,14 +56,17 @@
       <span class="ribbon">8월까지 쭉 숙소 최대할인! ✈️</span>
       <h1>숙소 <span style="color:var(--coral)">최대 10%</span> 쿠폰팩 🏖️</h1>
       <div class="foot" style="color:var(--muted);font-size:12px">쿠폰 혜택은 숙소/체크인 기간/적용 시점에 따라 달라질 수 있습니다.</div>
-      <div class="count" th:text="'현재 발급 : ' + (${issuedCount}?:0) + ' / 3'">현재 발급 : 0 / 3</div>
+      <div class="count" id="issue-count" th:text="'현재 발급 : ' + (${issuedCount}?:0) + ' / 3'">현재 발급 : 0 / 3</div>
     </div>
-    <form th:action="@{/event/coupon/issue-by-code}" method="post">
+    <!-- 기본 폼은 보존(프로그레시브)하지만 JS가 가로채서 JSON 호출 -->
+    <form class="coupon-form" th:action="@{/event/coupon/issue-by-code}" method="post" data-code="AUG_7P">
       <input type="hidden" name="code" value="AUG_7P"/>
       <div th:if="${_csrf} != null">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
       </div>
-      <button class="btn btn-primary" type="submit">쿠폰팩 다운받기 📥</button>
+      <button class="btn btn-primary" type="submit"
+              th:disabled="${issuedCodes?.contains('AUG_7P') or ((issuedCount ?: 0) >= 3)}"
+              th:text="${issuedCodes?.contains('AUG_7P')} ? '발급 완료 ✅' : '쿠폰팩 다운받기 📥'">쿠폰팩 다운받기 📥</button>
     </form>
   </section>
 
@@ -70,7 +78,7 @@
       <div class="line2">8만원 이상 · 최대 20,000원</div>
       <div class="line3">사용기간: 발급일로부터 10일 (8/31 만료)</div>
     </div>
-    <form th:action="@{/event/coupon/issue-by-code}" method="post">
+    <form class="coupon-form" th:action="@{/event/coupon/issue-by-code}" method="post" data-code="AUG_7P">
       <input type="hidden" name="code" value="AUG_7P"/>
       <div th:if="${_csrf} != null">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -89,7 +97,7 @@
       <div class="line2">12만원 이상 · 최대 40,000원</div>
       <div class="line3">사용기간: 발급일로부터 10일 (8/31 만료)</div>
     </div>
-    <form th:action="@{/event/coupon/issue-by-code}" method="post">
+    <form class="coupon-form" th:action="@{/event/coupon/issue-by-code}" method="post" data-code="AUG_10P">
       <input type="hidden" name="code" value="AUG_10P"/>
       <div th:if="${_csrf} != null">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -99,6 +107,8 @@
               th:text="${issuedCodes?.contains('AUG_10P')} ? '발급 완료 ✅' : '발급받기'">발급받기</button>
     </form>
   </article>
+
+  <!-- 5,000원 -->
   <article class="banner">
     <div class="bignum bignum--won">₩5,000</div>
     <div>
@@ -106,7 +116,7 @@
       <div class="line2">전호텔 사용</div>
       <div class="line3">다른 쿠폰과 중복 사용 가능</div>
     </div>
-    <form th:action="@{/event/coupon/issue-by-code}" method="post">
+    <form class="coupon-form" th:action="@{/event/coupon/issue-by-code}" method="post" data-code="SUMMER_5K">
       <input type="hidden" name="code" value="SUMMER_5K"/>
       <div th:if="${_csrf} != null">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -119,7 +129,7 @@
 
   <div class="sep"></div>
 
-  <!-- 지정 호텔 20% (쿠폰 배너: 분리) -->
+  <!-- 지정 호텔 20% -->
   <article class="banner" style="background:linear-gradient(120deg,#fff,var(--blue-200))">
     <div class="bignum" style="background-image:linear-gradient(180deg,#1b51ff,#73a2ff)">20%</div>
     <div>
@@ -127,7 +137,7 @@
       <div class="line2">지정 호텔 한정 · 중복 적용 불가</div>
       <div class="line3">사용기간: 발급일로부터 10일 (8/31 만료)</div>
     </div>
-    <form th:action="@{/event/coupon/issue-by-code}" method="post">
+    <form class="coupon-form" th:action="@{/event/coupon/issue-by-code}" method="post" data-code="HOTEL_20P">
       <input type="hidden" name="code" value="HOTEL_20P"/>
       <div th:if="${_csrf} != null">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -154,5 +164,96 @@
     </div>
   </div>
 </div>
+
+<!-- ✅ AJAX 처리 스크립트 -->
+<script>
+(function(){
+  const EVENT_CODE = 'august-pack'; // 서버 컨트롤러 상수와 일치
+  const csrfToken = document.querySelector('meta[name="_csrf"]')?.content ?? '';
+  const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content ?? 'X-CSRF-TOKEN';
+  const $count = document.getElementById('issue-count');
+
+  // 간단 토스트 (프로젝트의 모달/토스트로 교체해도 됨)
+  function toast(msg){ alert(msg); }
+
+  // 버튼 잠그기 + 텍스트 변경
+  function lockButton(btn){
+    btn.disabled = true;
+    btn.textContent = '발급 완료 ✅';
+  }
+
+  // 카운트 +1 (최대 3)
+  function bumpCount(){
+    if (!$count) return;
+    const m = $count.textContent.match(/현재 발급\s*:\s*(\d+)\s*\/\s*3/);
+    if (!m) return;
+    let n = parseInt(m[1] || '0', 10);
+    if (n < 3) n++;
+    $count.textContent = `현재 발급 : ${n} / 3`;
+  }
+
+  // 페이지 진입 시 서버와 1회 동기화 (다른 기기에서 이미 받았을 수 있으므로)
+  (async function syncIssued(){
+    try{
+      const r = await fetch(`/event/coupon/issued?eventCode=${encodeURIComponent(EVENT_CODE)}`, {
+        headers: { [csrfHeader]: csrfToken }
+      });
+      if (!r.ok) return;
+      const { issued } = await r.json();
+      if (issued) {
+        // 이미 발급된 쿠폰들의 버튼을 SSR이 disabled로 처리했을 것이므로 추가 조치는 불필요.
+        // (필요하면 여기서도 버튼 상태를 다시 스캔해 잠글 수 있음)
+      }
+    }catch(e){ /* ignore */ }
+  })();
+
+  // 모든 쿠폰 폼을 AJAX로 가로채기
+  document.querySelectorAll('form.coupon-form').forEach(form=>{
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+
+      const btn = form.querySelector('button[type="submit"]');
+      if (!btn || btn.disabled) return;
+
+      const code = form.dataset.code || form.querySelector('input[name="code"]')?.value || '';
+      if (!code) return;
+
+      // 서버 JSON 엔드포인트 호출
+      try{
+        btn.disabled = true; // 중복 클릭 방지
+        const r = await fetch('/event/coupon/issue-by-code.json', {
+          method: 'POST',
+          headers: {
+            'Content-Type':'application/x-www-form-urlencoded',
+            [csrfHeader]: csrfToken
+          },
+          body: new URLSearchParams({ code })
+        });
+
+        const res = await r.json().catch(()=> ({}));
+
+        if (r.ok && res.ok){
+          lockButton(btn);
+          bumpCount();
+          toast(res.message || '쿠폰이 발급되었습니다 🎁');
+        } else {
+          // 컨트롤러에서 ALREADY_ISSUED 를 내려주도록 수정해둔 상태
+          if (res.code === 'ALREADY_ISSUED' || /이미.*발급/.test(res.message || '')) {
+            lockButton(btn);
+            toast('이미 쿠폰을 발급받았습니다 🎁');
+          } else {
+            // 실패 시 버튼 복구
+            btn.disabled = false;
+            toast(res.message || '쿠폰 발급에 실패했습니다.');
+          }
+        }
+      } catch(err){
+        btn.disabled = false;
+        toast('네트워크 오류로 발급에 실패했습니다.');
+      }
+    });
+  });
+})();
+</script>
 </body>
 </html>

@@ -311,7 +311,7 @@ public class HotelService {
         }
         return hotelRepository.save(hotel);
     }
-}
+
 
 
 
@@ -335,4 +335,5 @@ public class HotelService {
                 })
                 .collect(Collectors.toList());
     }
+}
 
