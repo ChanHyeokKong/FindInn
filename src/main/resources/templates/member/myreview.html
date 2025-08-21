@@ -302,7 +302,8 @@
 
                 <!-- Review Actions -->
                 <div class="review-actions">
-                    <button class="btn btn-edit">
+                    <button class="btn btn-edit"
+                            th:onclick="openReviewPopup(/*[[@{/reviews/write(id=${review.booking.idx})}]]*/ '')">
                         <i class="fas fa-edit me-1"></i>수정
                     </button>
                     <button class="btn btn-delete">
@@ -332,6 +333,20 @@
             document.getElementById('modalImage').src = src;
             new bootstrap.Modal(document.getElementById('imageModal')).show();
         }
+        function openReviewPopup(url) {
+            const popupWidth = 700;
+            const popupHeight = 1000;
+
+            // Calculate the center of the screen
+            const left = (screen.width / 2) - (popupWidth / 2);
+            const top = (screen.height / 2) - (popupHeight / 2);
+
+            const popupFeatures = `width=${popupWidth},height=${popupHeight},top=${top},left=${left},scrollbars=yes,resizable=yes`;
+
+            // Open the new window
+            window.open(url, 'reviewPopup', popupFeatures);
+        }
     </script>
+
 </div>
 </html>
