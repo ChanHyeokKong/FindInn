@@ -397,6 +397,5 @@ public class HotelService {
                 })
                 .collect(Collectors.toList());
     }
+
 }
-
-

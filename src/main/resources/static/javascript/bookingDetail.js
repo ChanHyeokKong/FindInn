@@ -38,6 +38,22 @@ $(document).ready(function() {
                 if (data.result === "success") {
                     alert(data.message);
 
+                    // 쿠폰 사용했던 경우는 쿠폰 반환
+                    if (couponIdx) {
+                        $.ajax({
+                            url: "/api/user-coupons/revert/" + couponIdx,
+                            type: "POST",
+                            success: function(res) {
+                                console.log("✅ 쿠폰 반환 완료:", res);
+                            },
+                            error: function(xhr) {
+                                const res = xhr.responseJSON;
+                                const message = res?.message || "쿠폰 반환 처리 중 오류 발생";
+                                alert("❌ 쿠폰 반환 실패: " + message);
+                            }
+                        });
+                    }
+
                     // ✅ 예약 취소 문자 전송
                     $.ajax({
                         url: "/sms/booking-cancel",
