@@ -53,31 +53,58 @@ h2 {
 }
 
 .btn {
-    flex: 1;               /* 한 줄에 나란히 */
+    flex: 1;
     font-size: 18px;
+    font-weight: 700;
     padding: 12px 0;
-    border-radius: 8px;
+    border-radius: 12px; /* 조금 더 둥글게 */
     border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 기본 그림자 */
+    transition: all 0.25s ease;
 }
 
-/* 색상 스타일 */
+/* 버튼 호버 효과 */
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+
+/* primary 버튼 */
 .btn-primary {
-    background-color: #007BFF;
-    color: white;
+    background: linear-gradient(135deg, #007BFF, #0056B3);
+    color: #fff;
 }
 
 .btn-primary:hover {
-    background-color: #0056B3;
+    background: linear-gradient(135deg, #0056B3, #003d82);
 }
 
+/* secondary 버튼 */
 .btn-secondary {
-    background-color: #ccc;
-    color: black;
+    background: linear-gradient(135deg, #ddd, #bbb);
+    color: #333;
 }
 
 .btn-secondary:hover {
-    background-color: #aaa;
+    background: linear-gradient(135deg, #bbb, #999);
+}
+
+/* 버튼 그라데이션 반짝임 (선택사항) */
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
 }
