@@ -29,14 +29,16 @@ public class HotelService {
 
     @Autowired
     private FileStorageService fileStorageService;
-  
+
     @Autowired
     private ReviewService reviewService;
 
     // 전체 조회
     public List<HotelEntity> getAllHotelData() {
-        return hotelRepository.findAll();        
+        return hotelRepository.findAll();
     }
+    
+
 
     // 호텔 ID로 조회
     public Optional<HotelEntity> getHotelDataById(long idx) {
@@ -70,8 +72,8 @@ public class HotelService {
         List<String> tags = condition.getTags();
 
         Specification<HotelEntity> spec = Specification
-            .where(HotelSpecifications.keywordContains(keyword))
-            .and(HotelSpecifications.categoryEquals(category));
+                .where(HotelSpecifications.keywordContains(keyword))
+                .and(HotelSpecifications.categoryEquals(category));
 
         // 태그 조건 따로 처리
         if (tags != null && !tags.isEmpty()) {
@@ -95,13 +97,13 @@ public class HotelService {
 
 
         StringBuilder sql = new StringBuilder(
-        		"SELECT h.idx, h.hotel_name, h.member_idx, h.hotel_tel, h.hotel_category, h.hotel_address, h.hotel_image ,rt.min_price FROM hotel h LEFT JOIN hotel_tags t ON h.idx = t.hotel_idx LEFT JOIN( SELECT hotel_id, MIN(price) AS min_price FROM room_types GROUP BY hotel_id) rt ON h.idx = rt.hotel_id WHERE 1=1"
-        		);
+                "SELECT h.idx, h.hotel_name, h.member_idx, h.hotel_tel, h.hotel_category, h.hotel_address, h.hotel_image ,rt.min_price FROM hotel h LEFT JOIN hotel_tags t ON h.idx = t.hotel_idx LEFT JOIN( SELECT hotel_id, MIN(price) AS min_price FROM room_types GROUP BY hotel_id) rt ON h.idx = rt.hotel_id WHERE 1=1"
+        );
 
         if (minPrice != null && minPrice < 500000) {
             sql.append(" AND rt.min_price IS NOT NULL AND rt.min_price <= :priceRange");
         }
-        
+
         //인원수
         if (personCount != null && personCount > 0) {
             sql.append(" AND h.idx IN (");
@@ -112,12 +114,11 @@ public class HotelService {
             sql.append(" HAVING SUM(rt2.capacity) >= :personCount");
             sql.append(")");
         }
-       
-        
+
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-        	sql.append(" AND (h.hotel_name LIKE :keyword OR h.hotel_address LIKE :keyword)");
-           
+            sql.append(" AND (h.hotel_name LIKE :keyword OR h.hotel_address LIKE :keyword)");
+
         }
         if (category != null && !category.trim().isEmpty() && !category.equalsIgnoreCase("all")) {
             sql.append(" AND h.hotel_category LIKE :category");
@@ -129,8 +130,8 @@ public class HotelService {
             List<String> allowedTags = List.of(
                     "sauna", "swimming_pool", "restaurant", "fitness", "golf", "pc",
                     "kitchen", "washing_machine", "parking", "spa", "ski", "in_room_eating",
-                    "breakfast", "smoking", "luggage", "disabled", "pickup","family","waterpool",
-                    "view","beach","nicemeal","coupon","discount"
+                    "breakfast", "smoking", "luggage", "disabled", "pickup", "family", "waterpool",
+                    "view", "beach", "nicemeal", "coupon", "discount"
             );
             for (String tag : tags) {
                 if (allowedTags.contains(tag)) {
@@ -149,37 +150,35 @@ public class HotelService {
             sql.append(" SELECT 1 FROM booking b WHERE b.room_idx = r.idx");
             sql.append(" AND b.checkin < :checkOutDate AND b.checkout > :checkInDate))");
         }
-        
+
         //sort 
-        switch(sort) {
-        case "Score": 
-        	sql.append("");
-        	break;
-        	
-        case "Review": 
-        	sql.append("");
-        	break;
-        	
-        case "lowPrice": 
-        	sql.append(" order by rt.min_price asc");
-        	break;
-        	
-        case "highPrice": 
-        	sql.append(" order by rt.min_price desc");
-        	break;
-        	
-        
-        
+        switch (sort) {
+            case "Score":
+                sql.append("");
+                break;
+
+            case "Review":
+                sql.append("");
+                break;
+
+            case "lowPrice":
+                sql.append(" order by rt.min_price asc");
+                break;
+
+            case "highPrice":
+                sql.append(" order by rt.min_price desc");
+                break;
+
+
         }
-        
-        
+
 
         // 5. Create the query and set parameters
         Query query = entityManager.createNativeQuery(sql.toString()); // Assuming result maps to Hotel entity
         if (minPrice != null && minPrice < 500000) {
             query.setParameter("priceRange", minPrice);
         }
-        
+
         if (keyword != null && !keyword.trim().isEmpty()) {
             query.setParameter("keyword", "%" + keyword + "%");
         }
@@ -190,12 +189,11 @@ public class HotelService {
             query.setParameter("checkInDate", checkIn);
             query.setParameter("checkOutDate", checkOut);
         }
-        
+
         if (personCount != null && personCount > 0) {
             query.setParameter("personCount", personCount);
         }
-        
-        
+
 
         // The result needs to be mapped to HotelDto, which can be done after fetching
         List<Object[]> resultList = query.getResultList();
@@ -211,7 +209,7 @@ public class HotelService {
             dto.setHotelTel((String) row[3]);
             dto.setHotelCategory((String) row[4]);
             dto.setHotelAddress((String) row[5]);
-            dto.setHotelImage((String) row[6]); 
+            dto.setHotelImage((String) row[6]);
             dto.setPriceRange(row[7] != null ? ((Number) row[7]).intValue() : null);
 
             // ✅ 호텔 평점 세팅
@@ -256,29 +254,73 @@ public class HotelService {
             for (String tagValue : dto.getTag()) {
                 // 4. Use a switch to set the correct boolean field to true
                 switch (tagValue) {
-                    case "sauna": tagEntity.setSauna(true); break;
-                    case "swimming_pool": tagEntity.setSwimming_pool(true); break;
-                    case "restaurant": tagEntity.setRestaurant(true); break;
-                    case "fitness": tagEntity.setFitness(true); break;
-                    case "golf": tagEntity.setGolf(true); break;
-                    case "pc": tagEntity.setPc(true); break;
-                    case "kitchen": tagEntity.setKitchen(true); break;
-                    case "washing_machine": tagEntity.setWashing_Machine(true); break;
-                    case "parking": tagEntity.setParking(true); break;
-                    case "spa": tagEntity.setSpa(true); break;
-                    case "ski": tagEntity.setSki(true); break;
-                    case "in_room_eating": tagEntity.setIn_Room_Eating(true); break;
-                    case "breakfast": tagEntity.setBreakfast(true); break;
-                    case "smoking": tagEntity.setSmoking(true); break;
-                    case "luggage": tagEntity.setLuggage(true); break;
-                    case "disabled": tagEntity.setDisabled(true); break;
-                    case "pickup": tagEntity.setPickup(true); break;
+                    case "sauna":
+                        tagEntity.setSauna(true);
+                        break;
+                    case "swimming_pool":
+                        tagEntity.setSwimming_pool(true);
+                        break;
+                    case "restaurant":
+                        tagEntity.setRestaurant(true);
+                        break;
+                    case "fitness":
+                        tagEntity.setFitness(true);
+                        break;
+                    case "golf":
+                        tagEntity.setGolf(true);
+                        break;
+                    case "pc":
+                        tagEntity.setPc(true);
+                        break;
+                    case "kitchen":
+                        tagEntity.setKitchen(true);
+                        break;
+                    case "washing_machine":
+                        tagEntity.setWashing_Machine(true);
+                        break;
+                    case "parking":
+                        tagEntity.setParking(true);
+                        break;
+                    case "spa":
+                        tagEntity.setSpa(true);
+                        break;
+                    case "ski":
+                        tagEntity.setSki(true);
+                        break;
+                    case "in_room_eating":
+                        tagEntity.setIn_Room_Eating(true);
+                        break;
+                    case "breakfast":
+                        tagEntity.setBreakfast(true);
+                        break;
+                    case "smoking":
+                        tagEntity.setSmoking(true);
+                        break;
+                    case "luggage":
+                        tagEntity.setLuggage(true);
+                        break;
+                    case "disabled":
+                        tagEntity.setDisabled(true);
+                        break;
+                    case "pickup":
+                        tagEntity.setPickup(true);
+                        break;
                     // Tags from "#취향"
-                    case "family": tagEntity.setFamily(true); break;
-                    case "waterpool": tagEntity.setWaterpool(true); break;
-                    case "view": tagEntity.setView(true); break;
-                    case "beach": tagEntity.setBeach(true); break;
-                    case "nicemeal": tagEntity.setNicemeal(true); break;
+                    case "family":
+                        tagEntity.setFamily(true);
+                        break;
+                    case "waterpool":
+                        tagEntity.setWaterpool(true);
+                        break;
+                    case "view":
+                        tagEntity.setView(true);
+                        break;
+                    case "beach":
+                        tagEntity.setBeach(true);
+                        break;
+                    case "nicemeal":
+                        tagEntity.setNicemeal(true);
+                        break;
                 }
             }
 
@@ -287,7 +329,7 @@ public class HotelService {
             tagEntity.setHotel(hotel);
         }
 
-        if (dto.getImageFiles()!=null && !dto.getImageFiles().isEmpty()) {
+        if (dto.getImageFiles() != null && !dto.getImageFiles().isEmpty()) {
             List<String> imageNames = dto.getImageFiles().stream()
                     .filter(file -> !file.isEmpty())
                     .map(file -> fileStorageService.store(file, "hotels"))
@@ -303,7 +345,7 @@ public class HotelService {
                 roomTypes.setPrice(roomDto.getPrice());
                 roomTypes.setCapacity(roomDto.getMaxCapacity());
                 hotel.addRoomType(roomTypes);
-                if (roomDto.getImageFile()!=null && !roomDto.getImageFile().isEmpty()) {
+                if (roomDto.getImageFile() != null && !roomDto.getImageFile().isEmpty()) {
                     String uniqueImageName = fileStorageService.store(roomDto.getImageFile(), "hotels");
                     roomTypes.setImageUrl(uniqueImageName);
                 }
@@ -311,8 +353,6 @@ public class HotelService {
         }
         return hotelRepository.save(hotel);
     }
-}
-
 
 
     // 엔티티 to Dto 변환 메서드 (/h_list 용)
@@ -330,9 +370,18 @@ public class HotelService {
                     dto.setHotelCategory(hotel.getHotelCategory());
                     dto.setHotelAddress(hotel.getHotelAddress());
                     dto.setHotelImage(hotel.getHotelImage());
+                    
+                    // 최저 가격 조회 추가
+                    String priceQuery = "SELECT MIN(price) FROM room_types WHERE hotel_id = ?1";
+                    Query query = entityManager.createNativeQuery(priceQuery);
+                    query.setParameter(1, hotel.getIdx());
+                    Object priceResult = query.getSingleResult();
+                    dto.setPriceRange(priceResult != null ? ((Number) priceResult).intValue() : null);
+                    
                     dto.setRatingDto(reviewService.getRatings(hotel.getIdx())); // ✅ 평점 세팅
                     return dto;
                 })
                 .collect(Collectors.toList());
     }
+}
 

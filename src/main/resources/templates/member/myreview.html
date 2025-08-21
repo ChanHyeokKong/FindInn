@@ -1,34 +1,337 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/mypageLayout}">
+
+<th:block layout:fragment="head">
+    <title>내 리뷰 - FindInn</title>
+    <style>
+        .review-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: var(--spacing-2xl) 0;
+            margin-bottom: var(--spacing-xl);
+            border-radius: var(--border-radius-xl);
+        }
+        
+        .review-card {
+            background: var(--white);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-sm);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+            border: 2px solid var(--gray-200);
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .review-card:hover {
+            border-color: var(--warning-color);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        
+        .review-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--warning-color), #e0a800);
+        }
+        
+        .hotel-header {
+            display: flex;
+            justify-content: between;
+            align-items: start;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .hotel-name {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--gray-900);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .review-date {
+            color: var(--gray-500);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .rating-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--warning-lighter);
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--warning-light);
+        }
+        
+        .rating-stars {
+            font-size: var(--font-size-xl);
+            margin-right: var(--spacing-md);
+        }
+        
+        .rating-text {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--warning-dark);
+        }
+        
+        .room-info {
+            background: var(--light-gray);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .review-content {
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-lg);
+            background: rgba(0, 123, 255, 0.02);
+            border-radius: var(--border-radius-md);
+            border-left: 3px solid var(--primary-light);
+        }
+        
+        .review-images {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            margin-top: var(--spacing-lg);
+        }
+        
+        .review-image {
+            width: 120px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+        
+        .review-image:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-4xl) var(--spacing-xl);
+            background: var(--white);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--gray-400);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-number {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-extrabold);
+            color: var(--white);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .review-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .btn-edit {
+            background: var(--info-color);
+            border: none;
+            color: white;
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            font-size: var(--font-size-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        .btn-edit:hover {
+            background: var(--info-dark);
+            transform: translateY(-1px);
+            color: white;
+        }
+        
+        .btn-delete {
+            background: var(--danger-color);
+            border: none;
+            color: white;
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            font-size: var(--font-size-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        .btn-delete:hover {
+            background: var(--danger-dark);
+            transform: translateY(-1px);
+            color: white;
+        }
+    </style>
+</th:block>
+
 <div layout:fragment="content">
-    <div class="manager-content">
-        <h3>내 리뷰 목록</h3>
-        <!-- Check if reviews list is empty -->
-        <div th:if="${reviews.isEmpty()}">
-            <p>작성한 리뷰가 없습니다.</p>
-        </div>
-        <!-- Loop through reviews if not empty -->
-        <div th:unless="${reviews.isEmpty()}" class="review-list-container">
-            <div th:each="review : ${reviews}" class="mb-4 pb-4 border-bottom">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                     <h5 th:text="${review.hotel.hotelName}">호텔 이름</h5>
-                     <small class="text-muted" th:text="${#temporals.format(review.reviewDate, 'yyyy-MM-dd')}">날짜</small>
+    <!-- Header Section -->
+    <section class="review-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-3 fw-bold">
+                        <i class="fas fa-star me-3"></i>내 리뷰 목록
+                    </h1>
+                    <p class="mb-0 opacity-75">소중한 여행 경험을 공유해주셔서 감사합니다</p>
                 </div>
-                <div class="d-flex gap-3">
-                    <div class="flex-grow-1">
-                        <div class="mb-2">
-                            <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="'★'" th:class="${i <= review.rating} ? 'text-warning' : 'text-body-tertiary'"></span>
+                <div class="col-md-4">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" th:text="${#lists.size(reviews)}">0</div>
+                            <div class="stat-label">총 리뷰</div>
                         </div>
-                        <p class="small text-muted mb-2" th:text="${review.roomType.typeName}">객실 타입</p>
-                        <p th:text="${review.content}" class="mb-2 text-dark">리뷰 내용입니다.</p>
-                        <!-- Optional: Add review images if they exist -->
-                        <div th:if="${review.reviewFiles != null and !review.reviewFiles.isEmpty()}" class="d-flex gap-2 mt-2">
-                             <img th:each="file : ${review.reviewFiles}" th:src="@{'/uploads/reviews/' + ${file.storedFilePath}}" class="rounded" style="width: 80px; height: 60px; object-fit: cover;" alt="리뷰 이미지">
+                        <div class="stat-card">
+                            <div class="stat-number">4.5</div>
+                            <div class="stat-label">평균 평점</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
+
+    <div class="container">
+        <!-- Empty State -->
+        <div th:if="${reviews.isEmpty()}" class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-star-half-alt"></i>
+            </div>
+            <h3 class="text-muted mb-3">작성한 리뷰가 없습니다</h3>
+            <p class="text-muted mb-4">여행 후 소중한 경험을 다른 여행자들과 공유해보세요!<br>리뷰 작성으로 더 나은 여행 문화를 만들어가요.</p>
+            <a href="/mypage/reserve" class="btn btn-primary btn-lg">
+                <i class="fas fa-calendar-check me-2"></i>예약 내역 보기
+            </a>
+        </div>
+
+        <!-- Reviews List -->
+        <div th:unless="${reviews.isEmpty()}">
+            <div th:each="review : ${reviews}" class="review-card">
+                <!-- Hotel Header -->
+                <div class="hotel-header">
+                    <div class="flex-grow-1">
+                        <h3 class="hotel-name" th:text="${review.hotel.hotelName}">호텔 이름</h3>
+                        <div class="room-info">
+                            <i class="fas fa-bed text-primary me-2"></i>
+                            <span th:text="${review.roomType.typeName}">객실 타입</span>
+                        </div>
+                    </div>
+                    <div class="review-date">
+                        <i class="fas fa-calendar-alt me-1"></i>
+                        <span th:text="${#temporals.format(review.reviewDate, 'yyyy년 M월 d일')}">날짜</span>
+                    </div>
+                </div>
+
+                <!-- Rating Section -->
+                <div class="rating-section">
+                    <div class="rating-stars">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                              th:text="'★'" 
+                              th:class="${i <= review.rating} ? 'text-warning' : 'text-muted'">
+                        </span>
+                    </div>
+                    <div class="rating-text">
+                        <span th:text="${review.rating}">5</span>/5 
+                        <small class="text-muted">
+                            (<span th:text="${review.rating == 5} ? '최고예요!' : 
+                                           (${review.rating >= 4} ? '좋아요!' : 
+                                           (${review.rating >= 3} ? '보통이에요' : '아쉬워요'))">평가</span>)
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Review Content -->
+                <div class="review-content">
+                    <i class="fas fa-quote-left text-primary mb-2"></i>
+                    <p th:text="${review.content}" class="mb-0">리뷰 내용입니다.</p>
+                </div>
+
+                <!-- Review Images -->
+                <div th:if="${review.reviewFiles != null and !review.reviewFiles.isEmpty()}" class="review-images">
+                    <img th:each="file : ${review.reviewFiles}" 
+                         th:src="@{'/uploads/reviews/' + ${file.storedFilePath}}" 
+                         class="review-image" 
+                         alt="리뷰 이미지"
+                         onclick="openImageModal(this.src)">
+                </div>
+
+                <!-- Review Actions -->
+                <div class="review-actions">
+                    <button class="btn btn-edit">
+                        <i class="fas fa-edit me-1"></i>수정
+                    </button>
+                    <button class="btn btn-delete">
+                        <i class="fas fa-trash me-1"></i>삭제
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-0">
+                    <img id="modalImage" src="" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openImageModal(src) {
+            document.getElementById('modalImage').src = src;
+            new bootstrap.Modal(document.getElementById('imageModal')).show();
+        }
+    </script>
 </div>
 </html>
