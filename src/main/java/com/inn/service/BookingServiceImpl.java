@@ -229,6 +229,7 @@ public class BookingServiceImpl implements BookingService {
 
                 // 예약 정보
                 .merchantUid(booking.getMerchantUid())
+                .couponIdx(booking.getCouponIdx())
                 .checkin(booking.getCheckin())
                 .checkout(booking.getCheckout())
                 .checkinDay(checkinDay)

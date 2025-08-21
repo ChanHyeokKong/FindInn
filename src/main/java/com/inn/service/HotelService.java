@@ -311,9 +311,6 @@ public class HotelService {
         }
         return hotelRepository.save(hotel);
     }
-}
-
-
 
     // 엔티티 to Dto 변환 메서드 (/h_list 용)
     public List<HotelDto> getAllHotelDtos() {
@@ -335,4 +332,4 @@ public class HotelService {
                 })
                 .collect(Collectors.toList());
     }
-
+}
