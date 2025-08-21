@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModal = document.getElementById('closeCouponModal');
     const applyCouponBtn = document.getElementById('applyCouponBtn');
 
+    // 비로그인 시 요소가 없으면 함수 실행 안함
+    if (!couponBtn || !couponModal || !couponList || !closeModal || !applyCouponBtn) return;
+
     // 할인 표시 영역
     const discountRow = document.getElementById('discountRow');
     const discountPriceElem = document.getElementById('discountPrice');
@@ -79,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         disCount = await calculateDiscount(selectedCouponId);
 
         // 할인액 input 업데이트
-        if (discountAmountInput) discountAmountInput.value = disCount;
+        if (discountAmountInput) discountAmountInput.value = disCount.toLocaleString();
 
         // 할인액 표시 영역 업데이트
         if (disCount > 0) {
