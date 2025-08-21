@@ -68,7 +68,7 @@ public class HotelEntity {
 
 	public void addRoomType(RoomTypes roomType) {
 		roomTypes.add(roomType);
-		roomType.setHotel(this); // Set the parent (this Hotel instance) on the child
+		roomType.setHotel(this);
 	}
 
 

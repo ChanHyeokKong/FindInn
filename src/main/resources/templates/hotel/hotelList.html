@@ -1,115 +1,560 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout/searchLayout}">
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="head">
+	<style>
+		.search-header {
+			background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+			color: white;
+			padding: var(--spacing-xl) 0;
+			margin-bottom: var(--spacing-xl);
+		}
+		
+		.search-card-compact {
+			background: rgba(255, 255, 255, 0.95);
+			backdrop-filter: blur(10px);
+			border-radius: var(--border-radius-xl);
+			box-shadow: var(--shadow-lg);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+		}
+		
+		.hotel-card {
+			border: none;
+			border-radius: var(--border-radius-xl);
+			box-shadow: var(--shadow-sm);
+			transition: all var(--transition-normal);
+			overflow: hidden;
+			background: var(--white);
+			margin-bottom: var(--spacing-lg);
+			cursor: pointer;
+		}
+		
+		.hotel-card:hover {
+			transform: translateY(-5px);
+			box-shadow: var(--shadow-xl);
+		}
+		
+		.hotel-image {
+			position: relative;
+			overflow: hidden;
+			width: 250px;
+			height: 200px;
+		}
+		
+		.hotel-image img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			transition: transform var(--transition-slow);
+		}
+		
+		.hotel-card:hover .hotel-image img {
+			transform: scale(1.05);
+		}
+		
+		.price-tag {
+			background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+			color: white;
+			padding: var(--spacing-sm) var(--spacing-md);
+			border-radius: var(--border-radius-lg);
+			font-weight: var(--font-weight-bold);
+			box-shadow: var(--shadow-md);
+			font-size: var(--font-size-lg);
+		}
+		
+		.rating-stars {
+			color: #ffc107;
+		}
+		
+		.filter-section {
+			background: var(--white);
+			border-radius: var(--border-radius-lg);
+			box-shadow: var(--shadow-md);
+			padding: var(--spacing-lg);
+			margin-bottom: var(--spacing-xl);
+			border: 1px solid var(--gray-200);
+		}
+		
+		.sort-dropdown {
+			min-width: 180px;
+		}
+		
+		.results-info {
+			background: var(--white);
+			padding: var(--spacing-md);
+			border-radius: var(--border-radius-md);
+			border-left: 4px solid var(--primary-color);
+			color: var(--gray-900);
+			font-weight: var(--font-weight-semibold);
+		}
+		
+		.hotel-info {
+			flex: 1;
+			padding: var(--spacing-lg);
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+		}
+		
+		.hotel-title {
+			font-size: var(--font-size-xl);
+			font-weight: var(--font-weight-bold);
+			color: var(--gray-900);
+			margin-bottom: var(--spacing-sm);
+		}
+		
+		.hotel-address {
+			color: var(--gray-700);
+			margin-bottom: var(--spacing-md);
+			display: flex;
+			align-items: center;
+		}
+		
+		.hotel-rating {
+			display: flex;
+			align-items: center;
+			margin-bottom: var(--spacing-md);
+		}
+		
+		.hotel-bottom {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-end;
+		}
+		
+		.hotel-features {
+			display: flex;
+			gap: var(--spacing-sm);
+		}
+		
+		.feature-badge {
+			background: var(--primary-lighter);
+			color: var(--primary-dark);
+			padding: var(--spacing-xs) var(--spacing-sm);
+			border-radius: var(--border-radius-sm);
+			font-size: var(--font-size-xs);
+			font-weight: var(--font-weight-medium);
+		}
+	</style>
+</th:block>
 
 <div layout:fragment="content">
-
-
-
-
-
-	<br>
-	<div>
-		<div class="input-group" th:style="'max-width: 1200px;'">
-			<input type="text" th:name="searchKeyword" class="form-control" /> <input
-				type="date" id="start"
-				onChange="setendmin(this.value), startDate(this.value)"> <input
-				type="date" id="end" onChange="endDate(this.value)"> <input
-				type="number" placeholder="인원수" min="1" max="30" id="personCount" />
-			<button type="button" class="btn btn-success" id="btnSearch">검색</button>
-		</div>
-		<br>
-		<button class="btn btn-warning" id="showMap" data-bs-toggle="modal"
-			data-bs-target="#mapModal">지도보기</button>
-		<select style="float: right" id="sortList" name="sort">
-			<option value="Score">평점높은순</option>
-			<option value="Review">리뷰많은순</option>
-			<option value="lowPrice" selected="selected">낮은가격순</option>
-			<option value="highPrice">높은가격순</option>
-
-		</select>
-	</div>
-	<br>
-
-	<table class="table table-bordered" id="hotelTable">
-		<tbody id="hotelTbody">
-			<tr th:each="hotel : ${hotels}">
-				<td>
-					<div class="card hotel-card"
-						 th:attr="data-hotel-id=${hotel.idx}"
-						 style="display: flex; flex-direction: row; height: 200px;">
-
-						<!-- 왼쪽 이미지 영역 -->
-						<div style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-							<img th:if="${hotel.hotelImage != null}"
-								 th:src="@{'/hotelImage/' + ${hotel.hotelImage}}"
-								 alt="호텔 이미지"
-								 style="height: 200px; width: 100%; object-fit: cover;" />
-						</div>
-
-						<!-- 오른쪽 정보 영역 -->
-						<div class="card-body" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 15px;">
-
-							<!-- 호텔명 -->
-							<h5 class="card-title" th:text="${hotel.hotelName}">호텔명</h5>
-
-							<!-- 주소 -->
-							<p class="card-text" style="margin: 5px 0;">
-								<span th:text="${hotel.hotelAddress}">호텔 주소</span>
-							</p>
-
-							<!-- 평점 정보 -->
-							<p class="card-text" style="margin: 5px 0;">
-								<span th:if="${hotel.ratingDto != null}">
-									⭐ <span th:text="${hotel.ratingDto.rating_avg}"></span>
-									(<span th:text="${hotel.ratingDto.rating_count}"></span> 리뷰)
-								</span>
-								<span th:unless="${hotel.ratingDto != null}">
-									⭐ 0.0 (0 리뷰)
-								</span>
-							</p>
-
-							<!-- 금액 (오른쪽 하단 정렬) -->
-							<div style="display: flex; justify-content: flex-end; align-items: flex-end; flex-grow: 1;">
-						<span style="font-weight: bold; font-size: 18px; color: #007bff;">
-							₩ <span th:text="${hotel.priceRange}">0</span>
-						</span>
+	<!-- Search Header -->
+	<section class="search-header">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-lg-10">
+					<div class="search-card-compact p-4">
+						<div class="row g-3 align-items-end">
+							<div class="col-lg-3 col-md-6">
+								<label class="form-label fw-bold text-white">
+									<i class="fas fa-map-marker-alt text-white me-1"></i>여행지
+								</label>
+								<input type="text" name="searchKeyword" id="searchKeyword" class="form-control" placeholder="도시, 지역, 숙소명" />
+							</div>
+							<div class="col-lg-2 col-md-3">
+								<label class="form-label fw-bold text-white">
+									<i class="fas fa-calendar-alt text-white me-1"></i>체크인
+								</label>
+								<input type="date" id="start" class="form-control" onChange="setendmin(this.value), startDate(this.value)">
+							</div>
+							<div class="col-lg-2 col-md-3">
+								<label class="form-label fw-bold text-white">
+									<i class="fas fa-calendar-alt text-white me-1"></i>체크아웃
+								</label>
+								<input type="date" id="end" class="form-control" onChange="endDate(this.value)">
+							</div>
+							<div class="col-lg-2 col-md-3">
+								<label class="form-label fw-bold text-white">
+									<i class="fas fa-users text-white me-1"></i>인원수
+								</label>
+								<select id="personCount" class="form-select">
+									<option value="1">1명</option>
+									<option value="2" selected>2명</option>
+									<option value="3">3명</option>
+									<option value="4">4명</option>
+									<option value="5">5명</option>
+									<option value="6">6명 이상</option>
+								</select>
+							</div>
+							<div class="col-lg-3 col-md-3">
+								<button type="button" class="btn btn-primary btn-lg w-100 fw-bold" id="btnSearch">
+									<i class="fas fa-search me-2"></i>검색
+								</button>
 							</div>
 						</div>
 					</div>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+				</div>
+			</div>
+		</div>
+	</section>
 
+	<div class="container">
+		<!-- Filter and Sort Section -->
+		<div class="filter-section">
+			<div class="row align-items-center">
+				<div class="col-md-6">
+					<button class="btn btn-outline-primary me-3" id="showMap" data-bs-toggle="modal" data-bs-target="#mapModal">
+						<i class="fas fa-map-marked-alt me-2"></i>지도보기
+					</button>
+					<button class="btn btn-outline-secondary" id="filterToggle">
+						<i class="fas fa-filter me-2"></i>필터
+					</button>
+				</div>
+				<div class="col-md-6 text-md-end">
+					<div class="d-flex align-items-center justify-content-md-end">
+						<label class="form-label me-2 mb-0 fw-semibold">정렬:</label>
+						<select class="form-select sort-dropdown" id="sortList" name="sort">
+							<option value="Score">평점높은순</option>
+							<option value="Review">리뷰많은순</option>
+							<option value="lowPrice" selected="selected">낮은가격순</option>
+							<option value="highPrice">높은가격순</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Filter Sidebar (Hidden by default) -->
+		<div id="filterSidebar" class="mb-4" style="display: none;">
+			<div th:replace="fragments/sidebar :: hotelSearch-sidebar"></div>
+		</div>
 
-<div class="modal fade" id="mapModal" tabindex="-1" data-bs-backdrop="static">
+		<!-- Results Info -->
+		<div class="results-info mb-4">
+			<div class="d-flex align-items-center justify-content-between">
+				<div>
+					<h5 class="mb-1 fw-bold text-dark">검색 결과</h5>
+					<p class="mb-0 text-muted">총 <span class="fw-bold text-primary" th:text="${#lists.size(hotels)}">0</span>개의 숙소를 찾았습니다</p>
+				</div>
+				<div class="text-muted">
+					<i class="fas fa-info-circle me-1"></i>
+					최신 정보로 업데이트됨
+				</div>
+			</div>
+		</div>
+
+		<!-- Hotel List -->
+		<div class="row" id="hotelContainer">
+			<div class="col-12" th:each="hotel : ${hotels}">
+				<div class="hotel-card" th:attr="data-hotel-id=${hotel.idx}" onclick="goToHotelDetail(this)">
+					<div class="d-flex">
+						<!-- Hotel Image -->
+						<div class="hotel-image">
+							<img th:if="${hotel.hotelImage != null}"
+								 th:src="@{'/uploads/hotels/' + ${hotel.hotelImage}}"
+								 alt="호텔 이미지"
+								 loading="lazy" />
+							<div th:unless="${hotel.hotelImage != null}" 
+								 class="d-flex align-items-center justify-content-center bg-light h-100">
+								<i class="fas fa-hotel fa-3x text-muted"></i>
+							</div>
+						</div>
+
+						<!-- Hotel Info -->
+						<div class="hotel-info">
+							<div>
+								<h3 class="hotel-title" th:text="${hotel.hotelName}">호텔명</h3>
+								
+								<div class="hotel-address">
+									<i class="fas fa-map-marker-alt text-primary me-2"></i>
+									<span th:text="${hotel.hotelAddress}">호텔 주소</span>
+								</div>
+
+								<div class="hotel-rating">
+									<div class="rating-stars me-2">
+										<span th:if="${hotel.ratingDto != null}">
+											<th:block th:each="i : ${#numbers.sequence(1, 5)}">
+												<i class="fas fa-star" th:classappend="${i <= hotel.ratingDto.rating_avg} ? '' : 'text-muted'"></i>
+											</th:block>
+										</span>
+										<span th:unless="${hotel.ratingDto != null}">
+											<th:block th:each="i : ${#numbers.sequence(1, 5)}">
+												<i class="fas fa-star text-muted"></i>
+											</th:block>
+										</span>
+									</div>
+									<span class="fw-semibold me-2" th:if="${hotel.ratingDto != null}" th:text="${hotel.ratingDto.rating_avg}">0.0</span>
+									<span class="text-muted" th:if="${hotel.ratingDto != null}">
+										(<span th:text="${hotel.ratingDto.rating_count}">0</span> 리뷰)
+									</span>
+									<span class="text-muted" th:unless="${hotel.ratingDto != null}">
+										(리뷰 없음)
+									</span>
+								</div>
+
+								<div class="hotel-features">
+									<span class="feature-badge">
+										<i class="fas fa-wifi me-1"></i>무료 Wi-Fi
+									</span>
+									<span class="feature-badge">
+										<i class="fas fa-car me-1"></i>주차 가능
+									</span>
+									<span class="feature-badge">
+										<i class="fas fa-concierge-bell me-1"></i>24시간 서비스
+									</span>
+								</div>
+							</div>
+
+							<div class="hotel-bottom">
+								<div class="d-flex align-items-center">
+									<button class="btn btn-outline-primary btn-sm me-2">
+										<i class="fas fa-heart me-1"></i>찜하기
+									</button>
+									<button class="btn btn-outline-secondary btn-sm">
+										<i class="fas fa-share me-1"></i>공유
+									</button>
+								</div>
+								<div class="price-tag">
+									<div class="text-end">
+										<small class="d-block opacity-75">1박 기준</small>
+										<strong>₩<span th:text="${#numbers.formatInteger(hotel.priceRange, 3, 'COMMA')}">0</span></strong>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- No Results -->
+		<div th:if="${#lists.isEmpty(hotels)}" class="text-center py-5">
+			<div class="mb-4">
+				<i class="fas fa-search fa-4x text-muted"></i>
+			</div>
+			<h4 class="text-muted">검색 결과가 없습니다</h4>
+			<p class="text-muted">다른 검색 조건으로 다시 시도해보세요.</p>
+			<a href="/" class="btn btn-primary">
+				<i class="fas fa-home me-2"></i>홈으로 돌아가기
+			</a>
+		</div>
+	</div>
+
+	<!-- Map Modal -->
+	<div class="modal fade" id="mapModal" tabindex="-1" data-bs-backdrop="static">
 		<div class="modal-dialog modal-xl">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">지도</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
-						aria-label="Close"></button>
+					<h5 class="modal-title">
+						<i class="fas fa-map-marked-alt text-primary me-2"></i>지도에서 보기
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				
-				<div class="mapModal-body" style="display: flex; height: 650px;">
-				<div th:replace="fragments/sidebar :: hotelSearch-mapSidebar" 
-				     style="width: 180px; flex-shrink: 0; border-right: 1px solid #ddd; overflow-y: auto;"></div>
-					<div id="map" style="width: 100%; height: 650px;"></div>
-
+				<div class="modal-body p-0" style="height: 650px;">
+					<div class="d-flex h-100">
+						<div th:replace="fragments/sidebar :: hotelSearch-mapSidebar" 
+						     class="border-end" style="width: 280px; flex-shrink: 0; overflow-y: auto;"></div>
+						<div id="map" class="flex-grow-1"></div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 	
-	<script
-		th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoJsKey} + '&libraries=services'}"></script>
+	<script th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoJsKey} + '&libraries=services'}"></script>
 	<script src="/javascript/hotelSearch.js"></script>
+	
+	<!-- <script>
+		// Hotel detail navigation
+		function goToHotelDetail(element) {
+			const hotelId = element.getAttribute('data-hotel-id');
+			const checkIn = document.getElementById('start').value;
+			const checkOut = document.getElementById('end').value;
+			const personCount = document.getElementById('personCount').value;
+			
+			if (hotelId) {
+				const url = `/domestic-accommodations?id=${hotelId}&checkIn=${encodeURIComponent(checkIn || '')}&checkOut=${encodeURIComponent(checkOut || '')}&personCount=${encodeURIComponent(personCount || '')}`;
+				window.location.href = url;
+			}
+		}
+		
+		// Search functionality
+		document.addEventListener('DOMContentLoaded', function() {
+			const btnSearch = document.getElementById('btnSearch');
+			const filterToggle = document.getElementById('filterToggle');
+			const filterSidebar = document.getElementById('filterSidebar');
+			
+			// Filter toggle functionality
+			filterToggle.addEventListener('click', function() {
+				console.log('Filter toggle clicked');
+				console.log('Filter sidebar:', filterSidebar);
+				console.log('Current display:', filterSidebar.style.display);
+				
+				const isHidden = filterSidebar.style.display === 'none';
+				filterSidebar.style.display = isHidden ? 'block' : 'none';
+				
+				console.log('New display:', filterSidebar.style.display);
+				
+				if (isHidden) {
+					this.innerHTML = '<i class="fas fa-times me-2"></i>필터 닫기';
+				} else {
+					this.innerHTML = '<i class="fas fa-filter me-2"></i>필터';
+				}
+			});
+			
+			btnSearch.addEventListener('click', function() {
+				const keyword = document.getElementById('searchKeyword').value.trim();
+				const checkIn = document.getElementById('start').value;
+				const checkOut = document.getElementById('end').value;
+				const personCount = document.getElementById('personCount').value;
+
+				let url = `/h_list?keyword=${encodeURIComponent(keyword)}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}&personCount=${encodeURIComponent(personCount)}`;
+				
+				// Add loading state
+				const originalText = btnSearch.innerHTML;
+				btnSearch.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>검색 중...';
+				btnSearch.disabled = true;
+				
+				setTimeout(() => {
+					window.location.href = url;
+				}, 500);
+			});
+			
+			// Enter key search
+			document.getElementById('searchKeyword').addEventListener('keypress', function(e) {
+				if (e.key === 'Enter') {
+					btnSearch.click();
+				}
+			});
+		});
+		
+		// Price range slider functionality (initial setup)
+		const priceRangeInitial = document.getElementById('priceRange');
+		const priceDisplayInitial = document.getElementById('priceDisplay');
+		
+		if (priceRangeInitial && priceDisplayInitial) {
+			priceRangeInitial.addEventListener('input', function() {
+				const value = this.value;
+				const formattedValue = new Intl.NumberFormat('ko-KR').format(value);
+				priceDisplayInitial.textContent = formattedValue + '원';
+			});
+		}
+		
+		// Filter reset functionality
+		const restartBtn = document.getElementById('restart');
+		if (restartBtn) {
+			restartBtn.addEventListener('click', function() {
+				// Reset all radio buttons to "전체"
+				document.querySelector('input[name="category"][value="all"]').checked = true;
+				
+				// Reset price range to maximum
+				if (priceRange) {
+					priceRange.value = 500000;
+					priceDisplay.textContent = '500,000원';
+				}
+				
+				// Reset all checkboxes
+				document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+					checkbox.checked = false;
+				});
+			});
+		}
+		
+		// Apply filter functionality with Ajax
+		function applyFilters() {
+			// Collect filter values
+			const category = document.querySelector('input[name="category"]:checked').value;
+			const priceRangeValue = document.getElementById('priceRange').value;
+			const selectedTags = Array.from(document.querySelectorAll('input[name="tag"]:checked'))
+				.map(checkbox => checkbox.value);
+			
+			// Get current URL parameters to preserve search keyword
+			const urlParams = new URLSearchParams(window.location.search);
+			const keyword = urlParams.get('keyword');
+			const checkIn = urlParams.get('checkIn');
+			const checkOut = urlParams.get('checkOut');
+			const personCount = urlParams.get('personCount');
+			
+			// Build filter parameters
+			const params = [];
+			
+			// Preserve existing search parameters
+			if (keyword) params.push(`keyword=${encodeURIComponent(keyword)}`);
+			if (checkIn) params.push(`checkIn=${checkIn}`);
+			if (checkOut) params.push(`checkOut=${checkOut}`);
+			if (personCount) params.push(`personCount=${personCount}`);
+			
+			// Add filter parameters
+			if (category && category !== 'all') {
+				params.push(`category=${category}`);
+			}
+			if (priceRangeValue && priceRangeValue !== '500000') {
+				params.push(`priceRange=${priceRangeValue}`);
+			}
+			
+			if (selectedTags.length > 0) {
+				selectedTags.forEach(tag => params.push(`tags=${tag}`));
+			}
+			
+			// Show loading indicator
+			const resultsInfo = document.querySelector('.results-info');
+			if (resultsInfo) {
+				resultsInfo.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>검색 중...';
+			}
+			
+			// Make Ajax request to get filtered results
+			const searchUrl = `/h_search?${params.join('&')}`;
+			console.log('Applying filter via Ajax:', searchUrl);
+			
+			fetch(searchUrl)
+				.then(response => response.json())
+				.then(hotels => {
+					console.log('Filtered hotels received:', hotels);
+					renderHotels(hotels);
+					
+					// Update results count
+					if (resultsInfo) {
+						const count = hotels.length;
+						resultsInfo.innerHTML = `<i class="fas fa-hotel me-2"></i>총 ${count}개의 숙소가 검색되었습니다.`;
+					}
+				})
+				.catch(error => {
+					console.error('Error applying filter:', error);
+					if (resultsInfo) {
+						resultsInfo.innerHTML = '<i class="fas fa-exclamation-triangle me-2 text-warning"></i>검색 중 오류가 발생했습니다.';
+					}
+				});
+		}
+		
+		const applyFilterBtn = document.getElementById('applyFilter');
+		if (applyFilterBtn) {
+			applyFilterBtn.addEventListener('click', applyFilters);
+		}
+		
+		// Optional: Auto-apply filter on category change (disabled for now)
+		// const categoryInputs = document.querySelectorAll('input[name="category"]');
+		// categoryInputs.forEach(input => {
+		// 	input.addEventListener('change', function() {
+		// 		if (this.checked) {
+		// 			applyFilters();
+		// 		}
+		// 	});
+		// });
+		
+		// Optional: Auto-apply filter on tag change (disabled for now)
+		// const tagInputs = document.querySelectorAll('input[name="tag"]');
+		// tagInputs.forEach(input => {
+		// 	input.addEventListener('change', function() {
+		// 		applyFilters();
+		// 	});
+		// });
+		
+		// Price range real-time update (only update display, not apply filter)
+		const priceRangeRealTime = document.getElementById('priceRange');
+		if (priceRangeRealTime) {
+			priceRangeRealTime.addEventListener('input', function() {
+				const value = this.value;
+				const formattedValue = new Intl.NumberFormat('ko-KR').format(value);
+				const priceDisplay = document.getElementById('priceDisplay');
+				if (priceDisplay) {
+					priceDisplay.textContent = formattedValue + '원';
+				}
+			});
+		} 
+	</script>-->
 </div>
-
-
-
-
-
 </html>

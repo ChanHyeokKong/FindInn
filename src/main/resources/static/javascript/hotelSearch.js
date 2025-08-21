@@ -32,9 +32,30 @@ document.addEventListener("DOMContentLoaded", function() {
 	const radios = document.querySelectorAll('input[name="category"]');
 	const checks = document.querySelectorAll('input[name="tag"]');
 	const input = document.querySelector("input[name='searchKeyword']");
-	const tbody = document.querySelector("#hotelTbody");
+	const tbody = document.getElementById("hotelContainer");
 	const range = document.querySelector('input[name="priceRange"]');
 	const display = document.getElementById("priceDisplay");
+	
+	const filterToggle = document.getElementById('filterToggle');
+				const filterSidebar = document.getElementById('filterSidebar');
+				
+				// Filter toggle functionality
+				filterToggle.addEventListener('click', function() {
+					console.log('Filter toggle clicked');
+					console.log('Filter sidebar:', filterSidebar);
+					console.log('Current display:', filterSidebar.style.display);
+					
+					const isHidden = filterSidebar.style.display === 'none';
+					filterSidebar.style.display = isHidden ? 'block' : 'none';
+					
+					console.log('New display:', filterSidebar.style.display);
+					
+					if (isHidden) {
+						this.innerHTML = '<i class="fas fa-times me-2"></i>필터 닫기';
+					} else {
+						this.innerHTML = '<i class="fas fa-filter me-2"></i>필터';
+					}
+				});
 
     // URL 파라미터 추출 함수
     function getUrlParams() {
@@ -209,59 +230,99 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	});
 
-	// 호텔 목록 렌더링 함수
+	// 호텔 목록 렌더링 함수 (카드형 레이아웃)
 	function renderHotels(data) {
-        tbody.innerHTML = "";
+	    const container = document.getElementById("hotelContainer");
+		const totalHotelsSpan = document.getElementById("totalHotels");
+		totalHotelsSpan.textContent = data ? data.length : 0;
+	    container.innerHTML = "";
 
-        if (!data || data.length === 0) {
-            const row = document.createElement("tr");
-            const cell = document.createElement("td");
-            cell.colSpan = 1;
-            cell.textContent = "검색 결과가 없습니다.";
-            row.appendChild(cell);
-            tbody.appendChild(row);
-            return;
-        }
+	    // 검색 결과 없을 때
+	    if (!data || data.length === 0) {
+	        const noResultDiv = document.createElement("div");
+	        noResultDiv.className = "col-12 text-center py-5 text-muted";
+	        noResultDiv.innerHTML = '<i class="fas fa-hotel fa-3x mb-2"></i><br>검색 결과가 없습니다.';
+	        container.appendChild(noResultDiv);
+	        return;
+	    }
 
-        data.forEach(hotel => {
-            const row = document.createElement("tr");
-            const cell = document.createElement("td");
+	    data.forEach(hotel => {
+	        const hotelCard = document.createElement("div");
+	        hotelCard.className = "col-12 mb-4";
+	        hotelCard.innerHTML = `
+			<div class="results-info mb-4">
+						<div class="d-flex align-items-center justify-content-between">
+							<div>
+								<h5 class="mb-1 fw-bold text-dark">검색 결과</h5>
+								<p class="mb-0 text-muted">총 <span class="fw-bold text-primary">${data.length}</span>개의 숙소를 찾았습니다</p>
+							</div>
+							<div class="text-muted">
+								<i class="fas fa-info-circle me-1"></i>
+								최신 정보로 업데이트됨
+							</div>
+						</div>
+					</div>
+			
+	            <div class="hotel-card" data-hotel-id="${hotel.idx}" onclick="goToHotelDetail(this)">
+	                <div class="d-flex">
+	                    <!-- 호텔 이미지 -->
+	                    <div class="hotel-image" style="width:200px; height:200px; overflow:hidden; flex-shrink:0;">
+	                        ${hotel.hotelImage ? 
+	                            `<img src="/hotelImage/${hotel.hotelImage}" alt="호텔 이미지" style="width:100%; height:100%; object-fit:cover;">`
+	                            :
+	                            `<div class="d-flex align-items-center justify-content-center bg-light h-100">
+	                                <i class="fas fa-hotel fa-3x text-muted"></i>
+	                             </div>`
+	                        }
+	                    </div>
 
-            const imgTag = hotel.hotelImage
-                ? `<img src="/hotelImage/${hotel.hotelImage}" alt="호텔 이미지" style="height: 200px; width: 100%; object-fit: cover;" />`
-                : "";
+	                    <!-- 호텔 정보 -->
+	                    <div class="hotel-info flex-grow-1 d-flex flex-column justify-content-between p-3">
+	                        <div>
+	                            <h3 class="hotel-title">${hotel.hotelName}</h3>
+	                            <div class="hotel-address mb-2">
+	                                <i class="fas fa-map-marker-alt text-primary me-2"></i>
+	                                <span>${hotel.hotelAddress}</span>
+	                            </div>
+	                            <div class="hotel-rating mb-2">
+	                                <div class="rating-stars me-2">
+	                                    ${[1,2,3,4,5].map(i => 
+	                                        `<i class="fas fa-star ${hotel.ratingDto && i <= hotel.ratingDto.rating_avg ? '' : 'text-muted'}"></i>`
+	                                    ).join('')}
+	                                </div>
+	                                <span class="fw-semibold me-2">
+	                                    ${hotel.ratingDto ? hotel.ratingDto.rating_avg.toFixed(1) : "0.0"}
+	                                </span>
+	                                <span class="text-muted">
+	                                    (${hotel.ratingDto ? hotel.ratingDto.rating_count : 0} 리뷰)
+	                                </span>
+	                            </div>
 
-            const ratingHtml = hotel.ratingDto
-                ? `⭐ ${hotel.ratingDto.rating_avg} (${hotel.ratingDto.rating_count} 리뷰)`
-                : `⭐ 0.0 (0 리뷰)`;
+	                            <div class="hotel-features mb-2">
+	                                <span class="feature-badge me-2"><i class="fas fa-wifi me-1"></i>무료 Wi-Fi</span>
+	                                <span class="feature-badge me-2"><i class="fas fa-car me-1"></i>주차 가능</span>
+	                                <span class="feature-badge"><i class="fas fa-concierge-bell me-1"></i>24시간 서비스</span>
+	                            </div>
+	                        </div>
 
-            cell.innerHTML = `
-            <div class="card hotel-card" data-hotel-id="${hotel.idx}" style="display: flex; flex-direction: row; height: 200px;">
-                <!-- 왼쪽 이미지 -->
-                <div style="width: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                    ${imgTag}
-                </div>
-
-                <!-- 오른쪽 정보 -->
-                <div class="card-body" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 15px;">
-                    <h5 class="card-title">${hotel.hotelName}</h5>
-                    <p class="card-text" style="margin: 5px 0;">${hotel.hotelAddress}</p>
-                    <p class="card-text" style="margin: 5px 0;">${ratingHtml}</p>
-                    <div style="display: flex; justify-content: flex-end; align-items: flex-end; flex-grow: 1;">
-                        <span style="font-weight: bold; font-size: 18px; color: #007bff;">
-                            ₩ ${hotel.priceRange.toLocaleString()}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            `;
-
-            row.appendChild(cell);
-            tbody.appendChild(row);
-        });
-
-        registerHotelCardClicks();
-    }
+	                        <div class="hotel-bottom d-flex justify-content-between align-items-center mt-2">
+	                            <div>
+	                                <button class="btn btn-outline-primary btn-sm me-2"><i class="fas fa-heart me-1"></i>찜하기</button>
+	                                <button class="btn btn-outline-secondary btn-sm"><i class="fas fa-share me-1"></i>공유</button>
+	                            </div>
+	                            <div class="price-tag text-end">
+	                                <small class="d-block opacity-75">1박 기준</small>
+	                                <strong>₩ ${hotel.priceRange.toLocaleString()}</strong>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        `;
+	        container.appendChild(hotelCard);
+			registerHotelCardClicks();
+	    });
+	}
 
 
 	// 호텔 카드 클릭 이벤트 등록 함수
