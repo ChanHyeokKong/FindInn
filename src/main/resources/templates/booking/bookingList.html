@@ -1,104 +1,134 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+      layout:decorate="~{layout/mypageLayout}">
 
-<head>
+<th:block layout:fragment="head">
     <title>예약 내역</title>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" th:href="@{/css/bookingList.css}"/>
-</head>
+</th:block>
 
-<body>
-<div layout:fragment="content" class="booking-list-container">
+<div layout:fragment="content">
 
-    <h1 class="page-title">예약내역</h1>
-
-    <!-- 탭 메뉴 -->
-    <div class="tabs">
-        <button class="tab-button active" data-tab="confirmed">예약확정</button>
-        <button class="tab-button" data-tab="completed">이용완료</button>
-        <button class="tab-button" data-tab="canceled">예약취소</button>
-    </div>
-
-    <!-- 탭 컨텐츠 -->
-    <div class="tab-content active" id="confirmed">
-        <div th:if="${#lists.isEmpty(confirmedList)}" class="empty-message">
-            예정된 예약이 없습니다. <a href="/" class="btn-find">여행지 찾아보기</a>
-        </div>
-        <div th:each="booking : ${confirmedList}" class="booking-item">
-            <img th:src="@{'/hotelImage/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
-            <div class="booking-info">
-                <span class="status confirmed">예약확정</span>
-                <h3 class="hotel-name" th:text="${booking.hotelName}">호텔명</h3>
-                <p class="room-info" th:text="${booking.roomName + ' · ' + booking.roomNumber}">객실명 · 객실번호</p>
-                <div class="booking-buttons">
-                    <button class="btn btn-detail"
-                            th:onclick="|location.href='@{/booking/detail(merchantUid=${booking.merchantUid})}'|">
-                        예약 상세
-                    </button>
+    <!-- Header Section -->
+    <section class="reservation-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-3 fw-bold">
+                        <i class="fas fa-calendar-check me-3"></i>나의 예약 내역
+                    </h1>
+                    <p class="mb-0 opacity-75">여행의 추억을 확인하고 관리하세요</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number"
+                                 th:text="${#lists.size(confirmedList) + #lists.size(completedList) + #lists.size(canceledList)}">
+                                0
+                            </div>
+                            <div class="stat-label">총 예약 건수</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="tab-content" id="completed">
-        <div th:if="${#lists.isEmpty(completedList)}" class="empty-message">
-            이용 완료된 예약이 없습니다.
+    <div class="booking-list-container">
+
+        <!-- 탭 메뉴 -->
+        <div class="tabs">
+            <button class="tab-button active" data-tab="confirmed">예약확정</button>
+            <button class="tab-button" data-tab="completed">이용완료</button>
+            <button class="tab-button" data-tab="canceled">예약취소</button>
         </div>
-        <div th:each="booking : ${completedList}" class="booking-item">
-            <img th:src="@{'/hotelImage/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
-            <div class="booking-info">
-                <span class="status completed">이용완료</span>
-                <h3 class="hotel-name" th:text="${booking.hotelName}">호텔명</h3>
-                <p class="room-info" th:text="${booking.roomName + ' · ' + booking.roomNumber}">객실명 · 객실번호</p>
-                <div class="booking-buttons">
-                    <button class="btn btn-detail"
-                            th:onclick="|location.href='@{/booking/detail(merchantUid=${booking.merchantUid})}'|">
-                        예약 상세
-                    </button>
+
+        <!-- 탭 컨텐츠 -->
+        <div class="tab-content active" id="confirmed">
+            <div th:if="${#lists.isEmpty(confirmedList)}" class="empty-message">
+                예정된 예약이 없습니다. <a href="/" class="btn-find">여행지 찾아보기</a>
+            </div>
+            <div th:each="booking : ${confirmedList}" class="booking-item">
+                <img th:src="@{'/hotelImage/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
+                <div class="booking-info">
+                    <span class="status confirmed">예약확정</span>
+                    <h3 class="hotel-name" th:text="${booking.hotelName}">호텔명</h3>
+                    <p class="room-info" th:text="${booking.roomName + ' · ' + booking.roomNumber}">객실명 · 객실번호</p>
+                    <div class="booking-buttons">
+                        <button class="btn btn-detail"
+                                th:onclick="|location.href='@{/booking/detail(merchantUid=${booking.merchantUid})}'|">
+                            예약 상세
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="tab-content" id="canceled">
-        <div th:if="${#lists.isEmpty(canceledList)}" class="empty-message">
-            취소된 예약이 없습니다.
-        </div>
-        <div th:each="booking : ${canceledList}" class="booking-item">
-            <img th:src="@{'/hotelImage/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
-            <div class="booking-info">
-                <span class="status canceled">예약취소</span>
-                <h3 class="hotel-name" th:text="${booking.hotelName}">호텔명</h3>
-                <p class="room-info" th:text="${booking.roomName + ' · ' + booking.roomNumber}">객실명 · 객실번호</p>
-                <div class="booking-buttons">
-                    <button class="btn btn-detail"
-                            th:onclick="|location.href='@{/booking/detail(merchantUid=${booking.merchantUid})}'|">
-                        예약 상세
-                    </button>
+        <div class="tab-content" id="completed">
+            <div th:if="${#lists.isEmpty(completedList)}" class="empty-message">
+                이용 완료된 예약이 없습니다.
+            </div>
+            <div th:each="booking : ${completedList}" class="booking-item">
+                <img th:src="@{'/hotelImage/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
+                <div class="booking-info">
+                    <span class="status completed">이용완료</span>
+                    <h3 class="hotel-name" th:text="${booking.hotelName}">호텔명</h3>
+                    <p class="room-info" th:text="${booking.roomName + ' · ' + booking.roomNumber}">객실명 · 객실번호</p>
+                    <div class="booking-buttons">
+                        <button class="btn btn-detail"
+                                th:onclick="|location.href='@{/booking/detail(merchantUid=${booking.merchantUid})}'|">
+                            예약 상세
+                        </button>
+                        <button class="btn btn-review"
+                                th:onclick="'window.open(\'' + @{/reviews/write(id=${booking.bookingIdx})} + '\', \'_blank\', \'width=900,height=800,popup=yes\');'">
+                            <i class="fas fa-star me-2"></i>리뷰 작성
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 탭 변경 스크립트 -->
-    <script>
-        const tabs = document.querySelectorAll('.tab-button');
-        const contents = document.querySelectorAll('.tab-content');
+        <div class="tab-content" id="canceled">
+            <div th:if="${#lists.isEmpty(canceledList)}" class="empty-message">
+                취소된 예약이 없습니다.
+            </div>
+            <div th:each="booking : ${canceledList}" class="booking-item">
+                <img th:src="@{'/hotelImage/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
+                <div class="booking-info">
+                    <span class="status canceled">예약취소</span>
+                    <h3 class="hotel-name" th:text="${booking.hotelName}">호텔명</h3>
+                    <p class="room-info" th:text="${booking.roomName + ' · ' + booking.roomNumber}">객실명 · 객실번호</p>
+                    <div class="booking-buttons">
+                        <button class="btn btn-detail"
+                                th:onclick="|location.href='@{/booking/detail(merchantUid=${booking.merchantUid})}'|">
+                            예약 상세
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                contents.forEach(c => c.classList.remove('active'));
+        <!-- 탭 변경 스크립트 -->
+        <script>
+            const tabs = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
 
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.tab).classList.add('active');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
             });
-        });
-    </script>
+        </script>
+
+    </div>
 
 </div>
-</body>
+
 </html>
