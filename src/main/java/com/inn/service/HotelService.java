@@ -10,6 +10,7 @@ import com.inn.data.registerHotel.HotelRegistrationDto;
 import com.inn.data.registerHotel.RoomRegistrationDto;
 import com.inn.data.rooms.RoomTypes;
 import com.inn.data.review.RatingDto;
+import com.inn.data.rooms.Rooms;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -294,7 +295,8 @@ public class HotelService {
                     .collect(Collectors.toList());
             hotel.setHotelImage(imageNames.get(0));
         }
-
+        int roomnum = 1;
+        int floornum = 2;
         if (dto.getRooms() != null) {
             for (RoomRegistrationDto roomDto : dto.getRooms()) {
                 RoomTypes roomTypes = new RoomTypes();
@@ -302,6 +304,19 @@ public class HotelService {
                 roomTypes.setDescription(roomDto.getDescription());
                 roomTypes.setPrice(roomDto.getPrice());
                 roomTypes.setCapacity(roomDto.getMaxCapacity());
+
+                for (int i=0; i<5; i++){
+                    Rooms rooms = new Rooms();
+                    rooms.setRoomNumber(roomnum+floornum*100L);
+                    rooms.setRoomType(roomTypes);
+                    rooms.setHotel(hotel);
+                    roomTypes.addRoom(rooms);
+                    roomnum++;
+                    if (roomnum>10){
+                        roomnum=1;
+                        floornum++;
+                    }
+                }
                 hotel.addRoomType(roomTypes);
                 if (roomDto.getImageFile()!=null && !roomDto.getImageFile().isEmpty()) {
                     String uniqueImageName = fileStorageService.store(roomDto.getImageFile(), "hotels");
@@ -311,10 +326,6 @@ public class HotelService {
         }
         return hotelRepository.save(hotel);
     }
-}
-
-
-
     // 엔티티 to Dto 변환 메서드 (/h_list 용)
     public List<HotelDto> getAllHotelDtos() {
         return hotelRepository.findAll()
@@ -335,4 +346,7 @@ public class HotelService {
                 })
                 .collect(Collectors.toList());
     }
+}
+
+
 
