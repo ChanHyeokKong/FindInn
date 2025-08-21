@@ -216,4 +216,13 @@ public class MemberService implements UserDetailsService {
 
         memberDao.save(member);
     }
+
+    public void updateMember(MemberDto updateDto) {
+        Long idx = updateDto.getIdx();
+        MemberDto dto = memberDao.findByIdx(idx);
+
+        dto.setStatus(Long.valueOf(1));
+        memberDao.save(dto);
+
+    }
 }

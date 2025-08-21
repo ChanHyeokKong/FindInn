@@ -53,6 +53,12 @@ public class AdminController {
         return "member/admin/qna";
     }
 
-
+    @GetMapping("/admin/applylist")
+    public ModelAndView applyList(){
+        ModelAndView mv = new ModelAndView("member/admin/applyList");
+        List<MemberDto> list = adminService.getApplyList();
+        mv.addObject("members",list);
+        return mv;
+    }
 
 }

@@ -32,4 +32,10 @@ public class AdminService {
         List<MemberDto> list = memberDaoInter.findAllManager();
         return list;
     }
+
+    public List<MemberDto> getApplyList(){
+        List<MemberDto> list = memberDaoInter.findAllByStatus(Long.valueOf(1));
+        return list;
+    }
+
 }

@@ -2,20 +2,57 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
 <div layout:fragment="content">
     <div class="container mt-3">
-        <form action="/manage/apply" method="post">
-            <div class="form-group">
-                <caption>이메일</caption>
-                <input type="email" th:value="${currentUser.getUsername()}" disabled><br>
-                <caption>전화번호</caption>
-                <input type="text" name="hotelTel"><br>
-                <caption>호텔 이름</caption>
-                <input type="text" name="hotelName"><br>
-                <caption>호텔 주소</caption>
-                <input type="text" name="hotelAddress"><br>
-                <button type="submit">호텔 추가</button>
+        <form action="/manage/apply" method="post" th:if="${currentUser.getStatus() == 0}" id="applicationForm">
+            <input type="hidden" name="idx" th:value="${currentUser.getIdx()}">
+            <!-- Administrator Account Transition User Guide -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fa-solid fa-circle-info me-2"></i>관리자 계정 전환 안내</h5>
+                </div>
+                <div class="card-body">
+                    <p>관리자 계정으로 전환을 신청하시기 전에 다음 안내사항을 숙지해주시기 바랍니다.</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>권한 변경:</strong> 계정이 관리자로 전환되면, 현재 계정의 모든 권한이 관리자 권한으로 대체됩니다.</li>
+                        <li class="list-group-item"><strong>책임:</strong> 관리자 계정은 호텔 정보, 예약, 사용자 데이터 등 중요 정보에 접근할 수 있습니다. 모든 활동은 기록되며, 계정 소유자는 모든 활동에 대한 책임을 집니다.</li>
+                        <li class="list-group-item"><strong>전환 불가:</strong> 관리자로 전환된 계정은 다시 일반 사용자 계정으로 전환할 수 없습니다.</li>
+                        <li class="list-group-item"><strong>처리 시간:</strong> 신청서 제출 후 관리자 승인까지 최대 3-5 영업일이 소요될 수 있습니다.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Consent Checkbox -->
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="consentCheck">
+                <label class="form-check-label" for="consentCheck">
+                    위 내용을 모두 확인했으며, 관리자 계정으로 전환하는 것에 동의합니다.
+                </label>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary" id="submitBtn" disabled>관리자 권한 신청</button>
             </div>
         </form>
-
+        <div th:if="${currentUser.getStatus() == 1}">
+            <h1>심사 진행중입니다.</h1>
+        </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const consentCheck = document.getElementById('consentCheck');
+            const submitBtn = document.getElementById('submitBtn');
+
+            consentCheck.addEventListener('change', function() {
+                submitBtn.disabled = !this.checked;
+            });
+
+            document.getElementById('applicationForm').addEventListener('submit', function(e) {
+                if (document.getElementById('consentCheck').checked === false) {
+                    e.preventDefault();
+                    alert('안내 사항에 동의해야 신청할 수 있습니다.');
+                }
+            });
+        });
+    </script>
 </div>
 </html>

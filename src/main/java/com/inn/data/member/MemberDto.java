@@ -23,6 +23,9 @@ public class MemberDto {
     @Column
     private String memberName, memberPassword, memberPhone;
 
+    @Column
+    private Long status= Long.valueOf(0); // 0... 정상 사용자 | 1... 관리자 승인대기 | 추후 사용 중지 및, 휴먼 등 계정 관리 가능
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "member_roles",

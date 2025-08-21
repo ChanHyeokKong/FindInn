@@ -23,4 +23,8 @@ public interface MemberDaoInter extends JpaRepository<MemberDto, Long> {
             "join r.roomType rt " +
             "where b.memberIdx = :memberIdx and b.roomIdx = r.idx and b.memberIdx = m.idx")
     List<MyPageDto> findMyReserve(@Param("memberIdx") Long memberIdx);
+
+    MemberDto findByIdx(Long idx);
+
+    List<MemberDto> findAllByStatus(Long status);
 }
