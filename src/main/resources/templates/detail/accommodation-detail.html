@@ -2,18 +2,229 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${accommodation.name}">숙소 상세</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<th:block layout:fragment="head">
+    <title th:text="${accommodation.name} + ' - FindInn'">숙소 상세</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        /* Enhanced Accommodation Detail Styles */
+        .accommodation-hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: var(--spacing-2xl) 0;
+            margin-bottom: var(--spacing-xl);
+            margin-top: 0; /* header 바로 아래 시작 */
+        }
+        
+        /* 메인 콘텐츠가 헤더에 가려지지 않도록 조정 */
+        .main-content {
+            margin-top: 0 !important;
+            padding: 0 !important; /* accommodation-detail은 자체 패딩 사용 */
+        }
+        
+        /* 첫 번째 섹션이 헤더 아래 시작되도록 */
+        .accommodation-hero {
+            padding-top: calc(var(--header-height) + var(--spacing-2xl)) !important;
+        }
+        
+        .accommodation-title {
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-extrabold);
+            margin-bottom: var(--spacing-md);
+            background: linear-gradient(135deg, #ffffff, #f0f8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .rating-badge {
+            background: linear-gradient(135deg, var(--warning-color), #e0a800);
+            color: var(--gray-900);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-lg);
+            font-weight: var(--font-weight-bold);
+            box-shadow: var(--shadow-md);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+        
+        .action-btn {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            font-weight: var(--font-weight-semibold);
+            transition: all var(--transition-fast);
+            border: 2px solid transparent;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .gallery-section {
+            border-radius: var(--border-radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .gallery-image {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform var(--transition-normal);
+        }
+        
+        .gallery-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .gallery-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-slow);
+        }
+        
+        .gallery-image:hover img {
+            transform: scale(1.05);
+        }
+        
+        .content-card {
+            background: var(--white);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-sm);
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid var(--gray-200);
+            transition: box-shadow var(--transition-normal);
+        }
+        
+        .content-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .content-card h3 {
+            color: var(--primary-color);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 2px solid var(--primary-color);
+            position: relative;
+        }
+        
+        .content-card h3::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 50px;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border-radius: var(--border-radius-sm);
+        }
+        
+        .room-card {
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            transition: all var(--transition-fast);
+            background: var(--white);
+        }
+        
+        .room-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-3px);
+        }
+        
+        .room-image {
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+        }
+        
+        .room-price {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-lg);
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-lg);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .select-btn {
+            background: linear-gradient(135deg, var(--success-color), #1e7e34);
+            border: none;
+            color: white;
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            font-weight: var(--font-weight-semibold);
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .select-btn:hover {
+            background: linear-gradient(135deg, #1e7e34, #155724);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: white;
+        }
+        
+        .amenity-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            background: var(--light-gray);
+            border-radius: var(--border-radius-md);
+            transition: all var(--transition-fast);
+        }
+        
+        .amenity-item:hover {
+            background: var(--primary-lighter);
+            transform: translateX(5px);
+        }
+        
+        .amenity-item i {
+            color: var(--primary-color);
+            font-size: var(--font-size-lg);
+        }
+        
+        .map-container {
+            border-radius: var(--border-radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .review-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            transition: all var(--transition-fast);
+        }
+        
+        .review-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+        
+        .review-stars {
+            color: var(--warning-color);
+            margin-bottom: var(--spacing-sm);
+        }
+        
         /* 갤러리 모달 캐러셀 특별 스타일 */
         #galleryModal .carousel-item {
-            /* This background color makes each slide opaque, fixing the overlap issue */
             background-color: #212529;
-
-            /* These styles correctly center the image in the fullscreen modal */
             height: 100vh;
             display: flex;
             align-items: center;
@@ -26,255 +237,331 @@
             object-fit: contain;
             width: auto;
             height: auto;
+            border-radius: var(--border-radius-lg);
+        }
+        
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .accommodation-title {
+                font-size: var(--font-size-2xl);
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .content-card {
+                padding: var(--spacing-lg);
+            }
         }
     </style>
 </head>
 
-<body class="bg-light">
 <th:block layout:fragment="content">
-    <br>
-    <br>
-    <br>
-    <div class="container-fluid px-0">
-        <div class="bg-white">
-            <div class="container py-4">
-                <div class="row align-items-center mb-3">
-                    <div class="col">
-                        <h1 class="h2 mb-1" th:text="${accommodation.name}">강릉 더끌림 펜션</h1>
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <span class="badge bg-primary" th:text="${#numbers.formatDecimal(rating.rating_avg, 1, 1)}">4.5</span>
-                            <small class="text-muted" th:text="|리뷰 ${rating.rating_count}개|">리뷰 128개</small>
-                            <small class="text-muted">|</small>
-                            <small class="text-muted" th:text="${accommodation.address}">강원도 강릉시 해안로 123-45</small>
+    <!-- Hero Section -->
+    <section class="accommodation-hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="accommodation-title" th:text="${accommodation.name}">강릉 더끌림 펜션</h1>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rating-badge">
+                            <i class="bi bi-star-fill"></i>
+                            <span th:text="${#numbers.formatDecimal(rating.rating_avg, 1, 1)}">4.5</span>
                         </div>
-                    </div>
-                    <div class="col-auto">
-                        <div class="d-flex gap-2">
-                            <button id="chat-button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#chatModal" th:data-hotel-idx="${accommodation.hotel.idx}">
-                                <i class="bi bi-chat-dots"></i> 문의하기
-                            </button>
-                            <button class="btn btn-outline-secondary btn-sm">
-                                <i class="bi bi-heart"></i> 찜하기
-                            </button>
-                        </div>
+                        <small class="text-white-50" th:text="|리뷰 ${rating.rating_count}개|">리뷰 128개</small>
+                        <small class="text-white-50">•</small>
+                        <small class="text-white-50">
+                            <i class="bi bi-geo-alt me-1"></i>
+                            <span th:text="${accommodation.address}">강원도 강릉시 해안로 123-45</span>
+                        </small>
                     </div>
                 </div>
-
-                <div class="row g-2 mb-4" th:if="${accommodation.imageGalleries != null and !accommodation.imageGalleries.isEmpty()}">
-                    <div class="col-md-6">
-                        <div class="position-relative">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="0">
-                                <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[0]}}"
-                                     class="img-fluid rounded-3 w-100"
-                                     style="height: 350px; object-fit: cover; cursor: pointer;"
-                                     alt="대표 이미지">
-                            </a>
-                        </div>
+                <div class="col-lg-4 text-lg-end">
+                    <div class="action-buttons">
+                        <button id="chat-button" class="btn btn-light action-btn" data-bs-toggle="modal" data-bs-target="#chatModal" th:data-hotel-idx="${accommodation.hotel.idx}">
+                            <i class="bi bi-chat-dots me-2"></i>문의하기
+                        </button>
+                        <button class="btn btn-outline-light action-btn">
+                            <i class="bi bi-heart me-2"></i>찜하기
+                        </button>
                     </div>
-                    <div class="col-md-6">
-                        <div class="row g-2 h-100">
-                            <div class="col-6" th:if="${accommodation.imageGalleries.size() > 1}">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Gallery Section -->
+        <div class="gallery-section">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="gallery-image" style="height: 400px;">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="0">
+                            <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[0]}}"
+                                 class="w-100 h-100"
+                                 alt="대표 이미지">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row g-3 h-100">
+                        <div class="col-6" th:if="${accommodation.imageGalleries.size() > 1}">
+                            <div class="gallery-image" style="height: 190px;">
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="1">
                                     <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[1]}}"
-                                         class="img-fluid rounded-3 w-100"
-                                         style="height: 170px; object-fit: cover; cursor: pointer;"
+                                         class="w-100 h-100"
                                          alt="서브 이미지 1">
                                 </a>
                             </div>
-                            <div class="col-6" th:if="${accommodation.imageGalleries.size() > 2}">
+                        </div>
+                        <div class="col-6" th:if="${accommodation.imageGalleries.size() > 2}">
+                            <div class="gallery-image" style="height: 190px;">
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="2">
                                     <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[2]}}"
-                                         class="img-fluid rounded-3 w-100"
-                                         style="height: 170px; object-fit: cover; cursor: pointer;"
+                                         class="w-100 h-100"
                                          alt="서브 이미지 2">
                                 </a>
                             </div>
-                            <div class="col-12">
-                                <div class="position-relative">
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="3" th:if="${accommodation.imageGalleries.size() > 3}">
-                                        <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[3]}}"
-                                             class="img-fluid rounded-3 w-100"
-                                             style="height: 170px; object-fit: cover; cursor: pointer;"
-                                             alt="서브 이미지 3">
-                                        <div class="position-absolute top-50 start-50 translate-middle">
-                                            <button class="btn btn-dark btn-sm rounded-pill">
-                                                <i class="bi bi-images"></i> 사진 모두 보기
-                                            </button>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="container py-4">
-            <div class="row g-4">
-                <div class="col-12">
-                    <div class="bg-white rounded-3 p-4 mb-4 shadow-sm">
-                        <h3 class="h4 mb-4">객실 선택</h3>
-
-                        <div th:each="room : ${accommodation.roomTypes}" class="border rounded-3 p-3 mb-3">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <img th:src="@{'/uploads/hotels/' + ${room.imageUrl}}"
-                                         class="img-fluid rounded-3 w-100"
-                                         style="height: 150px; object-fit: cover;"
-                                         alt="객실 이미지">
-                                </div>
-                                <div class="col-md-5">
-                                    <h5 class="mb-2" th:text="${room.typeName}">글램핑 카라반 101호</h5>
-                                    <p class="text-muted small mb-2" th:text="${room.description}">상세 설명</p>
-                                    <div class="d-flex align-items-center gap-3 mb-2">
-                                        <small class="text-muted">
-                                            <i class="bi bi-people"></i> 최대 <span th:text="${room.capacity}">4</span>인
-                                        </small>
-                                    </div>
-                                    <div class="d-flex gap-2">
-                                        <span class="badge bg-light text-dark">무료 Wi-Fi</span>
-                                        <span class="badge bg-light text-dark">조식 포함</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 text-end d-flex flex-column justify-content-between">
-                                    <div>
-                                        <div class="h5 text-primary mb-0" th:text="|${#numbers.formatInteger(room.price, 3, 'COMMA')}원|">180,000원</div>
-                                        <small class="text-muted">1박 기준</small>
-                                    </div>
-                                    <div class="mt-3">
-                                        <a th:if="${room.available}"
-                                           th:href="@{/reserve(roomId=${room.id}, checkIn=${accommodation.checkInDate}, checkOut=${accommodation.checkOutDate})}"
-                                           class="btn btn-primary w-100">선택</a>
-                                        <button th:unless="${room.available}" class="btn btn-secondary w-100" disabled>매진</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-3 p-4 mb-4 shadow-sm">
-                        <h3 class="h4 mb-3">숙소 소개</h3>
-                        <div th:utext="${accommodation.hotel.getDescription()}">
-                            <p>숙소 상세 설명이 여기에 표시됩니다.</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-3 p-4 mb-4 shadow-sm">
-                        <h3 class="h4 mb-3">편의시설</h3>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-wifi text-primary"></i>
-                                    <span>무료 Wi-Fi</span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-car-front text-primary"></i>
-                                    <span>주차 가능</span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-droplet text-primary"></i>
-                                    <span>온수 공급</span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-wind text-primary"></i>
-                                    <span>에어컨</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-3 p-4 mb-4 shadow-sm">
-                        <h3 class="h4 mb-3">취소 및 환불 정책</h3>
-                        <div class="alert alert-info mb-0">
-                            <i class="bi bi-info-circle"></i>
-                            체크인일 기준 7일 전 취소 시 전액 환불
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-3 p-4 mb-4 shadow-sm">
-                        <h3 class="h4 mb-3">위치</h3>
-                        <div class="mb-3">
-                            <p class="text-muted mb-1" th:text="${accommodation.address}">강원도 강릉시 해안로 123-45</p>
-                        </div>
-                        <div id="map"
-                             th:data-kakao-key="${kakaoApiKey}"
-                             th:data-address="${accommodation.address}"
-                             style="width:100%;height:350px;"
-                             class="rounded-3">
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-3 p-4 mb-4 shadow-sm">
-                        <div id="review-section" th:fragment="review-fragment">
-                            <div th:each="review : ${reviewPage.content}" class="mb-4 pb-4 border-bottom">
-                                <div class="d-flex gap-3">
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <strong class="text-dark" th:text="${review.member?.memberName ?: '익명'}">작성자 이름</strong>
-                                            <small class="text-muted" th:text="${#temporals.format(review.reviewDate, 'M월 d일')}">날짜</small>
-                                        </div>
-
-                                        <div th:if="${review.imagePaths != null and !review.imagePaths.empty}" class="d-flex gap-2 mb-2">
-                                            <img th:each="imagePath : ${review.imagePaths}"
-                                                 th:src="@{'/uploads/reviews/' + ${imagePath}}"
-                                                 class="rounded"
-                                                 style="width: 80px; height: 60px; object-fit: cover;"
-                                                 alt="리뷰 이미지">
-                                        </div>
-
-                                        <div class="mb-2">
-                <span th:each="i : ${#numbers.sequence(1, 5)}"
-                      th:text="'★'"
-                      th:class="${i <= review.rating} ? 'text-warning' : 'text-body-tertiary'">
-                </span>
-                                        </div>
-
-                                        <p class="small text-muted mb-2" th:text="${review.roomName}">객실 타입</p>
-
-                                        <p th:text="${review.content}" class="mb-2 text-dark">리뷰 내용이 여기에 표시됩니다.</p>
-
-                                        <button th:if="${#strings.length(review.content) > 100}"
-                                                class="btn btn-link p-0 text-muted small"
-                                                type="button"
-                                                onclick="toggleReviewContent(this)">
-                                            더보기 <i class="fas fa-chevron-down"></i>
+                        <div class="col-12">
+                            <div class="gallery-image position-relative" style="height: 190px;" th:if="${accommodation.imageGalleries.size() > 3}">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="3">
+                                    <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[3]}}"
+                                         class="w-100 h-100"
+                                         alt="서브 이미지 3">
+                                    <div class="position-absolute top-50 start-50 translate-middle">
+                                        <button class="btn btn-primary btn-lg rounded-pill shadow-lg">
+                                            <i class="bi bi-images me-2"></i>사진 모두 보기
                                         </button>
                                     </div>
-                                </div>
+                                </a>
                             </div>
-
-                            <nav th:if="${reviewPage.totalPages > 1}" aria-label="Review pagination" class="d-flex justify-content-center mt-4">
-                                <ul class="pagination">
-                                    <li class="page-item" th:classappend="${reviewPage.first} ? 'disabled'">
-                                        <a class="page-link" th:href="@{/domestic-accommodations(page=${reviewPage.number - 1}, id=${hotelId})}" aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                        </a>
-                                    </li>
-
-                                    <li th:each="i : ${#numbers.sequence(0, reviewPage.totalPages - 1)}"
-                                        class="page-item"
-                                        th:classappend="${i == reviewPage.number} ? 'active'">
-                                        <a class="page-link" th:href="@{/domestic-accommodations(page=${i}, id=${hotelId})}" th:text="${i + 1}">1</a>
-                                    </li>
-
-                                    <li class="page-item" th:classappend="${reviewPage.last} ? 'disabled'">
-                                        <a class="page-link" th:href="@{/domestic-accommodations(page=${reviewPage.number + 1}, id=${hotelId})}" aria-label="Next">
-                                            <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
-
                         </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Room Selection Section -->
+        <div class="content-card">
+            <h3><i class="bi bi-house-door me-2"></i>객실 선택</h3>
+
+            <div th:each="room : ${accommodation.roomTypes}" class="room-card">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="room-image">
+                            <img th:src="@{'/uploads/hotels/' + ${room.imageUrl}}"
+                                 class="img-fluid w-100"
+                                 style="height: 180px; object-fit: cover;"
+                                 alt="객실 이미지">
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <h5 class="fw-bold text-dark mb-3" th:text="${room.typeName}">글램핑 카라반 101호</h5>
+                        <p class="text-muted mb-3" th:text="${room.description}">상세 설명</p>
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="amenity-item">
+                                <i class="bi bi-people-fill"></i>
+                                <span>최대 <span th:text="${room.capacity}">4</span>인</span>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-primary border border-primary">
+                                <i class="bi bi-wifi me-1"></i>무료 Wi-Fi
+                            </span>
+                            <span class="badge bg-light text-primary border border-primary">
+                                <i class="bi bi-cup-hot me-1"></i>조식 포함
+                            </span>
+                            <span class="badge bg-light text-primary border border-primary">
+                                <i class="bi bi-car-front me-1"></i>주차 가능
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-end d-flex flex-column justify-content-between">
+                        <div class="mb-3">
+                            <div class="room-price text-center">
+                                <div th:text="|₩${#numbers.formatInteger(room.price, 3, 'COMMA')}|">₩180,000</div>
+                                <small class="d-block mt-1 opacity-75">1박 기준</small>
+                            </div>
+                        </div>
+                        <div>
+                            <a th:if="${room.available}"
+                               th:href="@{/reserve(roomId=${room.id}, checkIn=${accommodation.checkInDate}, checkOut=${accommodation.checkOutDate})}"
+                               class="btn select-btn w-100">
+                                <i class="bi bi-check-circle me-2"></i>선택하기
+                            </a>
+                            <button th:unless="${room.available}" class="btn btn-secondary w-100" disabled>
+                                <i class="bi bi-x-circle me-2"></i>매진
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description Section -->
+        <div class="content-card">
+            <h3><i class="bi bi-info-circle me-2"></i>숙소 소개</h3>
+            <div th:utext="${accommodation.hotel.getDescription()}">
+                <p>숙소 상세 설명이 여기에 표시됩니다.</p>
+            </div>
+        </div>
+
+        <!-- Amenities Section -->
+        <div class="content-card">
+            <h3><i class="bi bi-star me-2"></i>편의시설</h3>
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3">
+                    <div class="amenity-item">
+                        <i class="bi bi-wifi"></i>
+                        <span>무료 Wi-Fi</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="amenity-item">
+                        <i class="bi bi-car-front"></i>
+                        <span>주차 가능</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="amenity-item">
+                        <i class="bi bi-droplet"></i>
+                        <span>온수 공급</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="amenity-item">
+                        <i class="bi bi-wind"></i>
+                        <span>에어컨</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="amenity-item">
+                        <i class="bi bi-tv"></i>
+                        <span>TV</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="amenity-item">
+                        <i class="bi bi-cup-hot"></i>
+                        <span>조식 서비스</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="amenity-item">
+                        <i class="bi bi-shield-check"></i>
+                        <span>24시간 보안</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="amenity-item">
+                        <i class="bi bi-telephone"></i>
+                        <span>룸서비스</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cancellation Policy Section -->
+        <div class="content-card">
+            <h3><i class="bi bi-calendar-x me-2"></i>취소 및 환불 정책</h3>
+            <div class="alert alert-info border-0 bg-light">
+                <div class="d-flex align-items-start gap-3">
+                    <i class="bi bi-info-circle-fill text-info fs-4"></i>
+                    <div>
+                        <h6 class="alert-heading mb-2">무료 취소 정책</h6>
+                        <p class="mb-1">체크인일 기준 <strong>7일 전</strong> 취소 시 전액 환불</p>
+                        <p class="mb-0 small text-muted">그 이후 취소 시 첫날 숙박료가 취소 수수료로 부과됩니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Location Section -->
+        <div class="content-card">
+            <h3><i class="bi bi-geo-alt me-2"></i>위치</h3>
+            <div class="mb-4">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-geo-alt-fill text-primary"></i>
+                    <span class="fw-semibold" th:text="${accommodation.address}">강원도 강릉시 해안로 123-45</span>
+                </div>
+                <p class="text-muted small mb-0">정확한 위치는 예약 완료 후 확인하실 수 있습니다.</p>
+            </div>
+            <div class="map-container">
+                <div id="map"
+                     th:data-kakao-key="${kakaoApiKey}"
+                     th:data-address="${accommodation.address}"
+                     style="width:100%;height:400px;">
+                </div>
+            </div>
+        </div>
+        <!-- Reviews Section -->
+        <div class="content-card">
+            <h3><i class="bi bi-chat-quote me-2"></i>이용후기</h3>
+            <div id="review-section" th:fragment="review-fragment">
+                <div th:each="review : ${reviewPage.content}" class="review-card">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <div>
+                                <strong class="text-dark d-block" th:text="${review.member?.memberName ?: '익명'}">작성자 이름</strong>
+                                <small class="text-muted" th:text="${review.roomName}">객실 타입</small>
+                            </div>
+                        </div>
+                        <small class="text-muted" th:text="${#temporals.format(review.reviewDate, 'M월 d일')}">날짜</small>
+                    </div>
+
+                    <div class="review-stars mb-3">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}"
+                              th:text="'★'"
+                              th:class="${i <= review.rating} ? 'text-warning' : 'text-muted'">
+                        </span>
+                        <span class="ms-2 fw-semibold text-dark" th:text="${review.rating} + '.0'">5.0</span>
+                    </div>
+
+                    <div th:if="${review.imagePaths != null and !review.imagePaths.empty}" class="d-flex gap-2 mb-3">
+                        <img th:each="imagePath : ${review.imagePaths}"
+                             th:src="@{'/uploads/reviews/' + ${imagePath}}"
+                             class="rounded-3 shadow-sm"
+                             style="width: 100px; height: 80px; object-fit: cover; cursor: pointer;"
+                             alt="리뷰 이미지">
+                    </div>
+
+                    <p th:text="${review.content}" class="mb-0 text-dark lh-base">리뷰 내용이 여기에 표시됩니다.</p>
+
+                    <button th:if="${#strings.length(review.content) > 100}"
+                            class="btn btn-link p-0 text-primary small mt-2"
+                            type="button"
+                            onclick="toggleReviewContent(this)">
+                        더보기 <i class="bi bi-chevron-down"></i>
+                    </button>
+                </div>
+
+                <nav th:if="${reviewPage.totalPages > 1}" aria-label="Review pagination" class="d-flex justify-content-center mt-5">
+                    <ul class="pagination pagination-lg">
+                        <li class="page-item" th:classappend="${reviewPage.first} ? 'disabled'">
+                            <a class="page-link rounded-pill me-2" th:href="@{/domestic-accommodations(page=${reviewPage.number - 1}, id=${hotelId})}" aria-label="Previous">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        <li th:each="i : ${#numbers.sequence(0, reviewPage.totalPages - 1)}"
+                            class="page-item me-1"
+                            th:classappend="${i == reviewPage.number} ? 'active'">
+                            <a class="page-link rounded-pill" th:href="@{/domestic-accommodations(page=${i}, id=${hotelId})}" th:text="${i + 1}">1</a>
+                        </li>
+
+                        <li class="page-item" th:classappend="${reviewPage.last} ? 'disabled'">
+                            <a class="page-link rounded-pill ms-2" th:href="@{/domestic-accommodations(page=${reviewPage.number + 1}, id=${hotelId})}" aria-label="Next">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
 

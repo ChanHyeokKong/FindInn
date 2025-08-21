@@ -1,111 +1,393 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <aside th:fragment="admin-sidebar">
     <div class="sidebar">
-        <img class="sidebar-logo" src="/image/logo_nemo_white.png">
-        <br>
-        <ul>
-            <li><a href="/admin/memberlist">고객 관리</a></li>
-            <li><a href="/admin/hotellist">호텔 관리</a></li>
-            <li><a href="/admin/managerlist">매니저 관리</a></li>
-            <li><a>고객 문의</a></li>
-            <li><a>승인 심사</a></li>
+        <img class="sidebar-logo" src="/image/logo_nemo_white.png" alt="FindInn Logo">
+        
+        <!-- Admin Profile Card -->
+        <div class="user-profile-card bg-white bg-opacity-10 rounded-3 p-3 mb-4">
+            <div class="d-flex align-items-center mb-3">
+                <div class="user-avatar bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                    <i class="fas fa-user-shield fa-lg"></i>
+                </div>
+                <div>
+                    <h6 class="text-white mb-1 fw-bold" th:text="${#authentication.principal.memberName}">관리자</h6>
+                    <small class="text-white-50" sec:authentication="name">admin@example.com</small>
+                    <div class="mt-1">
+                        <span class="badge bg-danger">
+                            <i class="fas fa-shield-alt me-1"></i>관리자
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Menu -->
+        <ul class="mypage-nav">
+            <li>
+                <a href="/admin/memberlist" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>고객 관리</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/hotellist" class="nav-item">
+                    <i class="fas fa-hotel"></i>
+                    <span>호텔 관리</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/managerlist" class="nav-item">
+                    <i class="fas fa-user-tie"></i>
+                    <span>매니저 관리</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/qna" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>고객 문의</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>승인 심사</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
         </ul>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions mt-4">
+            <a href="/h_list" class="btn btn-outline-light btn-sm w-100 mb-2">
+                <i class="fas fa-search me-2"></i>숙소 찾기
+            </a>
+            <form action="/logout" method="post" class="d-inline w-100">
+                <button type="submit" class="btn btn-danger btn-sm w-100">
+                    <i class="fas fa-sign-out-alt me-2"></i>로그아웃
+                </button>
+            </form>
+        </div>
     </div>
 </aside>
 
 <aside th:fragment="manager-sidebar">
-
     <div class="sidebar">
-        <img class="sidebar-logo" src="/image/logo_nemo_white.png">
-        <br>
-        <span>이&nbsp;&nbsp;&nbsp;름 :  </span>
-        <span th:text="${#authentication.principal.memberName}"></span>
-        <br>
-        <span>이메일 :   </span><span sec:authentication="name"></span>
-        <ul>
-            <li><a th:href="@{/manage/hotel}">호텔 관리</a></li>
-            <li><a th:href="@{/manage/reserve}">예약 관리</a></li>
-            <li><a th:href="@{/manage/room}">방 관리</a></li>
-            <li><a th:href="@{/manage/qna}">문의 확인</a></li>
+        <img class="sidebar-logo" src="/image/logo_nemo_white.png" alt="FindInn Logo">
+        
+        <!-- Manager Profile Card -->
+        <div class="user-profile-card bg-white bg-opacity-10 rounded-3 p-3 mb-4">
+            <div class="d-flex align-items-center mb-3">
+                <div class="user-avatar bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                    <i class="fas fa-user-tie fa-lg"></i>
+                </div>
+                <div>
+                    <h6 class="text-white mb-1 fw-bold" th:text="${#authentication.principal.memberName}">매니저명</h6>
+                    <small class="text-white-50" sec:authentication="name">manager@example.com</small>
+                    <div class="mt-1">
+                        <span class="badge bg-warning text-dark">
+                            <i class="fas fa-crown me-1"></i>매니저
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Menu -->
+        <ul class="mypage-nav">
+            <li>
+                <a th:href="@{/manage/hotel}" class="nav-item">
+                    <i class="fas fa-hotel"></i>
+                    <span>호텔 관리</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/manage/reserve}" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>예약 관리</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/manage/room}" class="nav-item">
+                    <i class="fas fa-bed"></i>
+                    <span>방 관리</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/manage/qna}" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>문의 확인</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
         </ul>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions mt-4">
+            <a href="/h_list" class="btn btn-outline-light btn-sm w-100 mb-2">
+                <i class="fas fa-search me-2"></i>숙소 찾기
+            </a>
+            <form action="/logout" method="post" class="d-inline w-100">
+                <button type="submit" class="btn btn-danger btn-sm w-100">
+                    <i class="fas fa-sign-out-alt me-2"></i>로그아웃
+                </button>
+            </form>
+        </div>
     </div>
 </aside>
 
 <aside th:fragment="hotelSearch-sidebar">
-	<div class="sidebar" style="width: 200px; height: 850px; overflow-y: auto;">
-      <span>필터</span>
-      <button id="restart">초기화</button> <hr>
-      
-      <b>숙소유형</b><br>
-      
-      <form id="categoryForm"></form>
-      <input name="category" type="radio" value="all" checked="checked"/>전체<br>
-      <input name="category" type="radio" value="motel"/>모텔<br>
-      <input name="category" type="radio" value="hotel_resort"/>호텔·리조트<br>
-      <input name="category" type="radio" value="pension"/>펜션<br>
-      <input name="category" type="radio" value="home_villa"/>홈&빌라<br>
-      <input name="category" type="radio" value="camping"/>캠핑<br>
-      <input name="category" type="radio" value="guesthouse"/>게하·한옥<hr>
-      
-      <b>가격</b><br>
-      <input type="range" min="50000" max="500000" step="50000" id="priceRange" name="priceRange" value="500000"><br>
-      <p id="priceDisplay">500,000원</p>
-      
-      <b>#취향</b><br>
-		<input type="checkbox" name="tag" value="family">#가족여행숙소
-		<input type="checkbox" name="tag" value="waterpool">#온수풀
-		<input type="checkbox" name="tag" value="view">#뷰맛집
-		<input type="checkbox" name="tag" value="beach">#바닷가
-		<input type="checkbox" name="tag" value="nicemeal">#조식맛집
-		<hr>
-		<b>할인혜택</b><br>
-		<input type="checkbox" name="tag" value="coupon">쿠폰할인
-		<input type="checkbox" name="tag" value="discount">할인특가
-		<hr>
-        <b>시설</b><br>
-        <input type="checkbox" name="tag" value="sauna">사우나
-        <input type="checkbox" name="tag" value="swimming_pool">수영장
-        <input type="checkbox" name="tag" value="restaurant">레스토랑
-        <input type="checkbox" name="tag" value="fitness">피트니스
-        <input type="checkbox" name="tag" value="golf">골프장
-        <input type="checkbox" name="tag" value="pc">공용PC
-        <input type="checkbox" name="tag" value="kitchen">주방/식당
-        <input type="checkbox" name="tag" value="washing_machine">세탁기
-        <input type="checkbox" name="tag" value="parking">주차장
-        <input type="checkbox" name="tag" value="spa">온천
-        <input type="checkbox" name="tag" value="ski">스키장
-        <input type="checkbox" name="tag" value="in_room_eating">객실내취사
-        <input type="checkbox" name="tag" value="breakfast">조식제공
-        <input type="checkbox" name="tag" value="smoking">객실내흡연
-        <input type="checkbox" name="tag" value="luggage">짐보관가능
-        <input type="checkbox" name="tag" value="disabled">장애인편의
-        <input type="checkbox" name="tag" value="pickup">픽업서비스
-      <hr>
-      
-      
+    <div class="simple-filter-sidebar">
+        <div class="filter-header">
+            <h5 class="filter-title">
+                <i class="fas fa-filter text-primary me-2"></i>필터
+            </h5>
+            <button class="btn btn-outline-secondary btn-sm" id="restart">
+                <i class="fas fa-redo me-1"></i>초기화
+            </button>
+        </div>
+        
+        <!-- 숙소 유형 -->
+        <div class="filter-section">
+            <h6 class="filter-section-title">숙소 유형</h6>
+            <div class="filter-options-compact">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="category" id="category-all" value="all" checked>
+                    <label class="form-check-label" for="category-all">전체</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="category" id="category-motel" value="motel">
+                    <label class="form-check-label" for="category-motel">모텔</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="category" id="category-hotel" value="hotel_resort">
+                    <label class="form-check-label" for="category-hotel">호텔</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="category" id="category-pension" value="pension">
+                    <label class="form-check-label" for="category-pension">펜션</label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 가격 범위 -->
+        <div class="filter-section">
+            <h6 class="filter-section-title">가격 범위</h6>
+            <div class="price-range-container">
+                <input type="range" class="form-range" min="50000" max="500000" step="50000" id="priceRange" name="priceRange" value="500000">
+                <div class="price-display">
+                    <small class="text-muted">최대: </small>
+                    <span class="price-value fw-bold text-primary" id="priceDisplay">500,000원</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 취향 태그 -->
+        <div class="filter-section">
+            <h6 class="filter-section-title">취향</h6>
+            <div class="filter-tags">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-family" value="family">
+                    <label class="form-check-label tag-label" for="tag-family">#가족여행숙소</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-waterpool" value="waterpool">
+                    <label class="form-check-label tag-label" for="tag-waterpool">#온수풀</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-view" value="view">
+                    <label class="form-check-label tag-label" for="tag-view">#뷰맛집</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-beach" value="beach">
+                    <label class="form-check-label tag-label" for="tag-beach">#바닷가</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-nicemeal" value="nicemeal">
+                    <label class="form-check-label tag-label" for="tag-nicemeal">#조식맛집</label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 할인 혜택 -->
+        <div class="filter-section">
+            <h6 class="filter-section-title">할인 혜택</h6>
+            <div class="filter-tags">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-coupon" value="coupon">
+                    <label class="form-check-label tag-label" for="tag-coupon">쿠폰할인</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-discount" value="discount">
+                    <label class="form-check-label tag-label" for="tag-discount">할인특가</label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 시설 -->
+        <div class="filter-section">
+            <h6 class="filter-section-title">시설</h6>
+            <div class="filter-tags">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-sauna" value="sauna">
+                    <label class="form-check-label tag-label" for="tag-sauna">사우나</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-swimming" value="swimming_pool">
+                    <label class="form-check-label tag-label" for="tag-swimming">수영장</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-restaurant" value="restaurant">
+                    <label class="form-check-label tag-label" for="tag-restaurant">레스토랑</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-fitness" value="fitness">
+                    <label class="form-check-label tag-label" for="tag-fitness">피트니스</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-golf" value="golf">
+                    <label class="form-check-label tag-label" for="tag-golf">골프장</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-pc" value="pc">
+                    <label class="form-check-label tag-label" for="tag-pc">공용PC</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-kitchen" value="kitchen">
+                    <label class="form-check-label tag-label" for="tag-kitchen">주방/식당</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-washing" value="washing_machine">
+                    <label class="form-check-label tag-label" for="tag-washing">세탁기</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-parking" value="parking">
+                    <label class="form-check-label tag-label" for="tag-parking">주차장</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-spa" value="spa">
+                    <label class="form-check-label tag-label" for="tag-spa">온천</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-ski" value="ski">
+                    <label class="form-check-label tag-label" for="tag-ski">스키장</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-eating" value="in_room_eating">
+                    <label class="form-check-label tag-label" for="tag-eating">객실내취사</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-breakfast" value="breakfast">
+                    <label class="form-check-label tag-label" for="tag-breakfast">조식제공</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-smoking" value="smoking">
+                    <label class="form-check-label tag-label" for="tag-smoking">객실내흡연</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-luggage" value="luggage">
+                    <label class="form-check-label tag-label" for="tag-luggage">짐보관가능</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-disabled" value="disabled">
+                    <label class="form-check-label tag-label" for="tag-disabled">장애인편의</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="tag" id="tag-pickup" value="pickup">
+                    <label class="form-check-label tag-label" for="tag-pickup">픽업서비스</label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 필터 적용 버튼 -->
+        <div class="filter-actions">
+            <button class="btn btn-primary w-100" id="applyFilter">
+                <i class="fas fa-search me-2"></i>필터 적용
+            </button>
+        </div>
     </div>
-
-	
-
-
 </aside>
 
 <aside th:fragment="mypage-sidebar">
-
     <div class="sidebar">
-        <img class="sidebar-logo" src="/image/logo_nemo_white.png">
-        <br>
-        <span>이&nbsp;&nbsp;&nbsp;름 :  </span>
-        <span th:text="${#authentication.principal.memberName}"></span>
-        <br>
-        <span>이메일 :   </span><span sec:authentication="name"></span>
-        <ul>
-            <li><a href="/mypage/reserve">나의 예약 내역</a></li>
-            <li><a href="/mypage/update">정보 수정</a></li>
-            <li><a href="/mypage/review">내 리뷰</a></li>
-            <li><a href="/mypage/qna">내 문의</a></li>
-
+        <img class="sidebar-logo" src="/image/logo_nemo_white.png" alt="FindInn Logo">
+        
+        <!-- User Profile Card -->
+        <div class="user-profile-card bg-white bg-opacity-10 rounded-3 p-3 mb-4">
+            <div class="d-flex align-items-center mb-3">
+                <div class="user-avatar bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                    <i class="fas fa-user fa-lg"></i>
+                </div>
+                <div>
+                    <h6 class="text-white mb-1 fw-bold" th:text="${#authentication.principal.memberName}">사용자명</h6>
+                    <small class="text-white-50" sec:authentication="name">user@example.com</small>
+                </div>
+            </div>
+            <div class="user-stats d-flex justify-content-around text-center">
+                <div>
+                    <div class="text-white fw-bold">5</div>
+                    <small class="text-white-50">예약</small>
+                </div>
+                <div>
+                    <div class="text-white fw-bold">3</div>
+                    <small class="text-white-50">리뷰</small>
+                </div>
+                <div>
+                    <div class="text-white fw-bold">2</div>
+                    <small class="text-white-50">쿠폰</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Menu -->
+        <ul class="mypage-nav">
+            <li>
+                <a href="/mypage/reserve" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>나의 예약 내역</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
+            <li>
+                <a href="/mypage/update" class="nav-item">
+                    <i class="fas fa-user-edit"></i>
+                    <span>정보 수정</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
+            <li>
+                <a href="/mypage/review" class="nav-item">
+                    <i class="fas fa-star"></i>
+                    <span>내 리뷰</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
+            <li>
+                <a href="/mypage/qna" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>내 문의</span>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                </a>
+            </li>
         </ul>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions mt-4">
+            <a href="/h_list" class="btn btn-outline-light btn-sm w-100 mb-2">
+                <i class="fas fa-search me-2"></i>숙소 찾기
+            </a>
+            <form action="/logout" method="post" class="d-inline w-100">
+                <button type="submit" class="btn btn-danger btn-sm w-100">
+                    <i class="fas fa-sign-out-alt me-2"></i>로그아웃
+                </button>
+            </form>
+        </div>
     </div>
 </aside>
 

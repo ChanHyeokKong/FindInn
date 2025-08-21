@@ -1,4 +1,6 @@
-$(".header-login").find(".btn-info").on("click", function () {
+// 로그인 모달 열기 시 초기화
+$(document).on('show.bs.modal', '#loginModal', function () {
+    console.log('Login modal opening');
     // Reset form to login state
     $(".modal-body").children().addClass("d-none");
     $(".modal-body").children(".login-selector").removeClass("d-none");
@@ -11,17 +13,29 @@ $(".header-login").find(".btn-info").on("click", function () {
     signForm.find('#password').prop('required', false);
     signForm.find('#password-repeat').prop('required', false);
     signForm.find('#memberPhone').prop('required', false);
-})
+});
 
-$(".header-login").find(".btn-danger").on("click", function () {
-    location.href = "/logout";
-})
+// 로그인 버튼 클릭 이벤트 추가 (Bootstrap data-bs-toggle 외에 추가 보장)
+$(document).on('click', '[data-bs-target="#loginModal"]', function(e) {
+    console.log('Login button clicked');
+});
+
+// 로그아웃은 이제 form submit으로 처리됨 (header.html에서)
 
 $(".email-login").on("click", function() {
     $(this).parents(".login-selector").addClass("d-none");
     $(".modal-body").find(".login-form").removeClass("d-none");
     $(".modal-body").find(".after-click").addClass("d-none");
-})
+});
+
+// 뒤로가기 버튼 이벤트
+$(document).on("click", ".back-to-selector", function() {
+    $(".login-form").addClass("d-none");
+    $(".login-selector").removeClass("d-none");
+    $(".after-click").addClass("d-none");
+    $("#sign-form").attr("action", "/login").off("submit");
+    $("#login-btn").attr("type", "button").text("로그인");
+});
 
 $("#login-btn").on("click", function () {
     let email = $("input[name='memberEmail']").val();
@@ -34,7 +48,7 @@ $("#login-btn").on("click", function () {
         dataType: "json",
         success: function (result) {
             // --- LOGIN PATH ---
-            $(".form-group .after-click").removeClass("d-none");
+            $(".after-click").removeClass("d-none");
             $("#login-btn").attr("type", "submit");
             // Ensure signup fields are not required
             $('#password').prop('required', true);
@@ -45,7 +59,7 @@ $("#login-btn").on("click", function () {
         error: function (xhr, status, error) {
             if(xhr.status === 404) {
                 // --- SIGNUP PATH ---
-                $(".form-group .after-click").removeClass("d-none");
+                $(".after-click").removeClass("d-none");
                 $(".after-click .signin-form").removeClass("d-none");
                 $("#sign-form").attr("action", "/signin").on("submit", validateSignupForm);
                 $("#login-btn").attr("type", "submit").text("회원가입");
@@ -72,8 +86,15 @@ $(document).ajaxError(function(event, xhr, settings, thrownError) {
     }
 });
 
+// jQuery와 Bootstrap 로딩 확인
+console.log('jQuery loaded:', typeof $ !== 'undefined');
+console.log('Bootstrap loaded:', typeof bootstrap !== 'undefined');
+
 // 페이지 로드 시 URL 파라미터를 확인하여 로그인 모달을 자동으로 엽니다.
 $(document).ready(function() {
+    console.log('Common.js loaded successfully');
+    console.log('DOM ready');
+    
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('loginRequired') && urlParams.get('loginRequired') === 'true') {
         // 로그인 모달의 ID가 'loginModal'이라고 가정합니다.
