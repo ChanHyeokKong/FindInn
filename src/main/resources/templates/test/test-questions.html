@@ -1,119 +1,183 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-<style>
-        body { font-family: sans-serif; text-align: center; padding: 30px; }
-        .question-card { max-width: 600px; margin: 0 auto; background: #f9f9f9; border-radius: 15px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .answer { margin: 15px 0; padding: 15px; background: #eaeaea; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-        .answer:hover { background: #d6d6d6; }
-    </style>
-</head>
-<body>
-<div id="quiz"></div>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
-<form id="resultForm" action="/test/result" method="post" style="display:none">
-    <input type="hidden" name="q1">
-    <input type="hidden" name="q2">
-    <input type="hidden" name="q3">
-    <input type="hidden" name="q4">
-    <input type="hidden" name="q5">
-    <input type="hidden" name="q6">
-</form>
-<script>
-const questions = [
-  {
-    text: "어떤 숙소 타입이 가장 끌려?",
-    answers: [
-      { text: "자연 속 조용한 펜션", value: "healing" },
-      { text: "도심 속 감성 부티크 호텔", value: "emotion" },
-      { text: "친구들과 함께 가는 대형 풀빌라", value: "activity" },
-      { text: "가성비 좋은 비즈니스 호텔", value: "challenge" }
-    ],
-    key: "q1"
-  },
-  {
-    text: "숙소에서 보내는 이상적인 하루는?",
-    answers: [
-      { text: "숙소 안에서 책 읽고 쉬기", value: "healing" },
-      { text: "포토존 돌며 사진 남기기", value: "emotion" },
-      { text: "수영장, 바베큐, 보드게임 등 풀활용", value: "activity" },
-      { text: "숙소는 그냥 잠만 자면 돼", value: "challenge" }
-    ],
-    key: "q2"
-  },
-  {
-    text: "숙소 고를 때 가장 중요하게 보는 건?",
-    answers: [
-      { text: "조용하고 프라이빗한 분위기", value: "healing" },
-      { text: "인테리어와 감성 분위기", value: "emotion" },
-      { text: "친구들과 놀 거리", value: "activity" },
-      { text: "가격 대비 실용성", value: "challenge" }
-    ],
-    key: "q3"
-  },
-  {
-    text: "여행 가서 숙소 체크인은 몇 시쯤 하고 싶어?",
-    answers: [
-      { text: "여유 있게 낮에 체크인", value: "healing" },
-      { text: "일몰 직전 도착해서 뷰 감상", value: "emotion" },
-      { text: "도착하자마자 활동 후 늦게 체크인", value: "activity" },
-      { text: "그날 사정 봐서 즉흥적으로", value: "challenge" }
-    ],
-    key: "q4"
-  },
-  {
-    text: "아침 식사는 어떻게 하고 싶어?",
-    answers: [
-      { text: "숙소 안에서 조용히 먹기", value: "healing" },
-      { text: "브런치 감성 카페 탐방", value: "emotion" },
-      { text: "근처 시장에서 사먹기", value: "activity" },
-      { text: "안 먹고 바로 일정 ㄱ", value: "challenge" }
-    ],
-    key: "q5"
-  },
-  {
-    text: "가장 선호하는 숙소 옵션은?",
-    answers: [
-      { text: "전망 좋은 창문", value: "emotion" },
-      { text: "조용한 단독 공간", value: "healing" },
-      { text: "바베큐, 노래방, 보드게임 등 부대시설", value: "activity" },
-      { text: "편의점 근처, 역세권, 저렴한 가격", value: "challenge" }
-    ],
-    key: "q6"
-  }
-];
+<th:block layout:fragment="head">
+	<style>
+		body { 
+			font-family: var(--font-family-base); 
+			text-align: center; 
+			padding: var(--spacing-lg); 
+			font-size: var(--font-size-base);
+		}
+		.question-card { 
+			max-width: 600px; 
+			margin: 0 auto; 
+			background: var(--white); 
+			border-radius: var(--border-radius-lg); 
+			padding: var(--spacing-xl); 
+			box-shadow: var(--shadow-md);
+			border: 1px solid var(--border-color);
+		}
+		.question-card h2 {
+			font-size: var(--font-size-xl);
+			font-weight: var(--font-weight-bold);
+			color: var(--primary-color);
+			margin-bottom: var(--spacing-lg);
+		}
+		.question-card p {
+			font-size: var(--font-size-lg);
+			color: var(--gray-700);
+			margin-bottom: var(--spacing-xl);
+			line-height: 1.5;
+		}
+		.answer { 
+			margin: var(--spacing-md) 0; 
+			padding: var(--spacing-lg); 
+			background: var(--light-gray); 
+			border-radius: var(--border-radius-md); 
+			cursor: pointer; 
+			transition: all var(--transition-normal);
+			border: 2px solid transparent;
+			font-size: var(--font-size-base);
+			color: var(--gray-700);
+		}
+		.answer:hover { 
+			background: var(--primary-lighter); 
+			border-color: var(--primary-color);
+			transform: translateY(-2px);
+			box-shadow: var(--shadow-sm);
+		}
+		.answer.selected {
+			background: var(--primary-color);
+			color: var(--white);
+			border-color: var(--primary-dark);
+		}
+	</style>
+</th:block>
 
-let current = 0;
-const answers = {};
+<div layout:fragment="content">
+	<div id="quiz"></div>
 
-function showQuestion() {
-    const q = questions[current];
-    const container = document.getElementById("quiz");
-    container.innerHTML = `
-        <div class="question-card">
-            <h2>Q${current + 1}</h2>
-            <p>${q.text}</p>
-            ${q.answers.map(a => `<div class="answer" onclick="chooseAnswer('${q.key}', '${a.value}')">${a.text}</div>`).join('')}
-        </div>
-    `;
-}
+	<form id="resultForm" action="/test/result" method="post" style="display:none">
+		<input type="hidden" name="q1">
+		<input type="hidden" name="q2">
+		<input type="hidden" name="q3">
+		<input type="hidden" name="q4">
+		<input type="hidden" name="q5">
+		<input type="hidden" name="q6">
+	</form>
+</div>
 
-function chooseAnswer(key, value) {
-    answers[key] = value;
-    current++;
-    if (current < questions.length) {
-        showQuestion();
-    } else {
-        for (let k in answers) {
-            document.querySelector(`input[name=${k}]`).value = answers[k];
-        }
-        document.getElementById("resultForm").submit();
-    }
-}
+<th:block layout:fragment="scripts">
+	<script>
+	const questions = [
+		{
+			text: "어떤 숙소 타입이 가장 끌려?",
+			answers: [
+				{ text: "자연 속 조용한 펜션", value: "healing" },
+				{ text: "도심 속 감성 부티크 호텔", value: "emotion" },
+				{ text: "친구들과 함께 가는 대형 풀빌라", value: "activity" },
+				{ text: "가성비 좋은 비즈니스 호텔", value: "challenge" }
+			],
+			key: "q1"
+		},
+		{
+			text: "숙소에서 보내는 이상적인 하루는?",
+			answers: [
+				{ text: "숙소 안에서 책 읽고 쉬기", value: "healing" },
+				{ text: "포토존 돌며 사진 남기기", value: "emotion" },
+				{ text: "수영장, 바베큐, 보드게임 등 풀활용", value: "activity" },
+				{ text: "숙소는 그냥 잠만 자면 돼", value: "challenge" }
+			],
+			key: "q2"
+		},
+		{
+			text: "숙소 고를 때 가장 중요하게 보는 건?",
+			answers: [
+				{ text: "조용하고 프라이빗한 분위기", value: "healing" },
+				{ text: "인테리어와 감성 분위기", value: "emotion" },
+				{ text: "친구들과 놀 거리", value: "activity" },
+				{ text: "가격 대비 실용성", value: "challenge" }
+			],
+			key: "q3"
+		},
+		{
+			text: "여행 가서 숙소 체크인은 몇 시쯤 하고 싶어?",
+			answers: [
+				{ text: "여유 있게 낮에 체크인", value: "healing" },
+				{ text: "일몰 직전 도착해서 뷰 감상", value: "emotion" },
+				{ text: "도착하자마자 활동 후 늦게 체크인", value: "activity" },
+				{ text: "그날 사정 봐서 즉흥적으로", value: "challenge" }
+			],
+			key: "q4"
+		},
+		{
+			text: "아침 식사는 어떻게 하고 싶어?",
+			answers: [
+				{ text: "숙소 안에서 조용히 먹기", value: "healing" },
+				{ text: "브런치 감성 카페 탐방", value: "emotion" },
+				{ text: "근처 시장에서 사먹기", value: "activity" },
+				{ text: "안 먹고 바로 일정 ㄱ", value: "challenge" }
+			],
+			key: "q5"
+		},
+		{
+			text: "가장 선호하는 숙소 옵션은?",
+			answers: [
+				{ text: "전망 좋은 창문", value: "emotion" },
+				{ text: "조용한 단독 공간", value: "healing" },
+				{ text: "바베큐, 노래방, 보드게임 등 부대시설", value: "activity" },
+				{ text: "편의점 근처, 역세권, 저렴한 가격", value: "challenge" }
+			],
+			key: "q6"
+		}
+	];
 
-showQuestion();
-</script>
-</body>
-</html>
+	let current = 0;
+	const answers = {};
+
+	function showQuestion() {
+		const q = questions[current];
+		const container = document.getElementById("quiz");
+		container.innerHTML = `
+			<div class="question-card">
+				<h2>Q${current + 1}</h2>
+				<p>${q.text}</p>
+				${q.answers.map(a => `<div class="answer" onclick="chooseAnswer('${q.key}', '${a.value}')">${a.text}</div>`).join('')}
+			</div>
+		`;
+	}
+
+	function chooseAnswer(key, value) {
+		answers[key] = value;
+		
+		// 선택된 답변 하이라이트
+		const answerElements = document.querySelectorAll('.answer');
+		answerElements.forEach(el => el.classList.remove('selected'));
+		event.target.classList.add('selected');
+		
+		setTimeout(() => {
+			current++;
+			if (current < questions.length) {
+				showQuestion();
+			} else {
+				submitAnswers();
+			}
+		}, 500);
+	}
+
+	function submitAnswers() {
+		Object.keys(answers).forEach(key => {
+			document.querySelector(`input[name="${key}"]`).value = answers[key];
+		});
+		document.getElementById('resultForm').submit();
+	}
+
+	// 페이지 로드 시 첫 번째 질문 표시
+	document.addEventListener('DOMContentLoaded', function() {
+		showQuestion();
+	});
+	</script>
+</th:block>

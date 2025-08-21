@@ -1,146 +1,832 @@
 /*
-    #007BFF 로고 이미지 파란색 코드
+    FindInn Common Styles - Enhanced Design System
+    Main Color: #007BFF
 */
 
-.header-menubar{
-    position: fixed; /* 화면에 헤더 고정 */
+/* Header Styles */
+.header-menubar {
+    position: fixed;
     top: 0;
     left: 0;
-    z-index: 1000; /* 다른 요소들 위에 표시되도록 z-index 설정 */
-    background-color: #007BFF;
+    z-index: var(--z-fixed);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* 로고와 로그인 버튼을 양 끝으로 분산 */
-    padding: 8px 20px; /* 상하, 좌우 여백 추가 */
-    box-sizing: border-box; /* padding과 border를 너비에 포함 */
+    justify-content: space-between;
+    padding: var(--spacing-sm) var(--spacing-xl);
+    box-sizing: border-box;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+    transition: all var(--transition-normal);
 }
 
 .header-logo {
-    flex-shrink: 0; /* 로고 영역이 줄어들지 않도록 설정 */
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
 }
 
-.header-logo img{
-    width: 150px; /* 로고 너비 고정 */
-    vertical-align: middle; /* 이미지 세로 정렬 */
+.header-logo:hover {
+    transform: scale(1.05);
+}
+
+.header-logo img {
+    width: 150px;
+    height: auto;
+    vertical-align: middle;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .header-menu {
-    flex-grow: 1; /* 메뉴 영역이 남은 공간을 모두 차지하도록 설정 */
+    flex-grow: 1;
     display: flex;
-    justify-content: center; /* 메뉴 아이템들을 중앙에 정렬 */
+    justify-content: center;
 }
 
 .header-menu .menu {
     display: flex;
     align-items: center;
-    gap: 25px; /* 메뉴 아이템 간의 간격 */
+    gap: var(--spacing-xl);
 }
 
 .header-login {
-    flex-shrink: 0; /* 로그인 영역이 줄어들지 않도록 설정 */
+    flex-shrink: 0;
     display: flex;
     align-items: center;
+    gap: var(--spacing-md);
 }
 
-
-.header-login button{
-    margin-right: 30px ;
+.header-login button {
+    margin-right: var(--spacing-xl);
+    transition: all var(--transition-fast);
+    border-radius: var(--border-radius-lg);
+    font-weight: var(--font-weight-semibold);
 }
 
-.header-menu a{
+.header-login button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.header-menu a {
     text-decoration: none;
-    color: #FFFFFF;
-    font-weight: bold;
-    font-size: 20px; /* 글자 크기 조정 */
+    color: var(--white);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-lg);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.header-menu a:hover {
+    color: var(--white);
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.header-menu a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--white);
+    transition: all var(--transition-fast);
+    transform: translateX(-50%);
+}
+
+.header-menu a:hover::after {
+    width: 80%;
 }
 
 .sidebar {
-    position: fixed; /* 화면에 사이드바 고정 */
-    top: 70px; /* 헤더 높이만큼 아래에 위치 */
+    position: fixed;
+    top: var(--header-height);
     left: 0;
-    z-index: 999;
-    width: 260px; /* 사이드바 너비 고정 */
-    height: calc(100vh - 70px); /* 화면 높이에서 헤더 높이(70px)를 뺀 만큼 차지 */
-    background: #007BFF;
-    padding: 20px;
-    box-sizing: border-box; /* 패딩을 너비에 포함 */
+    z-index: var(--z-sticky);
+    width: var(--sidebar-width);
+    height: calc(100vh - var(--header-height));
+    background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    padding: var(--spacing-xl);
+    box-sizing: border-box;
+    box-shadow: var(--shadow-lg);
+    overflow-y: auto;
+    transition: transform var(--transition-normal);
 }
 
-.sidebar ul{
+.sidebar ul {
     margin: 0;
-    font-size: 27px;
-    font-weight: bold;
-    color: #FFFFFF;
+    padding: 0;
+    list-style: none;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--white);
 }
 
-.sidebar ul li a{
-    display: block;
-    padding: 15px 20px; /* 상하, 좌우 패딩 조정 */
-    color: #FFFFFF;
+.sidebar ul li {
+    margin-bottom: var(--spacing-sm);
+}
+
+.sidebar ul li a {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    color: var(--white);
     text-decoration: none;
-    transition: background-color 0.2s;
-    border-radius: 5px; /* 약간의 둥근 모서리 추가 */
-    margin-bottom: 5px; /* 메뉴 아이템 간의 간격 */
+    transition: all var(--transition-fast);
+    border-radius: var(--border-radius-lg);
+    position: relative;
+    overflow: hidden;
 }
 
-.sidebar ul li a:hover{
-    background-color: #0056B3;
+.sidebar ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateX(8px);
+    box-shadow: var(--shadow-md);
 }
 
-.sidebar-logo{
+.sidebar ul li a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background-color: var(--white);
+    transform: translateX(-4px);
+    transition: transform var(--transition-fast);
+}
+
+.sidebar ul li a:hover::before {
+    transform: translateX(0);
+}
+
+.sidebar ul li a i {
+    margin-right: var(--spacing-md);
+    font-size: var(--font-size-lg);
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-logo {
     width: 180px;
     display: block;
-    margin: 30px 15px
+    margin: var(--spacing-xl) var(--spacing-md);
+    filter: brightness(1.1);
+    transition: transform var(--transition-fast);
+}
+
+.sidebar-logo:hover {
+    transform: scale(1.05);
 }
 
 .main-content {
-    margin-top: 70px; /* 고정된 헤더의 높이만큼 위쪽 여백 */
-    margin-left: 280px; /* 고정된 사이드바의 너비만큼 왼쪽 여백 */
-    padding: 20px; /* 콘텐츠 영역의 내부 여백 */
+    margin-top: var(--header-height);
+    padding: var(--spacing-xl);
     box-sizing: border-box;
+    background-color: var(--light-gray);
+    min-height: calc(100vh - var(--header-height));
+    transition: margin-left var(--transition-normal);
 }
 
-/* Modal Header 스타일 */
+/* 사이드바가 있는 페이지에만 margin-left 적용 */
+.with-sidebar .main-content {
+    margin-left: var(--sidebar-width);
+}
+
+/* 메인 페이지는 배경색 없음 */
+.main-page .main-content {
+    background-color: transparent;
+    padding: 0;
+}
+
+/* Modal Styles */
 .modal-header {
-    justify-content: center; /* Flexbox 가로 중앙 정렬 */
-    position: relative;      /* 닫기 버튼의 기준점 */
-    border-bottom: none;     /* 헤더 밑줄 제거 (선택 사항) */
+    justify-content: center;
+    position: relative;
+    border-bottom: 1px solid var(--gray-200);
+    background-color: var(--white);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    padding: var(--spacing-lg);
+}
+
+/* 로그인 모달 중앙 정렬 */
+#loginModal .modal-dialog {
+    max-width: 500px;
+    margin: 1.75rem auto;
+}
+
+#loginModal .modal-content {
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-2xl);
 }
 
 .modal-header .btn-close {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    opacity: 0.7;
+    transition: opacity var(--transition-fast);
+}
+
+.modal-header .btn-close:hover {
+    opacity: 1;
 }
 
 .modal-header img {
-    width: 150px; /* 로고 이미지 크기 지정 */
+    width: 150px;
+    height: auto;
+    filter: drop-shadow(var(--shadow-sm));
 }
 
-.modal-body{
+.modal-content {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-2xl);
+    background-color: var(--white);
+}
+
+.modal-body {
+    padding: var(--spacing-xl);
+    background-color: var(--white);
+}
+
+.modal-body div {
+    display: flex;
+    text-align: center;
     justify-content: center;
 }
 
-.modal-body div{
-    display: flex;
-    text-align: center;
+.modal-body .login-form {
+    width: 100%;
+    max-width: 400px;
 }
 
-.modal-body .login-form li{
+.modal-body .login-form li {
     list-style: none;
+    margin-bottom: var(--spacing-md);
 }
 
-.manager-content a{
+.modal-footer {
+    border-top: 1px solid var(--gray-200);
+    background-color: var(--light-gray);
+    border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+}
+
+.manager-content a {
     text-decoration: none;
     float: right;
-    margin-right: 20px;
+    margin-right: var(--spacing-xl);
+    color: var(--primary-color);
+    font-weight: var(--font-weight-medium);
+    transition: color var(--transition-fast);
 }
 
-i.fa-circle-user{
-    color: #FFFFFF;
+.manager-content a:hover {
+    color: var(--primary-dark);
+}
+
+/* 매니저/관리자 페이지 테이블 스타일 */
+.manager-content {
+    padding: var(--spacing-xl);
+}
+
+.manager-content h2 {
+    color: var(--gray-900);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.manager-content table {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+}
+
+.manager-content table th {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+    font-weight: var(--font-weight-semibold);
+    padding: var(--spacing-lg);
+    border: none;
+}
+
+.manager-content table td {
+    padding: var(--spacing-md);
+    border-color: var(--gray-200);
+    vertical-align: middle;
+}
+
+.manager-content table tbody tr:hover {
+    background-color: var(--primary-lighter);
+    transform: scale(1.01);
+    transition: all var(--transition-fast);
+}
+
+.manager-content .btn {
+    border-radius: var(--border-radius-md);
+    font-weight: var(--font-weight-medium);
+    transition: all var(--transition-fast);
+}
+
+.manager-content .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.manager-content .fa-plus {
+    color: var(--success-color);
+    margin-right: var(--spacing-sm);
+}
+
+/* 필터 섹션 스타일 */
+.manager-content .form-select,
+.manager-content .form-control {
+    border: 2px solid var(--gray-300);
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-fast);
+}
+
+.manager-content .form-select:focus,
+.manager-content .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem var(--primary-lighter);
+}
+
+i.fa-circle-user {
+    color: var(--white);
     margin-top: 2px;
     cursor: pointer;
+    transition: all var(--transition-fast);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
+i.fa-circle-user:hover {
+    color: var(--primary-lighter);
+    transform: scale(1.1);
+}
 
+.login-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+}
+
+.login-selector .email-login {
+    width: 240px;
+    height: 48px;
+    padding: 0;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--white);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    border: none;
+    border-radius: var(--border-radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-selector .email-login::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left var(--transition-slow);
+}
+
+.login-selector .email-login:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #003d82 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.login-selector .email-login:hover::before {
+    left: 100%;
+}
+
+.login-selector form {
+    width: 280px;
+    height: 56px;
+    margin: 0;
+    line-height: 0;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    background: transparent;
+}
+
+.login-selector form:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.login-selector form img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--transition-fast);
+}
+
+.login-selector form:hover img {
+    transform: scale(1.02);
+}
+
+/* 소셜 로그인 버튼 개별 스타일링 */
+.social-login-btn {
+    width: 280px;
+    height: 56px;
+    border: none;
+    border-radius: var(--border-radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    padding: 0;
+    background: transparent;
+    display: block;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.social-login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.social-login-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: var(--border-radius-lg);
+    display: block;
+    background-color: transparent;
+}
+
+/* 카카오 로그인 버튼 */
+.kakao-login {
+    background-color: transparent;
+}
+
+.kakao-login:hover {
+    background-color: transparent;
+}
+
+/* 네이버 로그인 버튼 */
+.naver-login {
+    background-color: transparent;
+}
+
+.naver-login:hover {
+    background-color: transparent;
+}
+
+/* Enhanced Mypage Navigation */
+.mypage-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mypage-nav li {
+    margin-bottom: var(--spacing-xs);
+}
+
+.mypage-nav .nav-item {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    color: var(--white);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    border-radius: var(--border-radius-lg);
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-weight: var(--font-weight-semibold);
+}
+
+.mypage-nav .nav-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left var(--transition-slow);
+}
+
+.mypage-nav .nav-item:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateX(8px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.mypage-nav .nav-item:hover::before {
+    left: 100%;
+}
+
+.mypage-nav .nav-item i:first-child {
+    margin-right: var(--spacing-md);
+    font-size: var(--font-size-lg);
+    width: 20px;
+    text-align: center;
+    color: var(--white);
+}
+
+.mypage-nav .nav-item span {
+    flex-grow: 1;
+    font-weight: var(--font-weight-semibold);
+    color: var(--white);
+}
+
+.mypage-nav .nav-item .fa-chevron-right {
+    font-size: var(--font-size-sm);
+    opacity: 0.9;
+    transition: all var(--transition-fast);
+    color: var(--white);
+}
+
+.mypage-nav .nav-item:hover .fa-chevron-right {
+    opacity: 1;
+    transform: translateX(4px);
+}
+
+/* User Profile Card */
+.user-profile-card {
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all var(--transition-normal);
+}
+
+.user-profile-card:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.user-avatar {
+    transition: all var(--transition-fast);
+}
+
+.user-profile-card:hover .user-avatar {
+    transform: scale(1.1);
+}
+
+.user-stats > div {
+    transition: transform var(--transition-fast);
+}
+
+.user-stats > div:hover {
+    transform: translateY(-2px);
+}
+
+/* Quick Actions */
+.quick-actions .btn {
+    transition: all var(--transition-fast);
+    font-weight: var(--font-weight-medium);
+}
+
+.quick-actions .btn-outline-light:hover {
+    background-color: var(--white);
+    color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.quick-actions .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Simple Filter Sidebar Styles */
+.simple-filter-sidebar {
+    background: var(--white);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--gray-200);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* Legacy filter sidebar for compatibility */
+.filter-sidebar {
+    background: var(--white);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--gray-200);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.filter-title {
+    color: var(--gray-900);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+    font-size: var(--font-size-lg);
+}
+
+.filter-section {
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.filter-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: var(--spacing-lg);
+}
+
+.filter-section-title {
+    color: var(--gray-800);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-base);
+    display: flex;
+    align-items: center;
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.filter-options .form-check {
+    margin-bottom: var(--spacing-xs);
+}
+
+.filter-options .form-check-input {
+    margin-right: var(--spacing-sm);
+}
+
+.filter-options .form-check-label {
+    color: var(--gray-700);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.filter-options .form-check-label:hover {
+    color: var(--primary-color);
+}
+
+.price-range-container {
+    padding: var(--spacing-md) 0;
+}
+
+.price-range-container .form-range {
+    margin-bottom: var(--spacing-sm);
+}
+
+.price-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--primary-lighter);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--primary-light);
+}
+
+.price-label {
+    color: var(--gray-700);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+}
+
+.price-value {
+    color: var(--primary-dark);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
+}
+
+.filter-actions {
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 2px solid var(--primary-color);
+}
+
+.filter-actions .btn {
+    font-weight: var(--font-weight-semibold);
+    padding: var(--spacing-md) var(--spacing-lg);
+    transition: all var(--transition-fast);
+}
+
+.filter-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Custom range slider styling */
+.form-range::-webkit-slider-thumb {
+    background: var(--primary-color);
+    border: 2px solid var(--white);
+    box-shadow: var(--shadow-sm);
+}
+
+.form-range::-webkit-slider-track {
+    background: var(--gray-300);
+    border-radius: var(--border-radius-full);
+}
+
+.form-range::-moz-range-thumb {
+    background: var(--primary-color);
+    border: 2px solid var(--white);
+    box-shadow: var(--shadow-sm);
+}
+
+.form-range::-moz-range-track {
+    background: var(--gray-300);
+    border-radius: var(--border-radius-full);
+}
+
+/* Compact Filter Options */
+.filter-options-compact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.filter-options-compact .form-check {
+    margin-bottom: var(--spacing-xs);
+    margin-right: var(--spacing-md);
+}
+
+.filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.filter-tags .form-check {
+    margin-bottom: var(--spacing-xs);
+    margin-right: var(--spacing-sm);
+}
+
+.tag-label {
+    background: var(--primary-lighter);
+    color: var(--primary-dark);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 1px solid var(--primary-light);
+}
+
+.tag-label:hover {
+    background: var(--primary-color);
+    color: var(--white);
+    transform: translateY(-1px);
+}
+
+.filter-tags .form-check-input:checked + .tag-label {
+    background: var(--primary-color);
+    color: var(--white);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Simplified price display */
+.simple-filter-sidebar .price-display {
+    display: flex;
+    align-items: center;
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: var(--light-gray);
+    border-radius: var(--border-radius-md);
+}
