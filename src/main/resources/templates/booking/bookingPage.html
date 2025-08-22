@@ -20,7 +20,7 @@
         <div class="left-section">
 
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                <button type="button" class="btn-back" onclick="history.back()">
+                <button type="button" class="btn-back" onclick="location.href=document.referrer">
                     <i class="fas fa-arrow-left" aria-hidden="true"></i>
                     <span class="sr-only">뒤로가기</span> <!-- 스크린 리더용 텍스트 -->
                 </button>
@@ -92,9 +92,18 @@
             <section>
                 <h2>결제 수단</h2>
                 <div id="payMethodSection" class="pay-method-section">
-                    <button type="button" class="payMethodBtn selected" data-method="tosspay">토스페이</button>
-                    <button type="button" class="payMethodBtn" data-method="kakaopay">카카오페이</button>
-                    <button type="button" class="payMethodBtn" data-method="card">신용/체크카드</button>
+                    <button type="button" class="payMethodBtn selected" data-method="tosspay">
+                        <img src="/image/tosspay.png" alt="토스페이 로고" class="tosspay-logo"/>
+                    </button>
+                    <button type="button" class="payMethodBtn" data-method="kakaopay">
+                        <img src="/image/kakaopay.png" alt="카카오페이 로고" class="kakaopay-logo"/>
+                    </button>
+                    <button type="button" class="payMethodBtn" data-method="naverpay">
+                        <img src="/image/naverpay.png" alt="네이버페이 로고" class="naverpay-logo"/>
+                    </button>
+                    <button type="button" class="payMethodBtn" data-method="card">
+                        <i class="fa-solid fa-credit-card"></i>신용/체크카드
+                    </button>
                 </div>
             </section>
 
@@ -113,11 +122,11 @@
 
                 <!-- 객실 정보 리스트 -->
                 <ul>
-                    <li><strong>객실:</strong> <span th:text="${roomNameAndNum}">객실명 및 번호</span></li>
-                    <li><strong>체크인:</strong> <span th:text="|${checkin} ${checkinDay} 15:00|">체크인</span></li>
-                    <li><strong>체크아웃:</strong> <span th:text="|${checkout} ${checkoutDay} 11:00|">체크아웃</span></li>
-                    <li><strong>기준인원:</strong> <span th:text="'최대 '+ ${capacity} + '인'">인원수</span></li>
-                    <li><strong>추가정보:</strong> <span th:text="${description}">설명</span></li>
+                    <li><strong>객실</strong> <span th:text="${roomNameAndNum}">객실명 및 번호</span></li>
+                    <li><strong>체크인</strong> <span th:text="|${checkin} ${checkinDay} 15:00|">체크인</span></li>
+                    <li><strong>체크아웃</strong> <span th:text="|${checkout} ${checkoutDay} 11:00|">체크아웃</span></li>
+                    <li><strong>기준인원</strong> <span th:text="'최대 '+ ${capacity} + '인'">인원수</span></li>
+                    <li><strong>추가정보</strong> <span th:text="${description}">설명</span></li>
                 </ul>
             </section>
 

@@ -58,6 +58,8 @@ public class CustomUserDetails implements UserDetails, OAuth2User { // OAuth2Use
         return member.getIdx();
     }
 
+    public Long getStatus() {return member.getStatus();}
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

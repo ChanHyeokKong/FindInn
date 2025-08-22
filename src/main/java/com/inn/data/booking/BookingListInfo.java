@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class BookingListInfo {
 
     // 예약 정보
+    private Long bookingIdx;
     private String merchantUid;
     private String status;
 

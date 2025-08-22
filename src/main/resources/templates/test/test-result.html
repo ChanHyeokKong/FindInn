@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>여행 성향 결과</title>
 
+  <!-- ✅ CSRF (있을 때만) -->
   <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}">
   <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}">
 
@@ -41,6 +42,7 @@
     .recos li{margin:6px 0;color:#475569}
     .ctl{margin-top:16px}
     .btn{display:inline-block;border:0;background:#2f6bff;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;cursor:pointer}
+    .btn[disabled]{background:#93b0ff;cursor:not-allowed}
 
     /* --- Modal --- */
     .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center;
@@ -132,7 +134,8 @@
   <!-- 쿠폰 버튼 (AJAX + 모달) -->
   <div class="ctl" th:if="${topTrait != null}">
     <input type="hidden" id="traitVal" th:value="${topTrait}">
-    <button type="button" id="btn-coupon" class="btn">🎁 쿠폰 받기</button>
+    <!-- ✅ 이벤트 코드 데이터 속성 추가 -->
+    <button type="button" id="btn-coupon" class="btn" data-event="event-test">🎁 쿠폰 받기</button>
   </div>
 </div>
 
@@ -148,10 +151,11 @@
 </div>
 
 <script>
-  // CSRF
+  // ===== CSRF =====
   const csrfToken  = document.querySelector('meta[name="_csrf"]')?.content || null;
-  const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content || null;
+  const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
 
+  // ===== Elements =====
   const $btn   = document.getElementById('btn-coupon');
   const $modal = document.getElementById('couponModal');
   const $msg   = document.getElementById('couponMsg');
@@ -163,13 +167,60 @@
   $modal?.addEventListener('click', (e)=>{ if(e.target === $modal) closeModal(); });
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
 
+  // ===== Helpers =====
+  const EVENT_CODE = $btn?.dataset.event || 'event-test';
+  const LS_KEY = `coupon_issued:${EVENT_CODE}`;
+
+  function lockButton(){
+    if (!$btn) return;
+    $btn.disabled = true;
+    $btn.textContent = '발급 완료 ✅';
+  }
+
+  function unlockButton(){
+    if (!$btn) return;
+    $btn.disabled = false;
+    $btn.textContent = '🎁 쿠폰 받기';
+  }
+
+  // ===== 초기 동기화 (서버 상태 확인) =====
+  (async function syncIssued(){
+    try {
+      // 로컬에 이미 찍혀 있으면 바로 잠금
+      if (localStorage.getItem(LS_KEY) === '1') { lockButton(); return; }
+
+      // 서버에도 물어보기 (다른 기기/브라우저에서 이미 받았을 수 있음)
+      const r = await fetch(`/event/coupon/issued?eventCode=${encodeURIComponent(EVENT_CODE)}`, {
+        headers: csrfToken ? { [csrfHeader]: csrfToken } : {}
+      });
+      if (r.ok) {
+        const { issued } = await r.json();
+        if (issued) {
+          localStorage.setItem(LS_KEY, '1');
+          lockButton();
+        } else {
+          unlockButton();
+        }
+      }
+    } catch (e) {
+      // 네트워크 오류 시엔 조용히 넘어감 (버튼은 기본 상태 유지)
+    }
+  })();
+
+  // ===== 클릭 처리 (AJAX) =====
   $btn?.addEventListener('click', async () => {
+    // 프론트 가드: 이미 발급 상태면 서버 안 가고 바로 안내
+    if (localStorage.getItem(LS_KEY) === '1' || $btn.disabled) {
+      openModal('이미 쿠폰을 발급받았습니다 🎁');
+      return;
+    }
+
     const trait = document.getElementById('traitVal')?.value || '';
     $btn.disabled = true;
 
     try {
       const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-      if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
+      if (csrfToken) headers[csrfHeader] = csrfToken;
 
       const res = await fetch('/event/test/issue-coupon', {
         method: 'POST',
@@ -179,18 +230,28 @@
 
       if (res.status === 401) { location.href = '/login'; return; }
 
-      let text = '쿠폰 발급이 완료되었습니다 🎁';
-      if (res.ok) {
-        const data = await res.json().catch(()=>null);
-        if (data?.message) text = data.message;
-        if (data?.ok === false && data?.message) text = data.message;
+      let data = null;
+      try { data = await res.json(); } catch(_) {}
+
+      if (res.ok && data?.ok) {
+        localStorage.setItem(LS_KEY, '1');
+        lockButton();
+        openModal(data.message || '쿠폰 발급이 완료되었습니다 🎁');
       } else {
-        text = '쿠폰 발급에 실패했습니다. 잠시 후 다시 시도해주세요.';
+        // 컨트롤러에서 중복 시 code=ALREADY_ISSUED 내려주도록 수정해둔 상태
+        const code = data?.code || '';
+        const msg  = data?.message || '';
+        if (code === 'ALREADY_ISSUED' || /이미.*발급/.test(msg)) {
+          localStorage.setItem(LS_KEY, '1');
+          lockButton();
+          openModal('이미 쿠폰을 발급받았습니다 🎁');
+        } else {
+          openModal(msg || '쿠폰 발급에 실패했습니다. 잠시 후 다시 시도해주세요.');
+          $btn.disabled = false; // 실패 시 재시도 가능
+        }
       }
-      openModal(text);
     } catch (err) {
       openModal('네트워크 오류로 실패했습니다. 잠시 후 다시 시도해주세요.');
-    } finally {
       $btn.disabled = false;
     }
   });

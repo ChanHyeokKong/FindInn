@@ -177,6 +177,7 @@ public class BookingServiceImpl implements BookingService {
                             .orElseThrow(() -> new IllegalArgumentException("호텔 정보를 찾을 수 없습니다."));
 
                     return BookingListInfo.builder()
+                            .bookingIdx(booking.getIdx())
                             .merchantUid(booking.getMerchantUid())
                             .status(booking.getStatus())
                             .hotelName(hotel.getHotelName())
@@ -229,6 +230,7 @@ public class BookingServiceImpl implements BookingService {
 
                 // 예약 정보
                 .merchantUid(booking.getMerchantUid())
+                .couponIdx(booking.getCouponIdx())
                 .checkin(booking.getCheckin())
                 .checkout(booking.getCheckout())
                 .checkinDay(checkinDay)

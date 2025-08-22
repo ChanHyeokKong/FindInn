@@ -9,6 +9,7 @@ import com.inn.data.member.QnaDto;
 import com.inn.data.member.QnaRepository;
 import com.inn.data.review.ReviewDto;
 import com.inn.data.review.ReviewRepository;
+import com.inn.service.BookingService;
 import com.inn.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,9 @@ public class MemberController {
     MemberDaoInter dao;
 
     @Autowired
+    BookingService bookingService;
+
+    @Autowired
     QnaRepository qnaRepository;
 
     @Autowired
@@ -66,12 +70,30 @@ public class MemberController {
         return "login/login";
     }
 
-    @GetMapping("/mypage/reserve")
-    public String mypage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model) {
+//    @GetMapping("/mypage/reserve")
+//    public String mypage(@AuthenticationPrincipal CustomUserDetails currentUser, Model model) {
+//
+//        List<MyPageDto> list = service.getMyReserve(currentUser.getIdx());
+//        model.addAttribute("reserves", list);
+//        return "member/myreserve";
+//    }
 
-        List<MyPageDto> list = service.getMyReserve(currentUser.getIdx());
-        model.addAttribute("reserves", list);
-        return "member/myreserve";
+    @GetMapping("/mypage/reserve")
+    public String bookingList(@AuthenticationPrincipal CustomUserDetails currentUser,
+                              Model model) {
+
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        Long memberIdx = currentUser.getIdx();
+
+        // 통합된 상태별 조회 메서드 사용
+        model.addAttribute("confirmedList", bookingService.getBookingsByStatus(memberIdx, "CONFIRMED"));
+        model.addAttribute("completedList", bookingService.getBookingsByStatus(memberIdx, "COMPLETED"));
+        model.addAttribute("canceledList", bookingService.getBookingsByStatus(memberIdx, "CANCELED"));
+
+        return "booking/bookingList";
     }
 
     @GetMapping("/mypage/update")
@@ -109,7 +131,7 @@ public class MemberController {
     }
 
     @GetMapping("/qna/write")
-    public String qnawrite() {
+    public String qnaWrite() {
         return "member/qnawrite";
     }
 

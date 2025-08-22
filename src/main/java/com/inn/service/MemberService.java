@@ -67,27 +67,6 @@ public class MemberService implements UserDetailsService {
 
     }
 
-    // 기존 유저 Role 제거 후 MANAGER 권한 부여
-    public void giveManagerRole(Long memberIdx) {
-        Optional<MemberDto> memberOptional = memberDao.findById(memberIdx);
-
-        if (memberOptional.isPresent()) {
-            MemberDto memberDto = memberOptional.get();
-
-            Optional<RoleDto> managerRoleOptional = Optional.ofNullable(roleDao.findByRoleName("ROLE_MANAGER"));
-            if (managerRoleOptional.isPresent()) {
-                memberDto.getRoles().clear();
-                memberDto.getRoles().add(managerRoleOptional.get());
-                memberDao.save(memberDto);
-                System.out.println("Member " + memberIdx + " has been granted ROLE_MANAGER.");
-            } else {
-                System.err.println("Error: ROLE_MANAGER not found in database. Please ensure it exists.");
-            }
-        } else {
-            System.err.println("Error: Member with ID " + memberIdx + " not found.");
-        }
-    }
-
     //멤버 객체 전체 리턴
     public List<MemberDto> getAllMembers() {
         List<MemberDto> list = memberDao.findAll();
@@ -215,5 +194,14 @@ public class MemberService implements UserDetailsService {
         }
 
         memberDao.save(member);
+    }
+
+    public void updateMember(MemberDto updateDto) {
+        Long idx = updateDto.getIdx();
+        MemberDto dto = memberDao.findByIdx(idx);
+
+        dto.setStatus(Long.valueOf(1));
+        memberDao.save(dto);
+
     }
 }
