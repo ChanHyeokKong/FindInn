@@ -14,23 +14,22 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/event") // 모든 경로 /event 하위
+@RequestMapping("/event")
 public class EventController {
 
-    // ✅ 캠페인 키 상수화
     private static final String CAMPAIGN_TEST = "event-test";
     private static final String CAMPAIGN_AUG  = "august-pack";
 
+    private static final List<String> PACK_CODES = List.of("AUG_7P", "AUG_10P", "AUG_5K");
+
     private final UserCouponService userCouponService;
 
-    /** 현재 로그인 사용자 (없으면 null) */
     private MemberDto currentUserOrNull() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()
@@ -42,22 +41,17 @@ public class EventController {
         return null;
     }
 
-    /** 현재 로그인 사용자 (없으면 예외) — POST에서 사용 */
     private MemberDto currentUserOrThrow() {
         MemberDto m = currentUserOrNull();
         if (m == null) throw new IllegalStateException("로그인이 필요합니다.");
         return m;
     }
 
-    /* ===================== 페이지 ===================== */
-
-    /** 루트/구명칭도 새 경로로 정리 */
     @GetMapping({"", "/", "/coupon-pack"})
     public String redirectToAugustPack() {
         return "redirect:/event/august-pack";
     }
 
-    /** 8월 쿠폰팩 랜딩 */
     @GetMapping("/august-pack")
     public String augustPackLanding(Model model) {
         int issuedCount = 0;
@@ -65,28 +59,62 @@ public class EventController {
 
         MemberDto me = currentUserOrNull();
         if (me != null) {
-            issuedCodes = userCouponService.getIssuedCodes(me, CAMPAIGN_AUG);
-            if (issuedCodes == null) issuedCodes = Collections.emptyList();
+            List<String> raw = userCouponService.getIssuedCodes(me, CAMPAIGN_AUG);
+            if (raw == null) raw = Collections.emptyList();
+
+            // ✅ 코드 정규화: 공백 제거 + 대문자 + 제어문자 제거
+            issuedCodes = raw.stream()
+                    .filter(Objects::nonNull)
+                    .map(s -> s.replaceAll("\\s+", ""))   // 모든 공백 제거
+                    .map(String::toUpperCase)
+                    .map(s -> s.replace("\r","").replace("\n",""))
+                    .collect(Collectors.toList());
+
             issuedCount = issuedCodes.size();
         }
 
+        // ✅ 안전한 매칭(대소문자/공백 무시)용 플래그 계산
+        boolean has7   = issuedCodes.stream().anyMatch(c -> c.equalsIgnoreCase("AUG_7P"));
+        boolean has10  = issuedCodes.stream().anyMatch(c -> c.equalsIgnoreCase("AUG_10P"));
+        boolean has5k  = issuedCodes.stream().anyMatch(c -> c.equalsIgnoreCase("AUG_5K"));
+
         model.addAttribute("issuedCount", issuedCount);
-        model.addAttribute("issuedCodes", issuedCodes);
+        model.addAttribute("issuedCodes", issuedCodes);   // (호환 유지)
+        model.addAttribute("has7", has7);
+        model.addAttribute("has10", has10);
+        model.addAttribute("has5k", has5k);
+        model.addAttribute("packSize", PACK_CODES.size());
+
         model.addAttribute("hotelName", "호텔 코지 중산 가오슝");
         model.addAttribute("hotelCity", "가오슝");
         model.addAttribute("hotelId", 123L);
         return "event/august-pack";
     }
 
-    /** 심리테스트 결과 페이지(필요 시) */
-    @GetMapping("/test-landing")
-    public String testLanding() {
-        return "event/test-result"; // 템플릿 파일 존재해야 함
+    /** 팩 일괄 발급 */
+    @PostMapping("/coupon/issue-pack")
+    @PreAuthorize("isAuthenticated()")
+    public String issuePack(RedirectAttributes ra) {
+        MemberDto me = currentUserOrThrow();
+        int ok = 0, already = 0, fail = 0;
+
+        for (String code : PACK_CODES) {
+            try {
+                userCouponService.issueByCode(me, code, CAMPAIGN_AUG);
+                ok++;
+            } catch (IllegalStateException ex) {
+                if ("ALREADY_ISSUED".equals(ex.getMessage())) already++;
+                else fail++;
+            } catch (Exception ex) {
+                log.error("issuePack error for {}", code, ex);
+                fail++;
+            }
+        }
+        String msg = "쿠폰팩 처리: 신규 " + ok + "개, 보유 " + already + "개" + (fail > 0 ? (", 실패 " + fail + "개") : "") + " 🎉";
+        ra.addFlashAttribute("toast", msg);
+        return "redirect:/event/august-pack";
     }
 
-    /* ===================== 동기화 체크 API ===================== */
-
-    /** (프론트 초기 동기화) 이 이벤트에서 이미 쿠폰을 보유했는지 여부 */
     @GetMapping(value = "/coupon/issued", produces = "application/json")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
@@ -97,9 +125,6 @@ public class EventController {
         return Map.of("issued", issued);
     }
 
-    /* ===================== API (발급) ===================== */
-
-    /** 결과(부캐) 맞춤 쿠폰 — JSON (페이지 이동 없음) */
     @PostMapping(value = "/test/issue-coupon", produces = "application/json")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
@@ -121,7 +146,6 @@ public class EventController {
         }
     }
 
-    /** 전 호텔 5% — JSON (페이지 이동 없음) */
     @PostMapping(value = "/coupon/issue-global", produces = "application/json")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
@@ -143,7 +167,6 @@ public class EventController {
         }
     }
 
-    /** 코드로 발급 — PRG 패턴 유지 (8월팩) */
     @PostMapping("/coupon/issue-by-code")
     @PreAuthorize("isAuthenticated()")
     public String issueByCode(@RequestParam("code") String code, RedirectAttributes ra) {
@@ -163,7 +186,6 @@ public class EventController {
         return "redirect:/event/august-pack";
     }
 
-    /** (선택) 8월팩도 AJAX로 쓰고 싶을 때 JSON 버전 제공 */
     @PostMapping(value = "/coupon/issue-by-code.json", produces = "application/json")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
@@ -185,34 +207,8 @@ public class EventController {
         }
     }
 
-    /** (레거시) 외부 폼 호환 — PRG 유지 */
-    @PostMapping("/coupon/issue")
-    @PreAuthorize("isAuthenticated()")
-    public String legacyIssueApi(@RequestParam(value = "couponCode", required = false) String couponCode,
-                                 @RequestParam(value = "relatedEvent", required = false) String relatedEvent,
-                                 RedirectAttributes ra) {
-        String code = couponCode == null ? "" : couponCode.trim();
-        String event = (relatedEvent == null || relatedEvent.isBlank()) ? CAMPAIGN_AUG : relatedEvent.trim();
-        try {
-            if (code.isBlank()) throw new IllegalStateException("쿠폰 코드를 입력해주세요.");
-            userCouponService.issueByCode(currentUserOrThrow(), code, event);
-            ra.addFlashAttribute("toast", "쿠폰이 발급되었습니다 🎁");
-        } catch (IllegalStateException ex) {
-            if ("ALREADY_ISSUED".equals(ex.getMessage())) {
-                ra.addFlashAttribute("toast", "이미 쿠폰을 발급받았습니다.");
-            } else {
-                ra.addFlashAttribute("toast", ex.getMessage());
-            }
-        } catch (Exception ex) {
-            log.error("legacyIssueApi error", ex);
-            ra.addFlashAttribute("toast", "처리 중 오류가 발생했습니다.");
-        }
-        return "redirect:/event/august-pack";
-    }
-
     @GetMapping("/eventlist")
     public String eventList(){
         return "/event/eventList";
     }
 }
-

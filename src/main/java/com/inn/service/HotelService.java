@@ -368,12 +368,6 @@ public class HotelService {
         }
         return hotelRepository.save(hotel);
     }
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> 5068b25eb20bd029e978c25e8370141979cddbc3
 
     // 엔티티 to Dto 변환 메서드 (/h_list 용)
     public List<HotelDto> getAllHotelDtos() {
@@ -405,4 +399,4 @@ public class HotelService {
     }
 }
 
-}
+

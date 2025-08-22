@@ -10,33 +10,60 @@
 
   <style>
     :root{
-      --bg:#fbfcfe; --card:#fff; --ink:#0f172a; --muted:#64748b;
+      --bg:#fbfcfe; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
       --shadow:0 16px 40px rgba(15,23,42,.08); --r:18px;
-      --bar-bg:#e9eef5;
-      --act:#f59e0b;      /* Activity: orange */
-      --heal:#10b981;     /* Healing: green  */
-      --chal:#db2777;     /* Challenge: pink */
-      --emo:#3b82f6;      /* Emotion: blue   */
+
+      /* 바 배경 조금 더 밝고 선명 */
+      --bar-bg:#f0f4f9;
+
+      /* ===== Pastel+ (밝고 선명) ===== */
+      /* Activity: 피치 → 살구 */
+      --act1:#ff9b73;
+      --act2:#ffd09b;
+
+      /* Healing: 에메랄드 → 민트 */
+      --heal1:#34d399;
+      --heal2:#a7f3d0;
+
+      /* Challenge: 로즈 핑크 */
+      --chal1:#f472b6;
+      --chal2:#fbcfe8;
+
+      /* Emotion: 맑은 블루 → 라벤더 블루 */
+      --emo1:#60a5fa;
+      --emo2:#bfdbfe;
     }
+
     *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg);padding:30px;text-align:center}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
+      color:var(--ink);background:var(--bg);padding:30px;text-align:center
+    }
     .card{max-width:820px;margin:0 auto;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:32px}
     h1{margin:0 0 6px;font-size:28px}
     .subtitle{margin:0 0 18px;color:var(--muted)}
-    .hero{margin:10px 0 14px}
-    .hero img{max-width:260px;border-radius:12px}
     .desc{margin:8px 0 16px;color:#334155}
     .section-title{margin:18px 0 10px;font-weight:700}
     .row{margin:14px 0}
     .label{display:flex;justify-content:space-between;align-items:center;margin:0 auto 6px;width:82%}
     .label span:first-child{font-weight:600}
     .pill{font-size:12px;background:#eef2ff;color:#3730a3;border-radius:999px;padding:4px 8px}
-    .bar-wrap{width:82%;height:14px;background:var(--bar-bg);border-radius:999px;margin:0 auto;overflow:hidden}
+
+    /* Bars */
+    .bar-wrap{
+      width:82%;height:14px;background:var(--bar-bg);border-radius:999px;margin:0 auto;overflow:hidden;
+      position:relative
+    }
+    .bar-wrap::after{content:"";position:absolute;inset:0;border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
     .bar{height:100%}
-    .bar.activity{background:var(--act)}
-    .bar.healing{background:var(--heal)}
-    .bar.challenge{background:var(--chal)}
-    .bar.emotion{background:var(--emo)}
+
+    /* 그라데이션 (밝고 선명) */
+    .bar.activity {background:linear-gradient(90deg,var(--act1),var(--act2))}
+    .bar.healing  {background:linear-gradient(90deg,var(--heal1),var(--heal2))}
+    .bar.challenge{background:linear-gradient(90deg,var(--chal1),var(--chal2))}
+    .bar.emotion  {background:linear-gradient(90deg,var(--emo1),var(--emo2))}
+
     .recos{margin-top:18px}
     .recos ul{list-style:none;padding:0;margin:6px 0 0}
     .recos li{margin:6px 0;color:#475569}
@@ -66,10 +93,6 @@
                : (#strings.capitalize(topTrait))}">
     결과명 (코드)
   </p>
-
-  <div class="hero" th:if="${character != null && character.imageUrl != null}">
-    <img th:src="${character.imageUrl}" alt="캐릭터 이미지">
-  </div>
 
   <p class="desc"
      th:text="${character != null && character.description != null ? character.description : '설명이 준비중입니다.'}">
@@ -134,7 +157,6 @@
   <!-- 쿠폰 버튼 (AJAX + 모달) -->
   <div class="ctl" th:if="${topTrait != null}">
     <input type="hidden" id="traitVal" th:value="${topTrait}">
-    <!-- ✅ 이벤트 코드 데이터 속성 추가 -->
     <button type="button" id="btn-coupon" class="btn" data-event="event-test">🎁 쿠폰 받기</button>
   </div>
 </div>
@@ -186,10 +208,7 @@
   // ===== 초기 동기화 (서버 상태 확인) =====
   (async function syncIssued(){
     try {
-      // 로컬에 이미 찍혀 있으면 바로 잠금
       if (localStorage.getItem(LS_KEY) === '1') { lockButton(); return; }
-
-      // 서버에도 물어보기 (다른 기기/브라우저에서 이미 받았을 수 있음)
       const r = await fetch(`/event/coupon/issued?eventCode=${encodeURIComponent(EVENT_CODE)}`, {
         headers: csrfToken ? { [csrfHeader]: csrfToken } : {}
       });
@@ -203,13 +222,12 @@
         }
       }
     } catch (e) {
-      // 네트워크 오류 시엔 조용히 넘어감 (버튼은 기본 상태 유지)
+      // 네트워크 오류는 조용히 패스
     }
   })();
 
   // ===== 클릭 처리 (AJAX) =====
   $btn?.addEventListener('click', async () => {
-    // 프론트 가드: 이미 발급 상태면 서버 안 가고 바로 안내
     if (localStorage.getItem(LS_KEY) === '1' || $btn.disabled) {
       openModal('이미 쿠폰을 발급받았습니다 🎁');
       return;
@@ -238,7 +256,6 @@
         lockButton();
         openModal(data.message || '쿠폰 발급이 완료되었습니다 🎁');
       } else {
-        // 컨트롤러에서 중복 시 code=ALREADY_ISSUED 내려주도록 수정해둔 상태
         const code = data?.code || '';
         const msg  = data?.message || '';
         if (code === 'ALREADY_ISSUED' || /이미.*발급/.test(msg)) {
@@ -247,7 +264,7 @@
           openModal('이미 쿠폰을 발급받았습니다 🎁');
         } else {
           openModal(msg || '쿠폰 발급에 실패했습니다. 잠시 후 다시 시도해주세요.');
-          $btn.disabled = false; // 실패 시 재시도 가능
+          $btn.disabled = false;
         }
       }
     } catch (err) {
