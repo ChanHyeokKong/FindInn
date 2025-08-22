@@ -112,7 +112,7 @@
 
 /* Enhanced Form Styles */
 .booking-form label {
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-bold);
     margin-bottom: var(--spacing-sm);
     display: block;
     color: var(--gray-800);
@@ -150,8 +150,7 @@
 
 /* 이름 입력 칸 좀 줄임 */
 .short-input input {
-    max-width: 250px;
-    margin-bottom: 30px;
+    max-width: 200px;
 }
 
 /* 휴대폰 번호와 인증번호 버튼 한 줄로 */
@@ -230,7 +229,7 @@
 
 .auth-input-row input {
     flex-grow: 1;
-    height: 40px;
+    height: 48px;
     padding: 0 12px;
     border-radius: 5px;
     border: 1px solid #ddd;
@@ -239,7 +238,7 @@
 }
 
 .auth-input-row button {
-    height: 40px;
+    height: 48px;
     padding: 0 20px;
     background-color: #007BFF;
     border: none;
@@ -389,7 +388,17 @@
     transform: translateY(0);
 }
 
-.pay-logo {
+.tosspay-logo {
+    max-height: 30px; /* 로고 크기 조정 */
+    display: block;
+}
+
+.kakaopay-logo {
+    max-height: 24px; /* 로고 크기 조정 */
+    display: block;
+}
+
+.naverpay-logo {
     max-height: 24px; /* 로고 크기 조정 */
     display: block;
 }
@@ -426,8 +435,19 @@
 }
 
 .booking-summary ul li {
+    display: flex;          /* Flexbox 적용 */
+    align-items: center;    /* 수직 가운데 정렬 */
     margin-bottom: 10px;
     font-size: 16px;
+}
+
+.booking-summary ul li strong {
+    min-width: 100px;       /* 라벨 영역 고정 너비, 필요시 조정 */
+    font-weight: 600;
+}
+
+.booking-summary ul li span {
+    flex: 1;                /* 남은 공간을 span이 채움 */
 }
 
 .booking-summary p {
