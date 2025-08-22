@@ -6,14 +6,14 @@
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
-            <th>Phone</th>
+            <th>승인</th>
 
         </tr>
         <tr th:each="member : ${members}">
             <td th:text="${member.idx}"></td>
             <td th:text="${member.MemberName}"></td>
             <td th:text="${member.MemberEmail}"></td>
-            <td th:text="${member.MemberPhone}"></td>
+            <td><button th:onclick="|location.href='@{/admin/apply(idx=${member.idx})}'|">승인</button></td>
 
         </tr>
     </table>

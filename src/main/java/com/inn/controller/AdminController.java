@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -59,6 +60,12 @@ public class AdminController {
         List<MemberDto> list = adminService.getApplyList();
         mv.addObject("members",list);
         return mv;
+    }
+
+    @GetMapping("/admin/apply")
+    public String apply(@RequestParam(name = "idx") Long idx){
+        adminService.giveManagerRole(idx);
+        return "redirect:/admin/applylist";
     }
 
 }
