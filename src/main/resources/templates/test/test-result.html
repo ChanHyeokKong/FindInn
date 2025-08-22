@@ -1,46 +1,45 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>여행 성향 결과</title>
 
   <!-- ✅ CSRF (있을 때만) -->
   <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}">
   <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}">
 
+  <!-- (선택) 링크 미리보기용 OG 메타 — 서버에서 결과값으로 채워도 좋아요 -->
+  <meta property="og:title" content="여행 성향 결과">
+  <meta property="og:description" content="나의 여행 성향 점수와 추천 숙소 확인하기">
+  <meta property="og:image" content="https://via.placeholder.com/1200x630.png?text=Travel+Result">
+  <meta property="og:url" content="">
+
   <style>
     :root{
       --bg:#fbfcfe; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
       --shadow:0 16px 40px rgba(15,23,42,.08); --r:18px;
-
-      /* 바 배경 조금 더 밝고 선명 */
       --bar-bg:#f0f4f9;
-
-      /* ===== Pastel+ (밝고 선명) ===== */
-      /* Activity: 피치 → 살구 */
-      --act1:#ff9b73;
-      --act2:#ffd09b;
-
-      /* Healing: 에메랄드 → 민트 */
-      --heal1:#34d399;
-      --heal2:#a7f3d0;
-
-      /* Challenge: 로즈 핑크 */
-      --chal1:#f472b6;
-      --chal2:#fbcfe8;
-
-      /* Emotion: 맑은 블루 → 라벤더 블루 */
-      --emo1:#60a5fa;
-      --emo2:#bfdbfe;
+      /* Pastel+ (밝고 선명) */
+      --act1:#ff9b73; --act2:#ffd09b;
+      --heal1:#34d399; --heal2:#a7f3d0;
+      --chal1:#f472b6; --chal2:#fbcfe8;
+      --emo1:#60a5fa; --emo2:#bfdbfe;
     }
 
     *{box-sizing:border-box}
     body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
-      color:var(--ink);background:var(--bg);padding:30px;text-align:center
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans KR',sans-serif;
+      color:var(--ink); background:var(--bg); padding:30px; text-align:center
     }
-    .card{max-width:820px;margin:0 auto;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:32px}
+
+    /* 카드 + 등장 애니메이션 */
+    .card{
+      max-width:820px; margin:0 auto; background:var(--card); border-radius:var(--r);
+      box-shadow:var(--shadow); padding:32px;
+      opacity:0; transform:translateY(8px); transition:opacity .45s ease, transform .45s ease;
+    }
+    .card.is-in{ opacity:1; transform:translateY(0); }
+
     h1{margin:0 0 6px;font-size:28px}
     .subtitle{margin:0 0 18px;color:var(--muted)}
     .desc{margin:8px 0 16px;color:#334155}
@@ -52,13 +51,10 @@
 
     /* Bars */
     .bar-wrap{
-      width:82%;height:14px;background:var(--bar-bg);border-radius:999px;margin:0 auto;overflow:hidden;
-      position:relative
+      width:82%; height:14px; background:var(--bar-bg); border-radius:999px; margin:0 auto; overflow:hidden; position:relative
     }
     .bar-wrap::after{content:"";position:absolute;inset:0;border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
     .bar{height:100%}
-
-    /* 그라데이션 (밝고 선명) */
     .bar.activity {background:linear-gradient(90deg,var(--act1),var(--act2))}
     .bar.healing  {background:linear-gradient(90deg,var(--heal1),var(--heal2))}
     .bar.challenge{background:linear-gradient(90deg,var(--chal1),var(--chal2))}
@@ -67,8 +63,14 @@
     .recos{margin-top:18px}
     .recos ul{list-style:none;padding:0;margin:6px 0 0}
     .recos li{margin:6px 0;color:#475569}
+
     .ctl{margin-top:16px}
-    .btn{display:inline-block;border:0;background:#2f6bff;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;cursor:pointer}
+    .btn{
+      display:inline-block; border:0; background:#2f6bff; color:#fff; padding:10px 14px; border-radius:10px;
+      text-decoration:none; cursor:pointer; transition: transform .12s ease, box-shadow .2s ease;
+    }
+    .btn:hover{ transform: translateY{-1px}; box-shadow:0 8px 18px rgba(47,107,255,.18); }
+    .btn:active{ transform: translateY(0); box-shadow:0 4px 10px rgba(47,107,255,.15); }
     .btn[disabled]{background:#93b0ff;cursor:not-allowed}
 
     /* --- Modal --- */
@@ -81,6 +83,9 @@
     .modal-msg{margin:8px 0 14px; color:#334155}
     .modal-actions{display:flex; justify-content:center; gap:10px}
     .btn-outline{background:#fff; color:#1f2937; border:1px solid #e5e7eb; border-radius:10px; padding:8px 12px; cursor:pointer}
+
+    /* 공유 영역 */
+    .share{margin-top:18px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap}
   </style>
 </head>
 <body>
@@ -159,6 +164,12 @@
     <input type="hidden" id="traitVal" th:value="${topTrait}">
     <button type="button" id="btn-coupon" class="btn" data-event="event-test">🎁 쿠폰 받기</button>
   </div>
+
+  <!-- 공유 (카카오 제거: 링크 공유 + 이미지 저장만) -->
+  <div class="share">
+    <button type="button" class="btn" id="btnShareLink">링크 복사</button>
+    <button type="button" class="btn" id="btnSaveImage">이미지 저장</button>
+  </div>
 </div>
 
 <!-- Modal -->
@@ -171,6 +182,9 @@
     </div>
   </div>
 </div>
+
+<!-- html2canvas (이미지 저장용) -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
   // ===== CSRF =====
@@ -189,7 +203,6 @@
   $modal?.addEventListener('click', (e)=>{ if(e.target === $modal) closeModal(); });
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
 
-  // ===== Helpers =====
   const EVENT_CODE = $btn?.dataset.event || 'event-test';
   const LS_KEY = `coupon_issued:${EVENT_CODE}`;
 
@@ -198,7 +211,6 @@
     $btn.disabled = true;
     $btn.textContent = '발급 완료 ✅';
   }
-
   function unlockButton(){
     if (!$btn) return;
     $btn.disabled = false;
@@ -271,6 +283,75 @@
       openModal('네트워크 오류로 실패했습니다. 잠시 후 다시 시도해주세요.');
       $btn.disabled = false;
     }
+  });
+
+  // ===== 카드 등장 애니메이션 =====
+  (function revealCard(){
+    const card = document.querySelector('.card');
+    if (!card) return;
+    const io = new IntersectionObserver((entries, ob) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { card.classList.add('is-in'); ob.disconnect(); }
+      });
+    }, { threshold: .3 });
+    io.observe(card);
+  })();
+
+  // ===== 능력치 바 애니메이션 (개선 버전) =====
+  (function animateBarsOnView(){
+    const bars = document.querySelectorAll('.bar-wrap .bar');
+    if (!bars.length) return;
+
+    const io = new IntersectionObserver((entries, ob) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target;
+
+        // th:style로 주입된 width 값 추출
+        const m = (el.getAttribute('style') || '').match(/width:\s*([\d.]+)%/);
+        const target = m ? m[1] : '0';
+
+        // 0%에서 시작 + transition 유지
+        el.style.width = '0%';
+        el.style.transition = 'width .9s cubic-bezier(.22,.61,.36,1)';
+
+        requestAnimationFrame(() => {
+          el.style.width = target + '%';
+        });
+
+        ob.unobserve(el);
+      });
+    }, { threshold: 0.35 });
+
+    bars.forEach(b => io.observe(b));
+  })();
+
+  // ===== 공유: 링크 복사 + 이미지 저장 =====
+  const pageUrl = window.location.href;
+  document.getElementById('btnShareLink')?.addEventListener('click', async () => {
+    const resultTitle = document.querySelector('h1')?.innerText || '여행 성향 결과';
+    const resultDesc  = document.querySelector('.desc')?.innerText || '나의 여행 성향을 확인해보세요';
+    const shareData = { title: resultTitle, text: resultDesc, url: pageUrl };
+
+    if (navigator.share) {
+      try { await navigator.share(shareData); return; } catch(e) {/* 취소 등 무시 */ }
+    }
+    try {
+      await navigator.clipboard.writeText(pageUrl);
+      alert('링크가 복사되었습니다.');
+    } catch(e) {
+      prompt('아래 링크를 복사하세요.', pageUrl);
+    }
+  });
+
+  document.getElementById('btnSaveImage')?.addEventListener('click', async () => {
+    const card = document.querySelector('.card');
+    if (!card) return;
+    const canvas = await html2canvas(card, { backgroundColor: '#ffffff', scale: 2 });
+    const link = document.createElement('a');
+    link.download = 'travel-result.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
   });
 </script>
 </body>

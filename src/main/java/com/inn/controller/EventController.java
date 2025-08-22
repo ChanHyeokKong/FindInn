@@ -23,13 +23,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/event")
 public class EventController {
 
+    // 캠페인 키
     private static final String CAMPAIGN_TEST = "event-test";
     private static final String CAMPAIGN_AUG  = "august-pack";
 
+    // ✅ 프론트 템플릿과 동일한 쿠폰 코드로 통일 (AUG_5K -> SUMMER_5K)
     private static final List<String> PACK_CODES = List.of("AUG_7P", "AUG_10P", "AUG_5K");
 
     private final UserCouponService userCouponService;
 
+    /** 현재 로그인 사용자 (없으면 null) */
     private MemberDto currentUserOrNull() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()
@@ -41,17 +44,21 @@ public class EventController {
         return null;
     }
 
+    /** 현재 로그인 사용자 (없으면 예외) — POST에서 사용 */
     private MemberDto currentUserOrThrow() {
         MemberDto m = currentUserOrNull();
         if (m == null) throw new IllegalStateException("로그인이 필요합니다.");
         return m;
     }
 
+    /* ===================== 페이지 라우팅 ===================== */
+
     @GetMapping({"", "/", "/coupon-pack"})
     public String redirectToAugustPack() {
         return "redirect:/event/august-pack";
     }
 
+    /** 8월 쿠폰팩 랜딩 */
     @GetMapping("/august-pack")
     public String augustPackLanding(Model model) {
         int issuedCount = 0;
@@ -62,36 +69,40 @@ public class EventController {
             List<String> raw = userCouponService.getIssuedCodes(me, CAMPAIGN_AUG);
             if (raw == null) raw = Collections.emptyList();
 
-            // ✅ 코드 정규화: 공백 제거 + 대문자 + 제어문자 제거
+            // 코드 정규화: 공백/개행 제거 + 대문자
             issuedCodes = raw.stream()
                     .filter(Objects::nonNull)
-                    .map(s -> s.replaceAll("\\s+", ""))   // 모든 공백 제거
+                    .map(s -> s.replaceAll("\\s+", ""))
                     .map(String::toUpperCase)
-                    .map(s -> s.replace("\r","").replace("\n",""))
+                    .map(s -> s.replace("\r", "").replace("\n", ""))
                     .collect(Collectors.toList());
 
             issuedCount = issuedCodes.size();
         }
 
-        // ✅ 안전한 매칭(대소문자/공백 무시)용 플래그 계산
-        boolean has7   = issuedCodes.stream().anyMatch(c -> c.equalsIgnoreCase("AUG_7P"));
-        boolean has10  = issuedCodes.stream().anyMatch(c -> c.equalsIgnoreCase("AUG_10P"));
-        boolean has5k  = issuedCodes.stream().anyMatch(c -> c.equalsIgnoreCase("AUG_5K"));
+        // 템플릿에서 쓰기 쉬운 플래그
+        boolean has7  = issuedCodes.stream().anyMatch(c -> c.equalsIgnoreCase("AUG_7P"));
+        boolean has10 = issuedCodes.stream().anyMatch(c -> c.equalsIgnoreCase("AUG_10P"));
+        boolean has5k = issuedCodes.stream().anyMatch(c -> c.equalsIgnoreCase("AUG_5K"));
 
         model.addAttribute("issuedCount", issuedCount);
-        model.addAttribute("issuedCodes", issuedCodes);   // (호환 유지)
+        model.addAttribute("issuedCodes", issuedCodes); // 하위호환
         model.addAttribute("has7", has7);
         model.addAttribute("has10", has10);
         model.addAttribute("has5k", has5k);
         model.addAttribute("packSize", PACK_CODES.size());
 
+        // 데모 호텔 정보
         model.addAttribute("hotelName", "호텔 코지 중산 가오슝");
         model.addAttribute("hotelCity", "가오슝");
         model.addAttribute("hotelId", 123L);
+
         return "event/august-pack";
     }
 
-    /** 팩 일괄 발급 */
+    /* ===================== API ===================== */
+
+    /** 팩 일괄 발급 (PRG) */
     @PostMapping("/coupon/issue-pack")
     @PreAuthorize("isAuthenticated()")
     public String issuePack(RedirectAttributes ra) {
@@ -115,6 +126,7 @@ public class EventController {
         return "redirect:/event/august-pack";
     }
 
+    /** (AJAX) 해당 이벤트/캠페인에서 이미 발급한 게 있는지 조회 */
     @GetMapping(value = "/coupon/issued", produces = "application/json")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
@@ -125,6 +137,7 @@ public class EventController {
         return Map.of("issued", issued);
     }
 
+    /** (AJAX) 심리테스트 결과 맞춤 쿠폰 발급 */
     @PostMapping(value = "/test/issue-coupon", produces = "application/json")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
@@ -146,6 +159,7 @@ public class EventController {
         }
     }
 
+    /** (AJAX) 전 호텔 5% 발급 예시 */
     @PostMapping(value = "/coupon/issue-global", produces = "application/json")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
@@ -167,6 +181,7 @@ public class EventController {
         }
     }
 
+    /** 코드로 발급 — PRG (8월팩) */
     @PostMapping("/coupon/issue-by-code")
     @PreAuthorize("isAuthenticated()")
     public String issueByCode(@RequestParam("code") String code, RedirectAttributes ra) {
@@ -186,6 +201,7 @@ public class EventController {
         return "redirect:/event/august-pack";
     }
 
+    /** 코드로 발급 — AJAX 버전 (선택) */
     @PostMapping(value = "/coupon/issue-by-code.json", produces = "application/json")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
@@ -208,7 +224,7 @@ public class EventController {
     }
 
     @GetMapping("/eventlist")
-    public String eventList(){
+    public String eventList() {
         return "/event/eventList";
     }
 }

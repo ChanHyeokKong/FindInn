@@ -39,6 +39,9 @@ public class BookingController {
             model.addAttribute("memberIdx", currentUser.getIdx());
             model.addAttribute("memberEmail", currentUser.getUsername());
             model.addAttribute("isLogined", true);
+//            model.addAttribute("memberIdx", null);
+//            model.addAttribute("memberEmail", "test@example.com");
+//            model.addAttribute("isLogined", false);
         } else {
             model.addAttribute("memberIdx", null);
             model.addAttribute("memberEmail", "test@example.com");
