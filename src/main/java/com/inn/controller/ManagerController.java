@@ -7,6 +7,7 @@ import com.inn.data.detail.DescriptionDto;
 import com.inn.data.hotel.HotelDto;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
+import com.inn.data.member.MemberDto;
 import com.inn.data.member.MyPageDto;
 import com.inn.data.member.manager.HotelRoomTypeSummaryDto;
 import com.inn.data.member.manager.HotelWithManagerDto;
@@ -93,14 +94,9 @@ public class ManagerController {
     }
 
     @PostMapping("manage/apply")
-    public String apply(@AuthenticationPrincipal CustomUserDetails currentUser, HotelEntity entity){
-        Long memberIdx = currentUser.getIdx();
-        entity.setMemberIdx(memberIdx);
-        System.out.println(entity.toString());
-
-        hotelRepository.save(entity);
-        memberService.giveManagerRole(currentUser.getIdx());
-
+    public String apply(MemberDto dto){
+        dto.setStatus(Long.valueOf(1));
+        memberService.updateMember(dto);
         return "redirect:/?login=true";
     }
 

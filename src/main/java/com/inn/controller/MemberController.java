@@ -131,7 +131,7 @@ public class MemberController {
     }
 
     @GetMapping("/qna/write")
-    public String qnawrite() {
+    public String qnaWrite() {
         return "member/qnawrite";
     }
 
