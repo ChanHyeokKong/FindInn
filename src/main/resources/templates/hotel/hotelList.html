@@ -137,6 +137,11 @@
 			font-size: var(--font-size-xs);
 			font-weight: var(--font-weight-medium);
 		}
+
+		/* Map modal top offset to avoid header overlap */
+		#mapModal .modal-dialog {
+			margin-top: 80px;
+		}
 	</style>
 </th:block>
 
@@ -227,7 +232,7 @@
 			<div class="d-flex align-items-center justify-content-between">
 				<div>
 					<h5 class="mb-1 fw-bold text-dark">검색 결과</h5>
-					<p class="mb-0 text-muted">총 <span class="fw-bold text-primary" th:text="${#lists.size(hotels)}">0</span>개의 숙소를 찾았습니다</p>
+					<p class="mb-0 text-muted">총 <span class="fw-bold text-primary" id="hotelCount" th:text="${#lists.size(hotels)}">0</span>개의 숙소를 찾았습니다</p>
 				</div>
 				<div class="text-muted">
 					<i class="fas fa-info-circle me-1"></i>
@@ -334,7 +339,7 @@
 	</div>
 
 	<!-- Map Modal -->
-	<div class="modal fade" id="mapModal" tabindex="-1" data-bs-backdrop="static">
+	<div class="modal fade" id="mapModal" tabindex="-1" data-bs-backdrop="false">
 		<div class="modal-dialog modal-xl">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -346,9 +351,7 @@
 				
 				<div class="modal-body p-0" style="height: 650px;">
 					<div class="d-flex h-100">
-						<div th:replace="fragments/sidebar :: hotelSearch-mapSidebar" 
-						     class="border-end" style="width: 280px; flex-shrink: 0; overflow-y: auto;"></div>
-						<div id="map" class="flex-grow-1"></div>
+						<div id="map" class="flex-grow-1" style="height:100%; width:100%;;"></div>
 					</div>
 				</div>
 			</div>
@@ -356,9 +359,14 @@
 	</div>
 	
 	<script th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoJsKey} + '&libraries=services'}"></script>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		window.initialHotels = /*[[${hotels}]]*/ [];
+		/*]]>*/
+	</script>
 	<script src="/javascript/hotelSearch.js"></script>
 	
-	<!-- <script>
+	<!--  <script>
 		// Hotel detail navigation
 		function goToHotelDetail(element) {
 			const hotelId = element.getAttribute('data-hotel-id');
@@ -554,7 +562,7 @@
 					priceDisplay.textContent = formattedValue + '원';
 				}
 			});
-		} 
+		}
 	</script>-->
 </div>
 </html>

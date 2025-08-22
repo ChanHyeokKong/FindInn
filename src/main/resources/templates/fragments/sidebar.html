@@ -304,13 +304,7 @@
                 </div>
             </div>
         </div>
-        
-        <!-- 필터 적용 버튼 -->
-        <div class="filter-actions">
-            <button class="btn btn-primary w-100" id="applyFilter">
-                <i class="fas fa-search me-2"></i>필터 적용
-            </button>
-        </div>
+       
     </div>
 </aside>
 
@@ -392,62 +386,131 @@
 </aside>
 
 <aside th:fragment="hotelSearch-mapSidebar">
-	<div class="mapSidebar" style="width:250px; height: 650px; overflow-y: auto;">
-      <span>필터</span>
-      <button id="restart">초기화</button> <hr>
-      
-      <b>숙소유형</b><br>
-      
-      <form id="categoryForm"></form>
-      <input name="category" type="radio" value="all" checked="checked"/>전체<br>
-      <input name="category" type="radio" value="motel"/>모텔<br>
-      <input name="category" type="radio" value="hotel_resort"/>호텔·리조트<br>
-      <input name="category" type="radio" value="pension"/>펜션<br>
-      <input name="category" type="radio" value="home_villa"/>홈&빌라<br>
-      <input name="category" type="radio" value="camping"/>캠핑<br>
-      <input name="category" type="radio" value="guesthouse"/>게하·한옥<hr>
-      
-      <b>가격</b><br>
-      <input type="range" min="50000" max="500000" step="50000" id="priceRange2" name="priceRange2" value="500000"><br>
-      <p id="priceDisplay">500,000원</p>
-      
-      <b>#취향</b><br>
-		<input type="checkbox" name="tag" value="family">#가족여행숙소
-		<input type="checkbox" name="tag" value="waterpool">#온수풀
-		<input type="checkbox" name="tag" value="view">#뷰맛집
-		<input type="checkbox" name="tag" value="beach">#바닷가
-		<input type="checkbox" name="tag" value="nicemeal">#조식맛집
-		<hr>
-		<b>할인혜택</b><br>
-		<input type="checkbox" name="tag" value="coupon">쿠폰할인
-		<input type="checkbox" name="tag" value="discount">할인특가
-		<hr>
-        <b>시설</b><br>
-        <input type="checkbox" name="tag" value="sauna">사우나
-        <input type="checkbox" name="tag" value="swimming_pool">수영장
-        <input type="checkbox" name="tag" value="restaurant">레스토랑
-        <input type="checkbox" name="tag" value="fitness">피트니스
-        <input type="checkbox" name="tag" value="golf">골프장
-        <input type="checkbox" name="tag" value="pc">공용PC
-        <input type="checkbox" name="tag" value="kitchen">주방/식당
-        <input type="checkbox" name="tag" value="washing_machine">세탁기
-        <input type="checkbox" name="tag" value="parking">주차장
-        <input type="checkbox" name="tag" value="spa">온천
-        <input type="checkbox" name="tag" value="ski">스키장
-        <input type="checkbox" name="tag" value="in_room_eating">객실내취사
-        <input type="checkbox" name="tag" value="breakfast">조식제공
-        <input type="checkbox" name="tag" value="smoking">객실내흡연
-        <input type="checkbox" name="tag" value="luggage">짐보관가능
-        <input type="checkbox" name="tag" value="disabled">장애인편의
-        <input type="checkbox" name="tag" value="pickup">픽업서비스
-      <hr>
-      
-      
-    </div>
+	<div class="mapSidebar p-3" style="width:250px; height: 650px; overflow-y: auto;">
+		<div class="d-flex align-items-center justify-content-between mb-3">
+			<h6 class="mb-0 fw-bold">필터</h6>
+			<button class="btn btn-sm btn-outline-secondary" id="mapRestart">
+				<i class="fas fa-redo me-1"></i>초기화
+			</button>
+		</div>
 
-	
+		<hr class="my-3"/>
 
+		<div class="mb-3">
+			<div class="text-muted small mb-2">숙소유형</div>
+			<div class="form-check mb-2">
+				<input class="form-check-input" type="radio" name="mapCategory" id="map-cat-all" value="all" checked>
+				<label class="form-check-label" for="map-cat-all">전체</label>
+			</div>
+			<div class="form-check mb-2">
+				<input class="form-check-input" type="radio" name="mapCategory" id="map-cat-motel" value="motel">
+				<label class="form-check-label" for="map-cat-motel">모텔</label>
+			</div>
+			<div class="form-check mb-2">
+				<input class="form-check-input" type="radio" name="mapCategory" id="map-cat-hotel" value="hotel_resort">
+				<label class="form-check-label" for="map-cat-hotel">호텔·리조트</label>
+			</div>
+			<div class="form-check mb-2">
+				<input class="form-check-input" type="radio" name="mapCategory" id="map-cat-pension" value="pension">
+				<label class="form-check-label" for="map-cat-pension">펜션</label>
+			</div>
+			<div class="form-check mb-2">
+				<input class="form-check-input" type="radio" name="mapCategory" id="map-cat-homevilla" value="home_villa">
+				<label class="form-check-label" for="map-cat-homevilla">홈&빌라</label>
+			</div>
+			<div class="form-check mb-2">
+				<input class="form-check-input" type="radio" name="mapCategory" id="map-cat-camping" value="camping">
+				<label class="form-check-label" for="map-cat-camping">캠핑</label>
+			</div>
+			<div class="form-check">
+				<input class="form-check-input" type="radio" name="mapCategory" id="map-cat-guest" value="guesthouse">
+				<label class="form-check-label" for="map-cat-guest">게하·한옥</label>
+			</div>
+		</div>
 
+		<hr class="my-3"/>
+
+		<div class="mb-3">
+			<div class="d-flex align-items-center justify-content-between mb-2">
+				<div class="text-muted small">가격 <span class="opacity-75">1박 기준</span></div>
+				<small class="text-primary fw-semibold" id="mapPriceDisplay">500,000원</small>
+			</div>
+			<input class="form-range" type="range" min="50000" max="500000" step="50000" id="priceRange2" name="priceRange2" value="500000">
+			<div class="d-flex justify-content-between mt-1">
+				<small class="text-muted">0원</small>
+				<small class="text-muted">500,000원 이상</small>
+			</div>
+		</div>
+
+		<hr class="my-3"/>
+
+		<div class="mb-3">
+			<div class="text-muted small mb-2">#취향</div>
+			<div class="d-flex flex-wrap gap-1">
+				<div class="form-check">
+					<input class="btn-check" type="checkbox" id="map-tag-family" name="mapTag" value="family">
+					<label class="btn btn-sm btn-outline-secondary" for="map-tag-family">#가족여행숙소</label>
+				</div>
+				<div class="form-check">
+					<input class="btn-check" type="checkbox" id="map-tag-waterpool" name="mapTag" value="waterpool">
+					<label class="btn btn-sm btn-outline-secondary" for="map-tag-waterpool">#온수풀</label>
+				</div>
+				<div class="form-check">
+					<input class="btn-check" type="checkbox" id="map-tag-view" name="mapTag" value="view">
+					<label class="btn btn-sm btn-outline-secondary" for="map-tag-view">#뷰맛집</label>
+				</div>
+				<div class="form-check">
+					<input class="btn-check" type="checkbox" id="map-tag-beach" name="mapTag" value="beach">
+					<label class="btn btn-sm btn-outline-secondary" for="map-tag-beach">#바닷가</label>
+				</div>
+				<div class="form-check">
+					<input class="btn-check" type="checkbox" id="map-tag-nicemeal" name="mapTag" value="nicemeal">
+					<label class="btn btn-sm btn-outline-secondary" for="map-tag-nicemeal">#조식맛집</label>
+				</div>
+			</div>
+		</div>
+
+		<hr class="my-3"/>
+
+		<div class="mb-3">
+			<div class="text-muted small mb-2">할인 혜택</div>
+			<div class="d-flex flex-wrap gap-1">
+				<div class="form-check">
+					<input class="btn-check" type="checkbox" id="map-tag-coupon" name="mapTag" value="coupon">
+					<label class="btn btn-sm btn-outline-secondary" for="map-tag-coupon">쿠폰할인</label>
+				</div>
+				<div class="form-check">
+					<input class="btn-check" type="checkbox" id="map-tag-discount" name="mapTag" value="discount">
+					<label class="btn btn-sm btn-outline-secondary" for="map-tag-discount">할인특가</label>
+				</div>
+			</div>
+		</div>
+
+		<hr class="my-3"/>
+
+		<div class="mb-2">
+			<div class="text-muted small mb-2">시설</div>
+			<div class="d-flex flex-wrap gap-1">
+				<div class="form-check"><input class="btn-check" id="map-f-sauna" type="checkbox" name="mapTag" value="sauna"><label class="btn btn-sm btn-outline-secondary" for="map-f-sauna">사우나</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-swimming" type="checkbox" name="mapTag" value="swimming_pool"><label class="btn btn-sm btn-outline-secondary" for="map-f-swimming">수영장</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-restaurant" type="checkbox" name="mapTag" value="restaurant"><label class="btn btn-sm btn-outline-secondary" for="map-f-restaurant">레스토랑</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-fitness" type="checkbox" name="mapTag" value="fitness"><label class="btn btn-sm btn-outline-secondary" for="map-f-fitness">피트니스</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-golf" type="checkbox" name="mapTag" value="golf"><label class="btn btn-sm btn-outline-secondary" for="map-f-golf">골프장</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-pc" type="checkbox" name="mapTag" value="pc"><label class="btn btn-sm btn-outline-secondary" for="map-f-pc">공용PC</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-kitchen" type="checkbox" name="mapTag" value="kitchen"><label class="btn btn-sm btn-outline-secondary" for="map-f-kitchen">주방/식당</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-washing" type="checkbox" name="mapTag" value="washing_machine"><label class="btn btn-sm btn-outline-secondary" for="map-f-washing">세탁기</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-parking" type="checkbox" name="mapTag" value="parking"><label class="btn btn-sm btn-outline-secondary" for="map-f-parking">주차장</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-spa" type="checkbox" name="mapTag" value="spa"><label class="btn btn-sm btn-outline-secondary" for="map-f-spa">온천</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-ski" type="checkbox" name="mapTag" value="ski"><label class="btn btn-sm btn-outline-secondary" for="map-f-ski">스키장</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-eating" type="checkbox" name="mapTag" value="in_room_eating"><label class="btn btn-sm btn-outline-secondary" for="map-f-eating">객실내취사</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-breakfast" type="checkbox" name="mapTag" value="breakfast"><label class="btn btn-sm btn-outline-secondary" for="map-f-breakfast">조식제공</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-smoking" type="checkbox" name="mapTag" value="smoking"><label class="btn btn-sm btn-outline-secondary" for="map-f-smoking">객실내흡연</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-luggage" type="checkbox" name="mapTag" value="luggage"><label class="btn btn-sm btn-outline-secondary" for="map-f-luggage">짐보관가능</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-disabled" type="checkbox" name="mapTag" value="disabled"><label class="btn btn-sm btn-outline-secondary" for="map-f-disabled">장애인편의</label></div>
+				<div class="form-check"><input class="btn-check" id="map-f-pickup" type="checkbox" name="mapTag" value="pickup"><label class="btn btn-sm btn-outline-secondary" for="map-f-pickup">픽업서비스</label></div>
+			</div>
+		</div>
+	</div>
 </aside>
 
 </html>

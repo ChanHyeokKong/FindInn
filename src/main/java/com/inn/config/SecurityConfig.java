@@ -75,6 +75,7 @@ public class SecurityConfig {
                                 "/qna",
                                 "/ws-chat/**",
                                 "/h_list",
+                                "/h_search",
                                 "/sms/auth",
                                 "/domestic-accommodations",
                                 "/event/eventlist"

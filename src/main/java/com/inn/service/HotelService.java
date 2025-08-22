@@ -98,8 +98,45 @@ public class HotelService {
 
 
         StringBuilder sql = new StringBuilder(
-                "SELECT h.idx, h.hotel_name, h.member_idx, h.hotel_tel, h.hotel_category, h.hotel_address, h.hotel_image ,rt.min_price FROM hotel h LEFT JOIN hotel_tags t ON h.idx = t.hotel_idx LEFT JOIN( SELECT hotel_id, MIN(price) AS min_price FROM room_types GROUP BY hotel_id) rt ON h.idx = rt.hotel_id WHERE 1=1"
-        );
+               // "SELECT h.idx, h.hotel_name, h.member_idx, h.hotel_tel, h.hotel_category, h.hotel_address, h.hotel_image ,rt.min_price, rv.avg_rating,  rv.review_count FROM hotel h LEFT LEFT JOIN hotel_tags t ON h.idx = t.hotel_idx LEFT JOIN( SELECT hotel_id, MIN(price) AS min_price FROM room_types GROUP BY hotel_id) rt ON h.idx = rt.hotel_id WHERE 1=1"
+        		"SELECT "
+        	    + "    h.idx, "
+        	    + "    h.hotel_name, "
+        	    + "    h.member_idx, "
+        	    + "    h.hotel_tel, "
+        	    + "    h.hotel_category, "
+        	    + "    h.hotel_address, "
+        	    + "    h.hotel_image, "
+        	    + "    rt.min_price, "
+        	    + "    rv.avg_rating, "
+        	    + "    rv.review_count "
+        	    + "FROM "
+        	    + "    hotel h "
+        	    + "LEFT JOIN "
+        	    + "    ( "
+        	    + "        SELECT "
+        	    + "            hotel_id, "
+        	    + "            MIN(price) AS min_price "
+        	    + "        FROM "
+        	    + "            room_types "
+        	    + "        GROUP BY "
+        	    + "            hotel_id "
+        	    + "    ) AS rt ON h.idx = rt.hotel_id "
+        	    + "LEFT JOIN "
+        	    + "    ( "
+        	    + "        SELECT "
+        	    + "            hotel_id, "
+        	    + "            AVG(rating) AS avg_rating, "
+        	    + "            COUNT(rating) AS review_count "
+        	    + "        FROM "
+        	    + "            review "
+        	    + "        GROUP BY "
+        	    + "            hotel_id "
+        	    + "    ) AS rv ON h.idx = rv.hotel_id "
+        	    + "WHERE "
+        	    + "    1=1 "
+        	  
+        		);
 
         if (minPrice != null && minPrice < 500000) {
             sql.append(" AND rt.min_price IS NOT NULL AND rt.min_price <= :priceRange");
@@ -155,11 +192,11 @@ public class HotelService {
         //sort 
         switch (sort) {
             case "Score":
-                sql.append("");
+                sql.append(" order by rv.avg_rating desc");
                 break;
 
             case "Review":
-                sql.append("");
+                sql.append(" order by rv.review_count desc");
                 break;
 
             case "lowPrice":
