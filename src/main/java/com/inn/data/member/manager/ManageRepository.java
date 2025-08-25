@@ -20,14 +20,15 @@ public interface ManageRepository extends JpaRepository<HotelEntity, Long> {
             "WHERE m.idx = :memberIdx")
     List<HotelWithManagerDto> findHotelRoomsAndTypesByMemberIdx(@Param("memberIdx") Long memberIdx);
 
-    @Query("select new com.inn.data.member.manager.HotelRoomTypeSummaryDto (" +
-            "h.idx, h.hotelName, m.memberName, rt.typeName, rt.description, rt.capacity, COUNT(r.idx)) " +
-            "from HotelEntity h " +
-            "JOIN MemberDto m on h.memberIdx = m.idx " +
-            "JOIN RoomTypes rt on h.idx = rt.hotel.idx " +   // RoomType은 반드시 있어야 함 (INNER JOIN)
-            "LEFT JOIN Rooms r on rt.idx = r.roomType.idx " +      // Rooms는 없을 수도 있음 (LEFT JOIN)
-            "where m.idx = :memberIdx " +
-            "GROUP BY h.idx, h.hotelName, m.memberName, rt.typeName, rt.description, rt.capacity, rt.idx")
+    @Query("SELECT new com.inn.data.member.manager.HotelRoomTypeSummaryDto(" +
+           "    h.idx, " +
+           "    h.hotelName, " +
+           "    COUNT(r.idx)) " +
+           "FROM HotelEntity h " +
+           "LEFT JOIN h.roomTypes rt " +
+           "LEFT JOIN rt.rooms r " +
+           "WHERE h.memberIdx = :memberIdx " +
+           "GROUP BY h.idx, h.hotelName")
     List<HotelRoomTypeSummaryDto> findHotelRoomTypesByMemberIdx(@Param("memberIdx") Long memberIdx);
 
     @Query("select h from HotelEntity h where h.memberIdx = :memberIdx")
