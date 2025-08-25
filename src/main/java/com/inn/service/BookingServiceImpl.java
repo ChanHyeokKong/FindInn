@@ -167,7 +167,7 @@ public class BookingServiceImpl implements BookingService {
      */
     @Override
     public List<BookingListInfo> getBookingsByStatus(Long memberIdx, String status) {
-        List<BookingEntity> bookings = bookingRepository.findByMemberIdxAndStatusOrderByCreatedAtDesc(memberIdx, status);
+        List<BookingEntity> bookings = bookingRepository.findByMemberIdxAndStatusWithPayment(memberIdx, status);
 
         return bookings.stream()
                 .map(booking -> {
