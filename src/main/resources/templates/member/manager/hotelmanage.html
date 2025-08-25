@@ -2,17 +2,22 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/managerLayout}">
 <div layout:fragment="content">
   <div class="manager-content">
-  <a href="/manage/addhotel"><i class="fa-solid fa-plus"> 호텔 상세 추가</i></a>
-  <table id="example" class="table table-striped table-bordered" style="width:100%">
-    <tr>
-      <th>호텔 이름</th>
-      <th>방 개수</th>
-    </tr>
-    <tr th:each="hotelRoomInfo : ${hotelRoomInfos}">
-      <td th:text="${hotelRoomInfo.hotelName}"></td>
-      <td th:text="${hotelRoomInfo.roomCount}"></td>
-    </tr>
-  </table>
+    <a href="/manage/addnewhotel"><i class="fa-solid fa-plus"> 호텔 추가</i></a>
+    <table id="example" class="table table-striped table-bordered" style="width:100%">
+      <thead> <tr>
+        <th>호텔 이름</th>
+        <th>방 개수</th>
+        <th>관리</th> </tr>
+      </thead>
+      <tbody> <tr th:each="hotelRoomInfo : ${hotelRoomInfos}">
+        <td th:text="${hotelRoomInfo.hotelName}"></td>
+        <td th:text="${hotelRoomInfo.roomCount}"></td>
+        <td>
+          <a th:href="@{/edit/{id}(id=${hotelRoomInfo.hotelId})}" class="btn btn-primary btn-sm">수정</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 </html>
