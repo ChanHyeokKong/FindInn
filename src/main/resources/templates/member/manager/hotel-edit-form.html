@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>숙소 정보 등록 - FindInn</title>
+    <title>숙소 정보 수정 - FindInn</title>
     
     <!-- Preload Critical Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -108,21 +108,6 @@
             object-fit: cover;
         }
         
-        .image-preview-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .image-preview-item img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: var(--border-radius-md);
-            border: 1px solid var(--gray-200);
-        }
-        
         .btn-custom-primary {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             border: none;
@@ -199,10 +184,13 @@
 <div layout:fragment="content">
     <div class="edit-form-container">
         <div class="page-header">
-            <h1><i class="fas fa-plus me-3"></i>숙소 정보 등록</h1>
+            <h1><i class="fas fa-edit me-3"></i>숙소 정보 수정</h1>
         </div>
 
-        <form th:action="@{/manage/registerHotel}" th:object="${hotelRegistrationDto}" method="post" enctype="multipart/form-data">
+        <!-- The form now points to the edit endpoint and is bound to the 'hotel' object -->
+        <form th:action="@{/edit/{id}(id=${hotel.idx})}" th:object="${hotel}" method="post" enctype="multipart/form-data">
+            <input type="hidden" th:field="*{idx}" />
+
             <!-- Basic Information Section -->
             <div class="form-section">
                 <h5><i class="fas fa-info-circle me-2"></i>기본 정보</h5>
@@ -210,12 +198,16 @@
                     <!-- Main Hotel Image -->
                     <div class="col-md-4">
                         <div class="mb-3">
-                            <label class="form-label">숙소 대표 사진 등록</label>
-                            <div class="image-upload-box" id="main-upload-box" onclick="document.getElementById('image-files').click();" style="height: 300px;">
-                                <span><i class="fa fa-camera fa-2x"></i><br>클릭하여 대표 사진 추가</span>
+                            <label class="form-label">숙소 대표 사진</label>
+                            <!-- The box now displays the existing image -->
+                            <div class="image-upload-box" id="main-upload-box" onclick="document.getElementById('new-main-image-file').click();" style="height: 300px;">
+                                <img th:if="*{hotelImage != null}"
+                                     th:src="@{'/uploads/hotels/' + ${hotel.hotelImage}}"
+                                     alt="대표 사진"/>
+                                <span th:unless="*{hotelImage != null}"><i class="fa fa-camera fa-2x"></i><br>클릭하여 대표 사진 추가</span>
                             </div>
-                            <input class="d-none" type="file" id="image-files" name="imageFiles" accept="image/*" multiple>
-                            <div id="image-preview-container" class="image-preview-container"></div>
+                            <!-- This input is for uploading a NEW image -->
+                            <input class="d-none" type="file" id="new-main-image-file" name="newHotelImageFile" accept="image/*">
                         </div>
                     </div>
 
@@ -223,22 +215,21 @@
                     <div class="col-md-7">
                         <div class="mb-3">
                             <label for="hotel_name" class="form-label">숙소명</label>
-                            <input type="text" class="form-control" id="hotel_name" name="hotel_name"
-                                   placeholder="숙소명을 입력하세요" required>
+                            <input type="text" class="form-control" id="hotel_name" th:field="*{hotelName}" required>
                         </div>
                         <div class="mb-3">
                             <label for="phone_number" class="form-label">전화번호</label>
-                            <input type="text" class="form-control" id="phone_number" name="phone_number"
-                                   placeholder="전화번호를 입력하세요" required>
+                            <input type="text" class="form-control" id="phone_number" th:field="*{hotelTel}" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">주소</label>
                             <div class="input-group mb-2">
-                                <input type="text" id="postcode" name="postcode" class="form-control" placeholder="우편번호" readonly>
+                                <input type="text" id="postcode" class="form-control" placeholder="우편번호" readonly>
                                 <button class="btn btn-outline-secondary" type="button" onclick="execDaumPostcode()">우편번호 찾기</button>
                             </div>
-                            <input type="text" id="address" name="address" class="form-control mb-2" placeholder="주소" readonly>
-                            <input type="text" id="detailAddress" name="detailAddress" class="form-control" placeholder="상세주소">
+                            <!-- The main address field is now bound -->
+                            <input type="text" id="address" th:field="*{hotelAddress}" class="form-control mb-2" placeholder="주소" readonly>
+                            <input type="text" id="detailAddress" class="form-control" placeholder="상세주소">
                         </div>
                     </div>
                 </div>
@@ -248,45 +239,45 @@
             <div class="form-section">
                 <h5><i class="fas fa-tags me-2"></i>카테고리</h5>
                 <div class="d-flex flex-wrap gap-2">
-                    <input type="radio" class="btn-check" name="category" id="cat_motel" value="motel" required><label class="btn btn-outline-primary" for="cat_motel">모텔</label>
-                    <input type="radio" class="btn-check" name="category" id="cat_hotel" value="hotel&resort"><label class="btn btn-outline-primary" for="cat_hotel">호텔·리조트</label>
-                    <input type="radio" class="btn-check" name="category" id="cat_pension" value="pension"><label class="btn btn-outline-primary" for="cat_pension">펜션</label>
-                    <input type="radio" class="btn-check" name="category" id="cat_home" value="home&villa"><label class="btn btn-outline-primary" for="cat_home">홈&빌라</label>
-                    <input type="radio" class="btn-check" name="category" id="cat_camping" value="camping"><label class="btn btn-outline-primary" for="cat_camping">캠핑</label>
-                    <input type="radio" class="btn-check" name="category" id="cat_guesthouse" value="guesthouse"><label class="btn btn-outline-primary" for="cat_guesthouse">게하·한옥</label>
+                    <input type="radio" class="btn-check" th:field="*{hotelCategory}" value="motel" id="cat_motel"><label class="btn btn-outline-primary" for="cat_motel">모텔</label>
+                    <input type="radio" class="btn-check" th:field="*{hotelCategory}" value="hotel&resort" id="cat_hotel"><label class="btn btn-outline-primary" for="cat_hotel">호텔·리조트</label>
+                    <input type="radio" class="btn-check" th:field="*{hotelCategory}" value="pension" id="cat_pension"><label class="btn btn-outline-primary" for="cat_pension">펜션</label>
+                    <input type="radio" class="btn-check" th:field="*{hotelCategory}" value="home&villa" id="cat_home"><label class="btn btn-outline-primary" for="cat_home">홈&빌라</label>
+                    <input type="radio" class="btn-check" th:field="*{hotelCategory}" value="camping" id="cat_camping"><label class="btn btn-outline-primary" for="cat_camping">캠핑</label>
+                    <input type="radio" class="btn-check" th:field="*{hotelCategory}" value="guesthouse" id="cat_guesthouse"><label class="btn btn-outline-primary" for="cat_guesthouse">게하·한옥</label>
                 </div>
             </div>
 
             <!-- Tags and Facilities Section -->
-            <div class="form-section">
+            <div class="form-section" th:object="${hotel.tags}">
                 <h5><i class="fas fa-heart me-2"></i>#취향</h5>
                 <div class="d-flex flex-wrap gap-2">
-                    <input type="checkbox" class="btn-check" id="tag_family" name="tag" value="family"><label class="btn btn-outline-success" for="tag_family">#가족여행숙소</label>
-                    <input type="checkbox" class="btn-check" id="tag_waterpool" name="tag" value="waterpool"><label class="btn btn-outline-success" for="tag_waterpool">#온수풀</label>
-                    <input type="checkbox" class="btn-check" id="tag_view" name="tag" value="view"><label class="btn btn-outline-success" for="tag_view">#뷰맛집</label>
-                    <input type="checkbox" class="btn-check" id="tag_beach" name="tag" value="beach"><label class="btn btn-outline-success" for="tag_beach">#바닷가</label>
-                    <input type="checkbox" class="btn-check" id="tag_nicemeal" name="tag" value="nicemeal"><label class="btn btn-outline-success" for="tag_nicemeal">#조식맛집</label>
+                    <input type="checkbox" class="btn-check" id="tag_family" name="tags.family" th:checked="*{family}"/><label class="btn btn-outline-success" for="tag_family">#가족여행숙소</label>
+                    <input type="checkbox" class="btn-check" id="tag_waterpool" name="tags.waterpool" th:checked="*{waterpool}"/><label class="btn btn-outline-success" for="tag_waterpool">#온수풀</label>
+                    <input type="checkbox" class="btn-check" id="tag_view" name="tags.view" th:checked="*{view}"/><label class="btn btn-outline-success" for="tag_view">#뷰맛집</label>
+                    <input type="checkbox" class="btn-check" id="tag_beach" name="tags.beach" th:checked="*{beach}"/><label class="btn btn-outline-success" for="tag_beach">#바닷가</label>
+                    <input type="checkbox" class="btn-check" id="tag_nicemeal" name="tags.nicemeal" th:checked="*{nicemeal}"/><label class="btn btn-outline-success" for="tag_nicemeal">#조식맛집</label>
                 </div>
                 
                 <h5 class="mt-4"><i class="fas fa-concierge-bell me-2"></i>시설</h5>
                 <div class="d-flex flex-wrap gap-2">
-                    <input type="checkbox" class="btn-check" id="fac_sauna" name="tag" value="sauna"><label class="btn btn-outline-secondary" for="fac_sauna">사우나</label>
-                    <input type="checkbox" class="btn-check" id="fac_swimming_pool" name="tag" value="swimming_pool"><label class="btn btn-outline-secondary" for="fac_swimming_pool">수영장</label>
-                    <input type="checkbox" class="btn-check" id="fac_restaurant" name="tag" value="restaurant"><label class="btn btn-outline-secondary" for="fac_restaurant">레스토랑</label>
-                    <input type="checkbox" class="btn-check" id="fac_fitness" name="tag" value="fitness"><label class="btn btn-outline-secondary" for="fac_fitness">피트니스</label>
-                    <input type="checkbox" class="btn-check" id="fac_golf" name="tag" value="golf"><label class="btn btn-outline-secondary" for="fac_golf">골프장</label>
-                    <input type="checkbox" class="btn-check" id="fac_pc" name="tag" value="pc"><label class="btn btn-outline-secondary" for="fac_pc">공용PC</label>
-                    <input type="checkbox" class="btn-check" id="fac_kitchen" name="tag" value="kitchen"><label class="btn btn-outline-secondary" for="fac_kitchen">주방/식당</label>
-                    <input type="checkbox" class="btn-check" id="fac_washing_machine" name="tag" value="washing_machine"><label class="btn btn-outline-secondary" for="fac_washing_machine">세탁기</label>
-                    <input type="checkbox" class="btn-check" id="fac_parking" name="tag" value="parking"><label class="btn btn-outline-secondary" for="fac_parking">주차장</label>
-                    <input type="checkbox" class="btn-check" id="fac_spa" name="tag" value="spa"><label class="btn btn-outline-secondary" for="fac_spa">온천</label>
-                    <input type="checkbox" class="btn-check" id="fac_ski" name="tag" value="ski"><label class="btn btn-outline-secondary" for="fac_ski">스키장</label>
-                    <input type="checkbox" class="btn-check" id="fac_in_room_eating" name="tag" value="in_room_eating"><label class="btn btn-outline-secondary" for="fac_in_room_eating">객실내취사</label>
-                    <input type="checkbox" class="btn-check" id="fac_breakfast" name="tag" value="breakfast"><label class="btn btn-outline-secondary" for="fac_breakfast">조식제공</label>
-                    <input type="checkbox" class="btn-check" id="fac_smoking" name="tag" value="smoking"><label class="btn btn-outline-secondary" for="fac_smoking">객실내흡연</label>
-                    <input type="checkbox" class="btn-check" id="fac_luggage" name="tag" value="luggage"><label class="btn btn-outline-secondary" for="fac_luggage">짐보관가능</label>
-                    <input type="checkbox" class="btn-check" id="fac_disabled" name="tag" value="disabled"><label class="btn btn-outline-secondary" for="fac_disabled">장애인편의</label>
-                    <input type="checkbox" class="btn-check" id="fac_pickup" name="tag" value="pickup"><label class="btn btn-outline-secondary" for="fac_pickup">픽업서비스</label>
+                    <input type="checkbox" class="btn-check" id="fac_sauna" name="tags.sauna" th:checked="*{sauna}"/><label class="btn btn-outline-secondary" for="fac_sauna">사우나</label>
+                    <input type="checkbox" class="btn-check" id="fac_swimming_pool" name="tags.swimming_pool" th:checked="*{swimming_pool}"/><label class="btn btn-outline-secondary" for="fac_swimming_pool">수영장</label>
+                    <input type="checkbox" class="btn-check" id="fac_restaurant" name="tags.restaurant" th:checked="*{restaurant}"/><label class="btn btn-outline-secondary" for="fac_restaurant">레스토랑</label>
+                    <input type="checkbox" class="btn-check" id="fac_fitness" name="tags.fitness" th:checked="*{fitness}"/><label class="btn btn-outline-secondary" for="fac_fitness">피트니스</label>
+                    <input type="checkbox" class="btn-check" id="fac_golf" name="tags.golf" th:checked="*{golf}"/><label class="btn btn-outline-secondary" for="fac_golf">골프장</label>
+                    <input type="checkbox" class="btn-check" id="fac_pc" name="tags.pc" th:checked="*{pc}"/><label class="btn btn-outline-secondary" for="fac_pc">공용PC</label>
+                    <input type="checkbox" class="btn-check" id="fac_kitchen" name="tags.kitchen" th:checked="*{kitchen}"/><label class="btn btn-outline-secondary" for="fac_kitchen">주방/식당</label>
+                    <input type="checkbox" class="btn-check" id="fac_washing_machine" name="tags.washing_Machine" th:checked="*{washing_Machine}"/><label class="btn btn-outline-secondary" for="fac_washing_machine">세탁기</label>
+                    <input type="checkbox" class="btn-check" id="fac_parking" name="tags.parking" th:checked="*{parking}"/><label class="btn btn-outline-secondary" for="fac_parking">주차장</label>
+                    <input type="checkbox" class="btn-check" id="fac_spa" name="tags.spa" th:checked="*{spa}"/><label class="btn btn-outline-secondary" for="fac_spa">온천</label>
+                    <input type="checkbox" class="btn-check" id="fac_ski" name="tags.ski" th:checked="*{ski}"/><label class="btn btn-outline-secondary" for="fac_ski">스키장</label>
+                    <input type="checkbox" class="btn-check" id="fac_in_room_eating" name="tags.in_Room_Eating" th:checked="*{in_Room_Eating}"/><label class="btn btn-outline-secondary" for="fac_in_room_eating">객실내취사</label>
+                    <input type="checkbox" class="btn-check" id="fac_breakfast" name="tags.breakfast" th:checked="*{breakfast}"/><label class="btn btn-outline-secondary" for="fac_breakfast">조식제공</label>
+                    <input type="checkbox" class="btn-check" id="fac_smoking" name="tags.smoking" th:checked="*{smoking}"/><label class="btn btn-outline-secondary" for="fac_smoking">객실내흡연</label>
+                    <input type="checkbox" class="btn-check" id="fac_luggage" name="tags.luggage" th:checked="*{luggage}"/><label class="btn btn-outline-secondary" for="fac_luggage">짐보관가능</label>
+                    <input type="checkbox" class="btn-check" id="fac_disabled" name="tags.disabled" th:checked="*{disabled}"/><label class="btn btn-outline-secondary" for="fac_disabled">장애인편의</label>
+                    <input type="checkbox" class="btn-check" id="fac_pickup" name="tags.pickup" th:checked="*{pickup}"/><label class="btn btn-outline-secondary" for="fac_pickup">픽업서비스</label>
                 </div>
             </div>
 
@@ -299,23 +290,71 @@
                     </button>
                 </div>
                 <div id="room-cards-container">
+                    <div th:each="room, iterStat : *{roomTypes}" class="room-card" th:id="'room-card-' + ${iterStat.index}">
+                        <div class="d-flex justify-content-end mb-2">
+                            <button type="button" class="btn-close" aria-label="Close" th:onclick="'deleteRoomCard(\'room-card-' + ${iterStat.index} + '\')'"></button>
+                        </div>
+                        <input type="hidden" th:field="*{roomTypes[__${iterStat.index}__].idx}" />
+                        <input type="hidden" th:field="*{roomTypes[__${iterStat.index}__].imageUrl}" />
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">객실 사진</label>
+                                <input type="file" class="form-control d-none" th:id="'room-image-input-' + ${iterStat.index}" th:name="|roomTypes[${iterStat.index}].imageFile|" accept="image/*" th:onchange="'previewRoomImage(event, \'room-image-preview-' + ${iterStat.index} + '\')'">
+                                <div th:id="'room-image-preview-' + ${iterStat.index}" class="image-upload-box" th:onclick="'document.getElementById(\'room-image-input-' + ${iterStat.index} + '\').click();'">
+                                    <img th:if="${room.imageUrl != null}"
+                                         th:src="@{'/uploads/hotels/' + ${room.imageUrl}}"
+                                         alt="Room image preview"/>
+                                    <span th:unless="${room.imageUrl != null}"><i class='fa fa-image'></i><br>클릭하여 사진 추가</span>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">객실명</label>
+                                    <input type="text" class="form-control" th:field="*{roomTypes[__${iterStat.index}__].typeName}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">객실 설명</label>
+                                    <textarea class="form-control" th:field="*{roomTypes[__${iterStat.index}__].description}" rows="2"></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6 mb-3">
+                                        <label class="form-label">가격 (1박)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" th:field="*{roomTypes[__${iterStat.index}__].price}" required>
+                                            <span class="input-group-text">원</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 mb-3">
+                                        <label class="form-label">최대 인원</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" th:field="*{roomTypes[__${iterStat.index}__].capacity}" required>
+                                            <span class="input-group-text">명</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Description Section -->
             <div class="form-section">
                 <h5><i class="fas fa-file-alt me-2"></i>숙소 소개</h5>
-                <textarea id="desc" th:field="*{desc}"></textarea>
+                <!-- Set initial content for Froala editor from the model -->
+                <textarea id="desc" th:field="*{description}" th:text="*{description}"></textarea>
             </div>
 
             <!-- Submit Button -->
             <div class="form-section text-center">
                 <button type="submit" class="btn-custom-primary btn-lg">
-                    <i class="fas fa-save me-2"></i>등록하기
+                    <i class="fas fa-save me-2"></i>수정하기
                 </button>
             </div>
         </form>
     </div>
+    <!-- 스크립트를 레이아웃과 호환되도록 별도 블록으로 분리 -->
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/froala-editor@4.2.0/js/froala_editor.pkgd.min.js"></script>
     <script th:inline="javascript">
@@ -353,52 +392,30 @@
 
         // Main Image Preview
         document.addEventListener('DOMContentLoaded', function() {
-            const imageFiles = document.getElementById('image-files');
-            if (imageFiles) {
-                imageFiles.addEventListener('change', function(event) {
+            const mainImageFile = document.getElementById('new-main-image-file');
+            if (mainImageFile) {
+                mainImageFile.addEventListener('change', function(event) {
                     const mainUploadBox = document.getElementById('main-upload-box');
-                    const previewContainer = document.getElementById('image-preview-container');
-
-                    // Always clear the previous previews
-                    previewContainer.innerHTML = '';
-
-                    const files = event.target.files;
-
-                    // If no files are selected (or selection is cancelled), reset the main box
-                    if (files.length === 0) {
-                        mainUploadBox.style.display = 'flex'; // Restore flex for centering
-                        mainUploadBox.style.padding = '';
-                        mainUploadBox.innerHTML = '<span><i class="fa fa-camera fa-2x"></i><br>클릭하여 대표 사진 추가</span>';
-                        return;
-                    }
-
-                    // --- New logic to fill the main upload box with the first image ---
-                    const firstFile = files[0];
-                    if (firstFile) {
-                        const readerForMain = new FileReader();
-                        readerForMain.onload = function(e) {
-                            mainUploadBox.style.display = 'block'; // Change display
-                            mainUploadBox.style.padding = '0';   // Remove padding
-                            // Use an img tag that fills the container
-                            mainUploadBox.innerHTML = `<img src="${e.target.result}" alt="대표 사진 프리뷰" style="width: 100%; height: 100%; object-fit: cover; border-radius: 5px;">`;
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            mainUploadBox.innerHTML = `<img src="${e.target.result}" alt="새 대표 사진 프리뷰">`;
                         };
-                        readerForMain.readAsDataURL(firstFile);
+                        reader.readAsDataURL(file);
                     }
                 });
             }
         });
 
         // --- Dynamic Room Card Logic ---
-        let roomIndex = 0;
         let roomCardsContainer;
+        let roomIndex = /*[[${#lists.size(hotel.roomTypes)}]]*/ 0;
 
         document.addEventListener('DOMContentLoaded', function() {
             roomCardsContainer = document.getElementById('room-cards-container');
-            // Add one room card by default when the page loads
-            addRoomCard();
         });
 
-        // Function to add a new room card
         function addRoomCard() {
             if (!roomCardsContainer) {
                 roomCardsContainer = document.getElementById('room-cards-container');
@@ -416,33 +433,32 @@
                     <div class="row">
                         <div class="col-md-4">
                             <label for="${imageInputId}" class="form-label">객실 사진</label>
-                            <input type="file" class="form-control d-none" id="${imageInputId}" name="rooms[${roomIndex}].imageFile" accept="image/*" onchange="previewRoomImage(event, '${imagePreviewId}')">
+                            <input type="file" class="form-control d-none" id="${imageInputId}" name="roomTypes[${roomIndex}].imageFile" accept="image/*" onchange="previewRoomImage(event, '${imagePreviewId}')">
                             <div id="${imagePreviewId}" class="image-upload-box" onclick="document.getElementById('${imageInputId}').click();">
                                <span><i class='fa fa-image'></i><br>클릭하여 사진 추가</span>
                             </div>
                         </div>
-
                         <div class="col-md-8">
                             <div class="mb-3">
                                 <label class="form-label">객실명</label>
-                                <input type="text" class="form-control" name="rooms[${roomIndex}].typeName" placeholder="예: 디럭스 더블룸" required>
+                                <input type="text" class="form-control" name="roomTypes[${roomIndex}].typeName" placeholder="예: 디럭스 더블룸" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">객실 설명</label>
-                                <textarea class="form-control" name="rooms[${roomIndex}].description" rows="2" placeholder="예: 오션뷰, 킹사이즈 베드"></textarea>
+                                <textarea class="form-control" name="roomTypes[${roomIndex}].description" rows="2" placeholder="예: 오션뷰, 킹사이즈 베드"></textarea>
                             </div>
                             <div class="row">
                                 <div class="col-sm-6 mb-3">
                                     <label class="form-label">가격 (1박)</label>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" name="rooms[${roomIndex}].price" placeholder="숫자만 입력" required>
+                                        <input type="number" class="form-control" name="roomTypes[${roomIndex}].price" placeholder="숫자만 입력" required>
                                         <span class="input-group-text">원</span>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 mb-3">
                                     <label class="form-label">최대 인원</label>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" name="rooms[${roomIndex}].maxCapacity" placeholder="숫자만 입력" required>
+                                        <input type="number" class="form-control" name="roomTypes[${roomIndex}].capacity" placeholder="숫자만 입력" required>
                                          <span class="input-group-text">명</span>
                                     </div>
                                 </div>
@@ -455,7 +471,6 @@
             roomIndex++; // Increment index for the next card
         }
 
-        // Function to delete a room card
         function deleteRoomCard(cardId) {
             const card = document.getElementById(cardId);
             if (card) {
@@ -463,11 +478,9 @@
             }
         }
 
-        // Function to preview the image for a specific room card
         function previewRoomImage(event, previewId) {
             const previewContainer = document.getElementById(previewId);
             const file = event.target.files[0];
-
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -480,6 +493,7 @@
         }
     </script>
 </div>
+
 
 </body>
 </html>
