@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -194,5 +195,10 @@ public class ReviewService {
 
     public RatingDto getRatings(Long hotel_id){
         return reviewRepository.findReviewStatsByHotelId(hotel_id);
+    }
+
+    @Transactional
+    public void deleteReview(Long review_id){
+        reviewRepository.deleteByIdx(review_id);
     }
 }
