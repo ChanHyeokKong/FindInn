@@ -35,7 +35,7 @@
                 <div class="d-flex align-items-center gap-3 mb-4 p-2 border rounded">
 
 
-                    <img th:src="@{'/hotelImage/' + ${review.hotelImages}}" alt="상품 이미지" class="rounded" style="width: 70px; height: 70px; object-fit: cover;">
+                    <img th:src="@{'/uploads/hotels/' + ${review.hotelImages}}" alt="상품 이미지" class="rounded" style="width: 70px; height: 70px; object-fit: cover;">
                     <div>
                         <small class="text-muted" th:text="${review.hotelName}"></small>
                         <p class="mb-0 fw-medium" th:text="${review.roomName}"></p>

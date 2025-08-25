@@ -4,19 +4,23 @@ import com.inn.config.CustomUserDetails;
 import com.inn.data.chat.ChatRoomDto;
 import com.inn.data.chat.ChatRoomRepository;
 import com.inn.data.detail.DescriptionDto;
-import com.inn.data.hotel.HotelDto;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
+import com.inn.data.hotel.TagEntity;
 import com.inn.data.member.MemberDto;
 import com.inn.data.member.MyPageDto;
 import com.inn.data.member.manager.HotelRoomTypeSummaryDto;
 import com.inn.data.member.manager.HotelWithManagerDto;
 import com.inn.data.post.Post;
+import com.inn.data.registerHotel.HotelEditDto;
 import com.inn.data.registerHotel.HotelRegistrationDto;
+import com.inn.data.registerHotel.RoomTypeEditDto;
+import com.inn.data.registerHotel.TagEditDto;
 import com.inn.data.rooms.Rooms;
 import com.inn.data.rooms.RoomsRepository;
 import com.inn.data.rooms.RoomTypes;
 import com.inn.data.rooms.RoomTypesRepository;
+import com.inn.service.FileStorageService;
 import com.inn.service.HotelService;
 import com.inn.service.ManagerService;
 import com.inn.service.MemberService;
@@ -28,12 +32,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -53,6 +57,12 @@ public class ManagerController {
     ChatRoomRepository chatRoomRepository;
     @Autowired
     private HotelService hotelService;
+
+    @Autowired
+    FileStorageService fileStorageService;
+
+    @Autowired
+    private org.springframework.core.io.ResourceLoader resourceLoader;
 
     @GetMapping("manage/room/detail")
     public String roomDetail(Long idx){
@@ -122,7 +132,21 @@ public class ManagerController {
 
 
     @GetMapping("manage/addnewhotel")
-    public String addNewHotel(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
+    public String addNewHotel(@AuthenticationPrincipal CustomUserDetails currentUser, Model model) {
+        HotelRegistrationDto hotelRegistrationDto = new HotelRegistrationDto();
+
+        // 리소스 폴더의 txt 파일에서 기본 설명을 로드
+        try {
+            org.springframework.core.io.Resource resource = resourceLoader.getResource("classpath:templates/defaults/hotel-description-template.txt");
+            String template = new String(resource.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            hotelRegistrationDto.setDesc(template);
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            // 파일을 읽지 못한 경우, 비어있거나 기본적인 대체 텍스트를 설정
+            hotelRegistrationDto.setDesc("<p>설명 템플릿을 불러오는 데 실패했습니다.</p>");
+        }
+
+        model.addAttribute("hotelRegistrationDto", hotelRegistrationDto);
         return "member/manager/addnewhotel";
     }
 
@@ -242,5 +266,208 @@ public class ManagerController {
         String content = hotelService.getHotelDescription(hotelId);
         return Collections.singletonMap("content", content != null ? content : "");
     }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable("id") Long id, Model model) {
+        // 1. Fetch the HotelEntity from the database
+        HotelEntity hotelEntity = hotelRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid hotel Id:" + id));
+        HotelEditDto hotelEditDto = mapEntityToDto(hotelEntity);
+        model.addAttribute("hotel", hotelEditDto);
+        return "member/manager/hotel-edit-form";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String processEditForm(@PathVariable("id") Long id,
+                                  @ModelAttribute("hotel") HotelEditDto hotelEditDto,
+                                  RedirectAttributes redirectAttributes) {
+        try {
+            HotelEntity hotelEntity = hotelRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid hotel Id:" + id));
+
+            updateEntityFromDto(hotelEntity, hotelEditDto);
+
+            hotelRepository.save(hotelEntity);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Hotel updated successfully!");
+        } catch (IOException e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "Error saving image file.");
+            return "redirect:/manage/hotel";
+        } catch (Exception e) {
+            // Handle other exceptions
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while updating the hotel.");
+            return "redirect:/manage/hotel";
+        }
+
+        return "redirect:/manage/hotel";
+    }
+
+
+    private HotelEditDto mapEntityToDto(HotelEntity entity) {
+        HotelEditDto dto = new HotelEditDto();
+        dto.setIdx(entity.getIdx());
+        dto.setHotelName(entity.getHotelName());
+        dto.setHotelAddress(entity.getHotelAddress());
+        dto.setHotelTel(entity.getHotelTel());
+        dto.setHotelCategory(entity.getHotelCategory());
+        dto.setDescription(entity.getDescription());
+        dto.setHotelImage(entity.getHotelImage()); // URL of the main image
+        dto.setHotelImages(entity.getHotelImages()); // URLs of gallery images
+
+        // Map associated tags
+        if (entity.getTag() != null) {
+            dto.setTags(mapTagEntityToDto(entity.getTag()));
+        }
+
+        // Map associated room types
+        dto.setRoomTypes(entity.getRoomTypes().stream()
+                .map(this::mapRoomTypeEntityToDto)
+                .collect(Collectors.toList()));
+
+        return dto;
+    }
+
+    private TagEditDto mapTagEntityToDto(TagEntity tagEntity) {
+        TagEditDto tagDto = new TagEditDto();
+        tagDto.setSauna(tagEntity.isSauna());
+        tagDto.setSwimming_pool(tagEntity.isSwimming_pool());
+        tagDto.setRestaurant(tagEntity.isRestaurant());
+        tagDto.setFitness(tagEntity.isFitness());
+        tagDto.setGolf(tagEntity.isGolf());
+        tagDto.setPc(tagEntity.isPc());
+        tagDto.setKitchen(tagEntity.isKitchen());
+        tagDto.setWashing_Machine(tagEntity.isWashing_Machine());
+        tagDto.setParking(tagEntity.isParking());
+        tagDto.setSpa(tagEntity.isSpa());
+        tagDto.setSki(tagEntity.isSki());
+        tagDto.setIn_Room_Eating(tagEntity.isIn_Room_Eating());
+        tagDto.setBreakfast(tagEntity.isBreakfast());
+        tagDto.setSmoking(tagEntity.isSmoking());
+        tagDto.setLuggage(tagEntity.isLuggage());
+        tagDto.setDisabled(tagEntity.isDisabled());
+        tagDto.setPickup(tagEntity.isPickup());
+        tagDto.setFamily(tagEntity.isFamily());
+        tagDto.setWaterpool(tagEntity.isWaterpool());
+        tagDto.setView(tagEntity.isView());
+        tagDto.setBeach(tagEntity.isBeach());
+        tagDto.setNicemeal(tagEntity.isNicemeal());
+        tagDto.setCoupon(tagEntity.isCoupon());
+        tagDto.setDiscount(tagEntity.isDiscount());
+        return tagDto;
+    }
+
+    private RoomTypeEditDto mapRoomTypeEntityToDto(RoomTypes roomType) {
+        RoomTypeEditDto roomDto = new RoomTypeEditDto();
+        roomDto.setIdx(roomType.getIdx());
+        roomDto.setTypeName(roomType.getTypeName());
+        roomDto.setDescription(roomType.getDescription());
+        roomDto.setPrice(roomType.getPrice());
+        roomDto.setCapacity(roomType.getCapacity());
+        roomDto.setImageUrl(roomType.getImageUrl());
+        return roomDto;
+    }
+
+    private void updateEntityFromDto(HotelEntity entity, HotelEditDto dto) throws IOException {
+        // Update basic hotel info
+        entity.setHotelName(dto.getHotelName());
+        entity.setHotelAddress(dto.getHotelAddress());
+        entity.setHotelTel(dto.getHotelTel());
+        entity.setHotelCategory(dto.getHotelCategory());
+        entity.setDescription(dto.getDescription());
+
+        // --- Handle main image replacement ---
+        MultipartFile mainImageFile = dto.getNewHotelImageFile();
+        if (mainImageFile != null && !mainImageFile.isEmpty()) {
+            String oldImageUrl = entity.getHotelImage();
+            String newImageUrl = fileStorageService.store(mainImageFile, "hotels");
+            entity.setHotelImage(newImageUrl);
+            if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+                fileStorageService.delete(oldImageUrl, "hotels");
+            }
+        }
+
+        updateTagEntityFromDto(entity.getTag(), dto.getTags());
+
+        Map<Long, RoomTypes> existingRoomsMap = entity.getRoomTypes()
+                .stream()
+                .collect(Collectors.toMap(RoomTypes::getIdx, room -> room));
+
+        List<RoomTypes> updatedRooms = new ArrayList<>();
+
+        if (dto.getRoomTypes() != null) {
+            for (RoomTypeEditDto roomDto : dto.getRoomTypes()) {
+                RoomTypes roomType;
+                if (roomDto.getIdx() != null) {
+                    roomType = existingRoomsMap.get(roomDto.getIdx());
+                    if (roomType == null) continue;
+                    existingRoomsMap.remove(roomDto.getIdx());
+                } else {
+                    roomType = new RoomTypes();
+                    roomType.setHotel(entity);
+                }
+
+                roomType.setTypeName(roomDto.getTypeName());
+                roomType.setDescription(roomDto.getDescription());
+                roomType.setPrice(roomDto.getPrice());
+                roomType.setCapacity(roomDto.getCapacity());
+
+                MultipartFile roomImageFile = roomDto.getImageFile();
+                if (roomImageFile != null && !roomImageFile.isEmpty()) {
+                    String oldRoomImageUrl = roomType.getImageUrl();
+
+                    String newRoomImageUrl = fileStorageService.store(roomImageFile, "hotels");
+                    roomType.setImageUrl(newRoomImageUrl);
+
+                    if (oldRoomImageUrl != null && !oldRoomImageUrl.isEmpty()) {
+                        fileStorageService.delete(oldRoomImageUrl, "hotels");
+                    }
+                }
+
+                updatedRooms.add(roomType);
+            }
+        }
+
+        for (RoomTypes roomToDelete : existingRoomsMap.values()) {
+            String imageToDelete = roomToDelete.getImageUrl();
+            if (imageToDelete != null && !imageToDelete.isEmpty()) {
+                fileStorageService.delete(imageToDelete, "hotels");
+            }
+        }
+
+        entity.getRoomTypes().clear();
+        entity.getRoomTypes().addAll(updatedRooms);
+    }
+
+    private void updateTagEntityFromDto(TagEntity tagEntity, TagEditDto tagDto) {
+        if (tagEntity == null || tagDto == null) return;
+
+        tagEntity.setSauna(tagDto.isSauna());
+        tagEntity.setSwimming_pool(tagDto.isSwimming_pool());
+        tagEntity.setRestaurant(tagDto.isRestaurant());
+        tagEntity.setFitness(tagDto.isFitness());
+        tagEntity.setGolf(tagDto.isGolf());
+        tagEntity.setPc(tagDto.isPc());
+        tagEntity.setKitchen(tagDto.isKitchen());
+        tagEntity.setWashing_Machine(tagDto.isWashing_Machine());
+        tagEntity.setParking(tagDto.isParking());
+        tagEntity.setSpa(tagDto.isSpa());
+        tagEntity.setSki(tagDto.isSki());
+        tagEntity.setIn_Room_Eating(tagDto.isIn_Room_Eating());
+        tagEntity.setBreakfast(tagDto.isBreakfast());
+        tagEntity.setSmoking(tagDto.isSmoking());
+        tagEntity.setLuggage(tagDto.isLuggage());
+        tagEntity.setDisabled(tagDto.isDisabled());
+        tagEntity.setPickup(tagDto.isPickup());
+        tagEntity.setFamily(tagDto.isFamily());
+        tagEntity.setWaterpool(tagDto.isWaterpool());
+        tagEntity.setView(tagDto.isView());
+        tagEntity.setBeach(tagDto.isBeach());
+        tagEntity.setNicemeal(tagDto.isNicemeal());
+        tagEntity.setCoupon(tagDto.isCoupon());
+        tagEntity.setDiscount(tagDto.isDiscount());
+    }
+
 
 }

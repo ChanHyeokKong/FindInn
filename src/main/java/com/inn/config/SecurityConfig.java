@@ -76,13 +76,14 @@ public class SecurityConfig {
                                 "/ws-chat/**",
                                 "/h_list",
                                 "/h_search",
-                                "/sms/auth",
+                                "/sms/**",
                                 "/domestic-accommodations",
                                 "/event/eventlist",
                                 "/booking/**",
                                 "/uploads/**",
                                 "/reserve",
-                                "/h_search"
+                                "/h_search",
+                                "/payment/**"
                         ).permitAll() // 이 경로들은 인증 없이 접근 허용
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )

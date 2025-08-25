@@ -50,7 +50,7 @@
 
     <!-- 호텔 정보 -->
     <section class="hotel-info">
-        <img th:src="@{'/hotelImage/' + ${detail.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
+        <img th:src="@{'/uploads/hotels/' + ${detail.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
         <div class="hotel-details">
             <h3 th:text="${detail.hotelName}"></h3>
             <div class="address-wrapper">
