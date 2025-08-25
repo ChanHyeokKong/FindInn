@@ -7,6 +7,7 @@ import com.inn.data.member.MemberDto;
 import com.inn.data.member.MyPageDto;
 import com.inn.data.member.QnaDto;
 import com.inn.data.member.QnaRepository;
+import com.inn.data.review.Review;
 import com.inn.data.review.ReviewDto;
 import com.inn.data.review.ReviewRepository;
 import com.inn.service.BookingService;
@@ -120,7 +121,7 @@ public class MemberController {
 
         service.updateMember(dto, newPassword);
         redirectAttributes.addFlashAttribute("successMessage", "회원 정보가 성공적으로 수정되었습니다.");
-        return "redirect:/mypage/update";
+        return "redirect:/mypage/reserve";
     }
 
     @GetMapping("/qna")
@@ -153,9 +154,15 @@ public class MemberController {
             return "redirect:/?login=false";
         }
         Long memberIdx = currentUser.getIdx();
-        List<com.inn.data.review.Review> reviews = reviewRepository.findByMember_Idx(memberIdx);
+        List<Review> reviews = reviewRepository.findByMember_Idx(memberIdx);
         model.addAttribute("reviews", reviews);
         return "member/myreview";
+    }
+
+    @GetMapping("/member/delete")
+    public String deleteMember(@AuthenticationPrincipal CustomUserDetails currentUser) {
+        service.deleteMember(currentUser.getIdx());
+        return "redirect:/logout";
     }
 
 
