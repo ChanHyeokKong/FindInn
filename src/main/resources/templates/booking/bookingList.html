@@ -72,7 +72,7 @@
                 이용 완료된 예약이 없습니다.
             </div>
             <div th:each="booking : ${completedList}" class="booking-item">
-                <img th:src="@{'/hotelImage/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
+                <img th:src="@{'/uploads/hotels/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
                 <div class="booking-info">
                     <span class="status completed">이용완료</span>
                     <h3 class="hotel-name" th:text="${booking.hotelName}">호텔명</h3>
@@ -96,7 +96,7 @@
                 취소된 예약이 없습니다.
             </div>
             <div th:each="booking : ${canceledList}" class="booking-item">
-                <img th:src="@{'/hotelImage/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
+                <img th:src="@{'/uploads/hotels/' + ${booking.hotelImage}}" alt="호텔 이미지" class="hotel-image"/>
                 <div class="booking-info">
                     <span class="status canceled">예약취소</span>
                     <h3 class="hotel-name" th:text="${booking.hotelName}">호텔명</h3>
