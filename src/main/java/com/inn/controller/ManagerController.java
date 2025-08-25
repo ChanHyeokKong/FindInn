@@ -4,7 +4,6 @@ import com.inn.config.CustomUserDetails;
 import com.inn.data.chat.ChatRoomDto;
 import com.inn.data.chat.ChatRoomRepository;
 import com.inn.data.detail.DescriptionDto;
-import com.inn.data.hotel.HotelDto;
 import com.inn.data.hotel.HotelEntity;
 import com.inn.data.hotel.HotelRepository;
 import com.inn.data.hotel.TagEntity;
@@ -61,6 +60,9 @@ public class ManagerController {
 
     @Autowired
     FileStorageService fileStorageService;
+
+    @Autowired
+    private org.springframework.core.io.ResourceLoader resourceLoader;
 
     @GetMapping("manage/room/detail")
     public String roomDetail(Long idx){
@@ -130,7 +132,21 @@ public class ManagerController {
 
 
     @GetMapping("manage/addnewhotel")
-    public String addNewHotel(@AuthenticationPrincipal CustomUserDetails currentUser, Model model){
+    public String addNewHotel(@AuthenticationPrincipal CustomUserDetails currentUser, Model model) {
+        HotelRegistrationDto hotelRegistrationDto = new HotelRegistrationDto();
+
+        // 리소스 폴더의 txt 파일에서 기본 설명을 로드
+        try {
+            org.springframework.core.io.Resource resource = resourceLoader.getResource("classpath:templates/defaults/hotel-description-template.txt");
+            String template = new String(resource.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            hotelRegistrationDto.setDesc(template);
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            // 파일을 읽지 못한 경우, 비어있거나 기본적인 대체 텍스트를 설정
+            hotelRegistrationDto.setDesc("<p>설명 템플릿을 불러오는 데 실패했습니다.</p>");
+        }
+
+        model.addAttribute("hotelRegistrationDto", hotelRegistrationDto);
         return "member/manager/addnewhotel";
     }
 
@@ -258,7 +274,7 @@ public class ManagerController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid hotel Id:" + id));
         HotelEditDto hotelEditDto = mapEntityToDto(hotelEntity);
         model.addAttribute("hotel", hotelEditDto);
-        return "member/hotel-edit-form";
+        return "member/manager/hotel-edit-form";
     }
 
     @PostMapping("/edit/{id}")
