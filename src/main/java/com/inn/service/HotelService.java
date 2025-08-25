@@ -111,6 +111,7 @@ public class HotelService {
         	    + "    rv.review_count "
         	    + "FROM "
         	    + "    hotel h "
+        	    + "LEFT JOIN hotel_tags t ON h.idx = t.hotel_idx "
         	    + "LEFT JOIN "
         	    + "    ( "
         	    + "        SELECT "

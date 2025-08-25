@@ -112,6 +112,7 @@ document.addEventListener("DOMContentLoaded", function() {
         fetch(url, { cache: 'no-cache' })
             .then(res => res.json())
             .then(data => {
+				console.log("서버 응답 데이터:", data);
                 hotels = data;
                 renderHotels(data);
                 console.log("검색된 호텔 목록:", hotels);
@@ -409,7 +410,7 @@ document.addEventListener("DOMContentLoaded", function() {
                           infoCard.style.fontSize = '12px';
                           infoCard.style.zIndex = 2000;
                           infoCard.innerHTML = `
-                          <img src="/hotelImage/${hotel.hotelImage}" alt="호텔 이미지" style="width: 100%; max-height: 100px; object-fit: cover; margin-top: 5px;">	
+                          <img src="/uploads/hotels/${hotel.hotelImage}" alt="호텔 이미지" style="max-width: 100%; max-height: 100px; object-fit: cover; margin-top: 5px;">	
                             <strong>${hotel.hotelName}</strong><br>
                             가격: ${hotel.priceRange.toLocaleString()}원<br>
                             주소: ${hotel.hotelAddress}<br>
