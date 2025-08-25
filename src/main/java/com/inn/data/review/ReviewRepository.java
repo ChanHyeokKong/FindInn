@@ -25,4 +25,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     RatingDto findReviewStatsByHotelId(@Param("hotelId") Long hotelId);
 
     List<ReviewDto> findByMemberIdx(Long memberIdx);
+
+    void deleteByIdx(Long idx);
 }

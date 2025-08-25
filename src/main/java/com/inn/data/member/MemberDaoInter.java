@@ -27,4 +27,6 @@ public interface MemberDaoInter extends JpaRepository<MemberDto, Long> {
     MemberDto findByIdx(Long idx);
 
     List<MemberDto> findAllByStatus(Long status);
+
+    void deleteByIdx(Long idx);
 }

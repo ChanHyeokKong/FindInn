@@ -50,4 +50,10 @@ public class ReviewController {
         return "review/close-with-alert";
     }
 
+    @GetMapping("/reviews/delete")
+    public String deleteReview(Long idx){
+        reviewService.deleteReview(idx);
+        return "redirect:/mypage/review";
+    }
+
  }

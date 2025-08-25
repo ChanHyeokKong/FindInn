@@ -11,10 +11,10 @@ public class HotelRoomTypeSummaryDto {
 
     private Long hotelId;
     private String hotelName;
-    private String memberName;
-    private String roomTypeName;
-    private String roomTypeDescription;
-    private Long roomTypeCapacity;
+//    private String memberName;
+//    private String roomTypeName;
+//    private String roomTypeDescription;
+//    private Long roomTypeCapacity;
     private Long roomCount;
 
 

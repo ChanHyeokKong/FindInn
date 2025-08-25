@@ -36,13 +36,9 @@ public class BookingController {
             Model model) {
 
         if (currentUser != null) {
-            // 로그인 테스트용
-//            model.addAttribute("memberIdx", currentUser.getIdx());
-//            model.addAttribute("memberEmail", currentUser.getUsername());
-//            model.addAttribute("isLogined", true);
-            model.addAttribute("memberIdx", null);
-            model.addAttribute("memberEmail", "test@example.com");
-            model.addAttribute("isLogined", false);
+            model.addAttribute("memberIdx", currentUser.getIdx());
+            model.addAttribute("memberEmail", currentUser.getUsername());
+            model.addAttribute("isLogined", true);
         } else {
             model.addAttribute("memberIdx", null);
             model.addAttribute("memberEmail", "test@example.com");

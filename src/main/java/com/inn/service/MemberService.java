@@ -9,6 +9,9 @@ import com.inn.data.hotel.HotelRepository;
 import com.inn.data.member.*;
 import com.inn.data.member.manager.ManageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.inn.config.CustomUserDetails;
@@ -182,18 +185,39 @@ public class MemberService implements UserDetailsService {
     // 회원 정보 수정
     @Transactional
     public void updateMember(MemberDto updateDto, String newPassword) {
-        MemberDto member = memberDao.findById(updateDto.getIdx()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        // 1. 데이터베이스에서 현재 회원 정보 조회
+        MemberDto member = memberDao.findById(updateDto.getIdx())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + updateDto.getIdx()));
 
-        // 이름과 전화번호 업데이트
+        // 2. 이름과 전화번호 업데이트
         member.setMemberName(updateDto.getMemberName());
         member.setMemberPhone(updateDto.getMemberPhone());
 
-        // 새 비밀번호가 제공되었는지 확인
+        // 3. 새 비밀번호가 제공된 경우에만 업데이트
         if (newPassword != null && !newPassword.isEmpty()) {
             member.setMemberPassword(pe.encode(newPassword));
         }
 
+        // 4. 데이터베이스에 변경사항 저장
         memberDao.save(member);
+
+        // 5. 현재 인증 정보 갱신
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getName().equals(member.getMemberEmail())) {
+            // 새로운 CustomUserDetails 생성
+            CustomUserDetails newUserDetails = new CustomUserDetails(member);
+
+            // 새로운 Authentication 객체 생성
+            UsernamePasswordAuthenticationToken newAuthentication = new UsernamePasswordAuthenticationToken(
+                    newUserDetails,
+                    null, // 비밀번호는 보통 null로 설정
+                    newUserDetails.getAuthorities());
+
+            newAuthentication.setDetails(authentication.getDetails());
+
+            // SecurityContextHolder에 새로운 Authentication 객체 설정
+            SecurityContextHolder.getContext().setAuthentication(newAuthentication);
+        }
     }
 
     public void updateMember(MemberDto updateDto) {
@@ -203,5 +227,10 @@ public class MemberService implements UserDetailsService {
         dto.setStatus(Long.valueOf(1));
         memberDao.save(dto);
 
+    }
+
+    @Transactional
+    public void deleteMember(Long idx){
+        memberDao.deleteByIdx(idx);
     }
 }
