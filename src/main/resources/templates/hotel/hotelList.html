@@ -151,6 +151,116 @@
 		#mapModal .modal-dialog {
 			margin-top: 80px;
 		}
+		/* 정보 카드 스타일 */
+.info-card {
+    position: absolute;
+    min-width: 250px;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #999;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    font-size: 12px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: row;
+    align-items: center; /* 이미지와 정보가 수평으로 정렬되도록 */
+    gap: 10px; /* 이미지와 텍스트 사이 간격 */
+}
+
+/* 호텔 이미지 스타일 */
+.info-card img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px; /* 이미지 테두리 살짝 둥글게 */
+}
+
+/* 텍스트 정보 스타일 */
+.info-card .hotel-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* 호텔명 스타일 */
+.info-card .hotel-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* 가격 정보 스타일 */
+.info-card .hotel-price {
+    margin-bottom: 5px;
+}
+
+/* 주소 및 전화번호 스타일 */
+.info-card .hotel-address,
+.info-card .hotel-tel {
+    font-size: 10px;
+    color: #666;
+}
+
+/* 호버 상태에서의 효과 */
+.info-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.hotel-card.map-hotel-card {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: 380px; /* 카드 전체 폭을 넓게 설정 */
+    margin-bottom: 10px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+.hotel-card.map-hotel-card .hotel-image {
+    width: 120px; /* 이미지 폭 고정 */
+    height: 120px; /* 이미지 높이 고정 */
+    flex-shrink: 0;
+}
+
+.hotel-card.map-hotel-card .hotel-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.hotel-card.map-hotel-card .hotel-info {
+    padding: 0 10px;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.hotel-card.map-hotel-card .hotel-title,
+.hotel-card.map-hotel-card .hotel-address {
+    word-wrap: break-word;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.hotel-card.map-hotel-card .hotel-title {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.hotel-card.map-hotel-card .hotel-address {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.hotel-card.map-hotel-card .price-tag {
+    font-size: 1.1rem;
+    text-align: right;
+    margin-top: auto;
+}
+		
 	</style>
 </th:block>
 
@@ -219,8 +329,8 @@
 				</div>
 				<div class="col-md-6 text-md-end">
 					<div class="d-flex align-items-center justify-content-md-end">
-						<label class="form-label me-2 mb-0 fw-semibold">정렬:</label>
-						<select class="form-select sort-dropdown" id="sortList" name="sort">
+						<label class="form-label me-2 mb-0 fw-semibold" style="writing-mode: horizontal-tb;  text-align: left;">정렬:</label>
+						<select class="form-select sort-dropdown" id="sortList" name="sort" style="width:200px">
 							<option value="Score">평점높은순</option>
 							<option value="Review">리뷰많은순</option>
 							<option value="lowPrice" selected="selected">낮은가격순</option>
