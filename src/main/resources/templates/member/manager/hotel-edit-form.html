@@ -347,11 +347,24 @@
             </div>
 
             <!-- Submit Button -->
-            <div class="form-section text-center">
-                <button type="submit" class="btn-custom-primary btn-lg">
-                    <i class="fas fa-save me-2"></i>수정하기
-                </button>
+            <div class.="form-section">
+                <div class="d-flex justify-content-center align-items-center gap-3">
+                    <button type="submit" class="btn-custom-primary btn-lg">
+                        <i class="fas fa-save me-2"></i>수정하기
+                    </button>
+
+                    <form th:action="@{/delete/{id}(id=${hotel.idx})}" method="post"
+                          onsubmit="return confirm('정말로 이 숙소를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+
+                        <input type="hidden" name="_method" value="delete" />
+
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="fas fa-trash-alt me-2"></i>삭제하기 🗑️
+                        </button>
+                    </form>
+                </div>
             </div>
+
         </form>
     </div>
     <!-- 스크립트를 레이아웃과 호환되도록 별도 블록으로 분리 -->
