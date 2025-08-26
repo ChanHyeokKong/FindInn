@@ -25,7 +25,6 @@ public class ReviewController {
     public class GlobalExceptionHandler {
         @ExceptionHandler(IllegalArgumentException.class)
         public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-            // Returns a 400 Bad Request status with the exception message as the body
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }

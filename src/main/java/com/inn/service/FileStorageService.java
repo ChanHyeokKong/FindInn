@@ -17,14 +17,13 @@ public class FileStorageService {
 
     private final Path rootLocation;
 
-    // Inject the upload path from application.properties
     public FileStorageService(@Value("${file.upload-dir}") String uploadDir) {
         this.rootLocation = Paths.get(uploadDir);
         try {
             // Create the directory if it doesn't exist
             Files.createDirectories(rootLocation);
         } catch (IOException e) {
-            throw new RuntimeException("Could not initialize storage location", e);
+            throw new RuntimeException("저장경로를 지정할 수 없습니다", e);
         }
     }
 
@@ -33,7 +32,7 @@ public class FileStorageService {
 
         try {
             if (file.isEmpty() || originalFilename.contains("..")) {
-                throw new RuntimeException("Invalid file provided");
+                throw new RuntimeException("잘못된 파일입니다.");
             }
 
             Path targetDirectory = this.rootLocation.resolve(subDirectory).normalize();
@@ -55,29 +54,22 @@ public class FileStorageService {
             return uniqueFilename;
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to store file " + originalFilename, e);
+            throw new RuntimeException("파일 저장에 실패했습니다: " + originalFilename, e);
         }
     }
 
     public void delete(String filename, String subfolder) {
         if (filename == null || filename.isBlank()) {
-            return; // Do nothing if the filename is invalid
+            return;
         }
 
         try {
-            // 1. Construct the full path to the file
+            // 경로 지정
             Path filePath = this.rootLocation.resolve(subfolder).resolve(filename).normalize();
-
-            // 2. Delete the file if it exists
-            // Using deleteIfExists prevents an exception if the file is already gone for some reason
             Files.deleteIfExists(filePath);
 
         } catch (IOException ex) {
-            // You might want to log this error instead of throwing a fatal exception,
-            // as a failed deletion might not be a critical failure.
-            System.err.println("Could not delete file: " + filename + ". Reason: " + ex.getMessage());
-            // Or re-throw as a custom exception if it's critical
-            // throw new RuntimeException("Could not delete file: " + filename, ex);
+            System.err.println("파일을 지우는데 실패했습니다: " + filename + "." + ex.getMessage());
         }
     }
 }
