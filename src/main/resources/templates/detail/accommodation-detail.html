@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
@@ -14,18 +15,13 @@
             margin-bottom: var(--spacing-xl);
             margin-top: 0; /* header 바로 아래 시작 */
         }
-
-        /* 메인 콘텐츠가 헤더에 가려지지 않도록 조정 */
         .main-content {
             margin-top: 0 !important;
-            padding: 0 !important; /* accommodation-detail은 자체 패딩 사용 */
+            padding: 0 !important;
         }
-
-        /* 첫 번째 섹션이 헤더 아래 시작되도록 */
         .accommodation-hero {
             padding-top: calc(var(--header-height) + var(--spacing-2xl)) !important;
         }
-
         .accommodation-title {
             font-size: var(--font-size-4xl);
             font-weight: var(--font-weight-extrabold);
@@ -35,7 +31,6 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
         .rating-badge {
             background: linear-gradient(135deg, var(--warning-color), #e0a800);
             color: var(--gray-900);
@@ -47,12 +42,10 @@
             align-items: center;
             gap: var(--spacing-xs);
         }
-
         .action-buttons {
             display: flex;
             gap: var(--spacing-md);
         }
-
         .action-btn {
             padding: var(--spacing-sm) var(--spacing-lg);
             border-radius: var(--border-radius-lg);
@@ -60,41 +53,34 @@
             transition: all var(--transition-fast);
             border: 2px solid transparent;
         }
-
         .action-btn:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
-
         .gallery-section {
             border-radius: var(--border-radius-xl);
             overflow: hidden;
             box-shadow: var(--shadow-lg);
             margin-bottom: var(--spacing-xl);
         }
-
         .gallery-image {
             position: relative;
             overflow: hidden;
             cursor: pointer;
             transition: transform var(--transition-normal);
         }
-
         .gallery-image:hover {
             transform: scale(1.02);
         }
-
         .gallery-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform var(--transition-slow);
         }
-
         .gallery-image:hover img {
             transform: scale(1.05);
         }
-
         .content-card {
             background: var(--white);
             border-radius: var(--border-radius-xl);
@@ -104,11 +90,9 @@
             border: 1px solid var(--gray-200);
             transition: box-shadow var(--transition-normal);
         }
-
         .content-card:hover {
             box-shadow: var(--shadow-lg);
         }
-
         .content-card h3 {
             color: var(--primary-color);
             font-weight: var(--font-weight-bold);
@@ -117,7 +101,6 @@
             border-bottom: 2px solid var(--primary-color);
             position: relative;
         }
-
         .content-card h3::before {
             content: '';
             position: absolute;
@@ -128,7 +111,6 @@
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             border-radius: var(--border-radius-sm);
         }
-
         .room-card {
             border: 2px solid var(--gray-200);
             border-radius: var(--border-radius-xl);
@@ -137,18 +119,15 @@
             transition: all var(--transition-fast);
             background: var(--white);
         }
-
         .room-card:hover {
             border-color: var(--primary-color);
             box-shadow: var(--shadow-lg);
             transform: translateY(-3px);
         }
-
         .room-image {
             border-radius: var(--border-radius-lg);
             overflow: hidden;
         }
-
         .room-price {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
@@ -158,7 +137,6 @@
             font-size: var(--font-size-lg);
             box-shadow: var(--shadow-md);
         }
-
         .select-btn {
             background: linear-gradient(135deg, var(--success-color), #1e7e34);
             border: none;
@@ -169,14 +147,12 @@
             transition: all var(--transition-fast);
             box-shadow: var(--shadow-sm);
         }
-
         .select-btn:hover {
             background: linear-gradient(135deg, #1e7e34, #155724);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
             color: white;
         }
-
         .amenity-item {
             display: flex;
             align-items: center;
@@ -186,23 +162,19 @@
             border-radius: var(--border-radius-md);
             transition: all var(--transition-fast);
         }
-
         .amenity-item:hover {
             background: var(--primary-lighter);
             transform: translateX(5px);
         }
-
         .amenity-item i {
             color: var(--primary-color);
             font-size: var(--font-size-lg);
         }
-
         .map-container {
             border-radius: var(--border-radius-xl);
             overflow: hidden;
             box-shadow: var(--shadow-lg);
         }
-
         .review-card {
             background: var(--white);
             border: 1px solid var(--gray-200);
@@ -211,54 +183,38 @@
             margin-bottom: var(--spacing-lg);
             transition: all var(--transition-fast);
         }
-
         .review-card:hover {
             box-shadow: var(--shadow-md);
             border-color: var(--primary-light);
         }
-
         .review-stars {
             color: var(--warning-color);
             margin-bottom: var(--spacing-sm);
         }
-
-        /* 갤러리 모달 캐러셀 특별 스타일 */
-        #galleryModal .carousel-item {
-            background-color: #212529;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #galleryModal .carousel-item img {
-            max-height: 90vh;
-            max-width: 90vw;
-            object-fit: contain;
-            width: auto;
-            height: auto;
-            border-radius: var(--border-radius-lg);
-        }
-
-        /* 반응형 디자인 */
         @media (max-width: 768px) {
             .accommodation-title {
                 font-size: var(--font-size-2xl);
             }
-
             .action-buttons {
                 flex-direction: column;
             }
-
             .content-card {
                 padding: var(--spacing-lg);
             }
         }
+        /* CSS for review text truncation */
+        .long-review.truncated {
+            max-height: 4.5em; /* Approximately 3 lines */
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
     </style>
 </head>
 
+<body>
 <th:block layout:fragment="content">
-    <!-- Hero Section -->
     <section class="accommodation-hero">
         <div class="container">
             <div class="row align-items-center">
@@ -292,12 +248,12 @@
     </section>
 
     <div class="container">
-        <!-- Gallery Section -->
         <div class="gallery-section">
             <div class="row g-3">
                 <div class="col-md-6">
                     <div class="gallery-image" style="height: 400px;">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="0">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal"
+                           th:data-image-src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[0]}}">
                             <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[0]}}"
                                  class="w-100 h-100"
                                  alt="대표 이미지">
@@ -308,7 +264,8 @@
                     <div class="row g-3 h-100">
                         <div class="col-6" th:if="${accommodation.imageGalleries.size() > 1}">
                             <div class="gallery-image" style="height: 190px;">
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="1">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal"
+                                   th:data-image-src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[1]}}">
                                     <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[1]}}"
                                          class="w-100 h-100"
                                          alt="서브 이미지 1">
@@ -317,7 +274,8 @@
                         </div>
                         <div class="col-6" th:if="${accommodation.imageGalleries.size() > 2}">
                             <div class="gallery-image" style="height: 190px;">
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="2">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal"
+                                   th:data-image-src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[2]}}">
                                     <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[2]}}"
                                          class="w-100 h-100"
                                          alt="서브 이미지 2">
@@ -326,15 +284,11 @@
                         </div>
                         <div class="col-12">
                             <div class="gallery-image position-relative" style="height: 190px;" th:if="${accommodation.imageGalleries.size() > 3}">
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-thumbnail-index="3">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal"
+                                   th:data-image-src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[3]}}">
                                     <img th:src="@{'/uploads/hotels/' + ${accommodation.imageGalleries[3]}}"
                                          class="w-100 h-100"
                                          alt="서브 이미지 3">
-                                    <div class="position-absolute top-50 start-50 translate-middle">
-                                        <button class="btn btn-primary btn-lg rounded-pill shadow-lg">
-                                            <i class="bi bi-images me-2"></i>사진 모두 보기
-                                        </button>
-                                    </div>
                                 </a>
                             </div>
                         </div>
@@ -343,7 +297,6 @@
             </div>
         </div>
 
-        <!-- Room Selection Section -->
         <div class="content-card">
             <h3><i class="bi bi-house-door me-2"></i>객실 선택</h3>
 
@@ -400,7 +353,6 @@
             </div>
         </div>
 
-        <!-- Description Section -->
         <div class="content-card">
             <h3><i class="bi bi-info-circle me-2"></i>숙소 소개</h3>
             <div th:utext="${accommodation.hotel.getDescription()}">
@@ -408,7 +360,6 @@
             </div>
         </div>
 
-        <!-- Amenities Section -->
         <div class="content-card">
             <h3><i class="bi bi-star me-2"></i>편의시설</h3>
             <div class="row g-3">
@@ -463,7 +414,6 @@
             </div>
         </div>
 
-        <!-- Cancellation Policy Section -->
         <div class="content-card">
             <h3><i class="bi bi-calendar-x me-2"></i>취소 및 환불 정책</h3>
             <div class="alert alert-info border-0 bg-light">
@@ -478,7 +428,6 @@
             </div>
         </div>
 
-        <!-- Location Section -->
         <div class="content-card">
             <h3><i class="bi bi-geo-alt me-2"></i>위치</h3>
             <div class="mb-4">
@@ -496,7 +445,6 @@
                 </div>
             </div>
         </div>
-        <!-- Reviews Section -->
         <div class="content-card">
             <h3><i class="bi bi-chat-quote me-2"></i>이용후기</h3>
             <div id="review-section" th:fragment="review-fragment">
@@ -565,47 +513,15 @@
         </div>
     </div>
 
-
-    </div>
-
     <div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content bg-dark">
-                <div class="modal-header border-0 position-absolute top-0 end-0 z-3" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content bg-transparent border-0">
+                <div class="modal-header border-0 position-absolute top-0 end-0 z-3">
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-0">
-                    <div id="imageCarousel" class="carousel slide h-100" data-bs-ride="false">
-                        <div class="carousel-indicators">
-                            <button th:each="image, status : ${accommodation.imageGalleries}"
-                                    type="button"
-                                    data-bs-target="#imageCarousel"
-                                    th:data-bs-slide-to="${status.index}"
-                                    th:classappend="${status.index == 0} ? 'active'"
-                                    th:aria-current="${status.index == 0} ? 'true'"
-                                    th:aria-label="|Slide ${status.count}|">
-                            </button>
-                        </div>
-
-                        <div class="carousel-inner h-100">
-                            <div th:each="image, status : ${accommodation.imageGalleries}"
-                                 th:class="${status.index == 0} ? 'carousel-item active' : 'carousel-item'">
-                                <div class="d-flex align-items-center justify-content-center h-100">
-                                    <img th:src="@{'/uploads/hotels/' + ${image}}"
-                                         class="img-fluid"
-                                         alt="Gallery Image">
-                                </div>
-                            </div>
-                        </div>
-
-                        <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <img id="modalImage" src="" class="img-fluid rounded-3" alt="Full size image view">
                     </div>
                 </div>
             </div>
@@ -614,17 +530,13 @@
 
     <script th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoApiKey} + '&libraries=services'}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script th:if="${message}">
-        alert("[[${message}]]");
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
     <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js}"></script>
     <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js}"></script>
     <script th:src="@{/javascript/chat.js}"></script>
     <link rel="stylesheet" th:href="@{/css/chat.css}">
     <input type="hidden" id="currentMemberIdx" th:value="${currentMemberIdx}" />
 
-    <!-- Chat Modal -->
     <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -633,7 +545,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body chat-box" id="chat-box" style="height: 400px; overflow-y: auto;">
-                    <!-- Chat messages will be loaded here -->
                 </div>
                 <div class="modal-footer">
                     <div class="input-group">
@@ -650,12 +561,11 @@
 
         function initKakaoMap() {
             const mapContainer = document.getElementById('map');
-            // If the map container doesn't exist on the page, do nothing.
             if (!mapContainer) return;
 
             const address = mapContainer.dataset.address;
             const mapOption = {
-                center: new kakao.maps.LatLng(37.566826, 126.9786567), // Default to Seoul City Hall
+                center: new kakao.maps.LatLng(37.566826, 126.9786567), // Default to Seoul
                 level: 3
             };
 
@@ -673,8 +583,19 @@
             });
         }
 
+        function toggleReviewContent(button) {
+            const reviewContent = button.previousElementSibling;
+            if (reviewContent.classList.contains('truncated')) {
+                reviewContent.classList.remove('truncated');
+                button.innerHTML = '접기 <i class="bi bi-chevron-up"></i>';
+            } else {
+                reviewContent.classList.add('truncated');
+                button.innerHTML = '더보기 <i class="bi bi-chevron-down"></i>';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. Initialize the map when the page first loads
+            // 1. Initialize map
             initKakaoMap();
 
             // 2. Handle alert messages
@@ -701,22 +622,19 @@
                             return response.text();
                         })
                         .then(html => {
-                            // Create a temporary container to parse the new HTML
                             const parser = new DOMParser();
                             const doc = parser.parseFromString(html, 'text/html');
                             const newReviewContent = doc.getElementById('review-section');
 
-                            // Replace the content if new content is found
                             if (newReviewContent) {
                                 reviewSection.innerHTML = newReviewContent.innerHTML;
                             }
 
-                            // **FIX 1: Tell the map to redraw itself**
+                            initializeReviewTruncation();
+
                             if (map) {
                                 map.relayout();
                             }
-
-                            // **FIX 2: The scrollIntoView line is removed to prevent jumping**
                         })
                         .catch(error => {
                             console.error('Error fetching review page:', error);
@@ -725,96 +643,41 @@
                 });
             }
 
+            // 4. New logic for the simple image modal
             const galleryModal = document.getElementById('galleryModal');
-            if(galleryModal) {
-                const carouselElement = document.getElementById('imageCarousel');
-                const carousel = new bootstrap.Carousel(carouselElement, { interval: false, wrap: true });
+            if (galleryModal) {
+                const modalImageElement = document.getElementById('modalImage');
 
                 galleryModal.addEventListener('show.bs.modal', function (event) {
                     const trigger = event.relatedTarget;
                     if (!trigger) return;
-                    const slideToIndex = parseInt(trigger.getAttribute('data-thumbnail-index')) || 0;
-                    carousel.to(slideToIndex);
+
+                    const imageUrl = trigger.getAttribute('data-image-src');
+
+                    if (modalImageElement && imageUrl) {
+                        modalImageElement.src = imageUrl;
+                    }
+                });
+
+                galleryModal.addEventListener('hidden.bs.modal', function () {
+                    if(modalImageElement) {
+                        modalImageElement.src = '';
+                    }
                 });
             }
-        });
-    </script>
 
-
-    <script>
-        function toggleReviewContent(button) {
-            const reviewContent = button.previousElementSibling;
-            const icon = button.querySelector('i');
-
-            if (reviewContent.style.maxHeight && reviewContent.style.maxHeight !== 'none') {
-                reviewContent.style.maxHeight = 'none';
-                button.innerHTML = '접기 <i class="fas fa-chevron-up"></i>';
-            } else {
-                reviewContent.style.maxHeight = '4.5em';
-                reviewContent.style.overflow = 'hidden';
-                button.innerHTML = '더보기 <i class="fas fa-chevron-down"></i>';
+            // 5. Initialize review content truncation on page load
+            function initializeReviewTruncation() {
+                const reviewContents = document.querySelectorAll('p[th\\:text*="review.content"]');
+                reviewContents.forEach(content => {
+                    if (content.textContent.length > 100 && !content.classList.contains('long-review')) {
+                        content.classList.add('long-review', 'truncated');
+                    }
+                });
             }
-        }
-
-        // Initialize truncated content on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const reviewContents = document.querySelectorAll('p[th\\:text*="review.content"]');
-            reviewContents.forEach(content => {
-                if (content.textContent.length > 100) {
-                    content.style.maxHeight = '4.5em';
-                    content.style.overflow = 'hidden';
-                }
-            });
-        });
-        document.addEventListener('DOMContentLoaded', function () {
-            const galleryModal = document.getElementById('galleryModal');
-            const carouselElement = document.getElementById('imageCarousel');
-            const carousel = new bootstrap.Carousel(carouselElement, {
-                interval: false,
-                wrap: true,
-                keyboard: true
-            });
-
-            galleryModal.addEventListener('show.bs.modal', function (event) {
-                const trigger = event.relatedTarget;
-                if (!trigger) return;
-
-                // 썸네일에 지정한 index 읽기
-                const slideToIndex = parseInt(trigger.getAttribute('data-thumbnail-index')) || 0;
-
-                // 해당 index로 이동
-                carousel.to(slideToIndex);
-            });
-
-            // 모달 닫힐 때 키보드 이벤트 제거
-            galleryModal.addEventListener('hidden.bs.modal', function () {
-                document.removeEventListener('keydown', handleKeyDown);
-            });
-
-            // 모달 열리면 키보드 네비게이션 적용
-            galleryModal.addEventListener('shown.bs.modal', function () {
-                document.addEventListener('keydown', handleKeyDown);
-            });
-
-            function handleKeyDown(event) {
-                switch(event.key) {
-                    case 'ArrowLeft':
-                        event.preventDefault();
-                        carousel.prev();
-                        break;
-                    case 'ArrowRight':
-                        event.preventDefault();
-                        carousel.next();
-                        break;
-                    case 'Escape':
-                        event.preventDefault();
-                        bootstrap.Modal.getInstance(galleryModal).hide();
-                        break;
-                }
-            }
+            initializeReviewTruncation();
         });
     </script>
 </th:block>
 </body>
-
 </html>
