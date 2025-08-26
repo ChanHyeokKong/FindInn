@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -74,11 +73,10 @@ public class ReviewService {
                 List<ReviewFile> reviewFiles = review.get().getReviewFiles();
 
                 if (reviewFiles != null && !reviewFiles.isEmpty()) {
-                    // 3. Map the file entities to a list of their file names only
                     List<String> imageNames = reviewFiles.stream()
                             .map(reviewFile -> Path.of(reviewFile.getStoredFilePath()).getFileName().toString())
                             .collect(Collectors.toList());
-                    dto.setImagePaths(imageNames); // Consider renaming this field to imageNames for clarity
+                    dto.setImagePaths(imageNames);
                 }
                 System.out.println(dto);
                 return dto;

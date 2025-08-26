@@ -75,31 +75,12 @@ public class HotelController {
 
 		long safePrice = (price != null) ? price : 0L;
 
-		System.out.println(keyword);
-		System.out.println(tags);
-		System.out.println(category);
-		System.out.println(checkIn);
-		System.out.println(checkOut);
-		System.out.println(personCount);
 		List<HotelDto> results = hotelService.searchHotelsWithConditions(keyword, category, tags, checkIn, checkOut,  safePrice, personCount, sort);
-		System.out.println(results);
-		System.out.println(sort);
-
 		
 		System.out.printf("검색 조건: keyword=%s, category=%s, checkIn=%s, checkOut=%s, tags=%s, 인원수=%s, price=%d\n, sort=%s\n",
 			    keyword, category, checkIn, checkOut, tags, personCount, safePrice, sort);
 		return results;
 	}
-
-
-
-
-
-
-	
-	
-	
-	
 	
 
 }

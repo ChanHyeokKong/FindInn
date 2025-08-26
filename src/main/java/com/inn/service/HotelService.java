@@ -1,13 +1,15 @@
 package com.inn.service;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.inn.data.hotel.*;
-import com.inn.data.registerHotel.HotelRegistrationDto;
-import com.inn.data.registerHotel.RoomRegistrationDto;
+import com.inn.data.registerHotel.*;
 import com.inn.data.rooms.RoomTypes;
 import com.inn.data.review.RatingDto;
 import com.inn.data.rooms.Rooms;
@@ -15,10 +17,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class HotelService {
@@ -286,12 +288,9 @@ public class HotelService {
         hotel.setMemberIdx(mem_idx);
 
         if (dto.getTag() != null && !dto.getTag().isEmpty()) {
-            // 2. Create a new TagEntity instance
             TagEntity tagEntity = new TagEntity();
 
-            // 3. Loop through the list of tag strings from the DTO
             for (String tagValue : dto.getTag()) {
-                // 4. Use a switch to set the correct boolean field to true
                 switch (tagValue) {
                     case "sauna":
                         tagEntity.setSauna(true);
@@ -363,7 +362,6 @@ public class HotelService {
                 }
             }
 
-            // 5. Establish the bidirectional relationship
             hotel.setTag(tagEntity);
             tagEntity.setHotel(hotel);
         }
@@ -436,6 +434,183 @@ public class HotelService {
                 })
                 .collect(Collectors.toList());
     }
+
+
+
+
+    public HotelEditDto mapEntityToDto(HotelEntity entity) {
+        HotelEditDto dto = new HotelEditDto();
+        dto.setIdx(entity.getIdx());
+        dto.setHotelName(entity.getHotelName());
+        dto.setHotelAddress(entity.getHotelAddress());
+        dto.setHotelTel(entity.getHotelTel());
+        dto.setHotelCategory(entity.getHotelCategory());
+        dto.setDescription(entity.getDescription());
+        dto.setHotelImage(entity.getHotelImage()); // URL of the main image
+        dto.setHotelImages(entity.getHotelImages()); // URLs of gallery images
+
+        // Map associated tags
+        if (entity.getTag() != null) {
+            dto.setTags(mapTagEntityToDto(entity.getTag()));
+        }
+
+        // Map associated room types
+        dto.setRoomTypes(entity.getRoomTypes().stream()
+                .map(this::mapRoomTypeEntityToDto)
+                .collect(Collectors.toList()));
+
+        return dto;
+    }
+
+    private TagEditDto mapTagEntityToDto(TagEntity tagEntity) {
+        TagEditDto tagDto = new TagEditDto();
+        tagDto.setSauna(tagEntity.isSauna());
+        tagDto.setSwimming_pool(tagEntity.isSwimming_pool());
+        tagDto.setRestaurant(tagEntity.isRestaurant());
+        tagDto.setFitness(tagEntity.isFitness());
+        tagDto.setGolf(tagEntity.isGolf());
+        tagDto.setPc(tagEntity.isPc());
+        tagDto.setKitchen(tagEntity.isKitchen());
+        tagDto.setWashing_Machine(tagEntity.isWashing_Machine());
+        tagDto.setParking(tagEntity.isParking());
+        tagDto.setSpa(tagEntity.isSpa());
+        tagDto.setSki(tagEntity.isSki());
+        tagDto.setIn_Room_Eating(tagEntity.isIn_Room_Eating());
+        tagDto.setBreakfast(tagEntity.isBreakfast());
+        tagDto.setSmoking(tagEntity.isSmoking());
+        tagDto.setLuggage(tagEntity.isLuggage());
+        tagDto.setDisabled(tagEntity.isDisabled());
+        tagDto.setPickup(tagEntity.isPickup());
+        tagDto.setFamily(tagEntity.isFamily());
+        tagDto.setWaterpool(tagEntity.isWaterpool());
+        tagDto.setView(tagEntity.isView());
+        tagDto.setBeach(tagEntity.isBeach());
+        tagDto.setNicemeal(tagEntity.isNicemeal());
+        tagDto.setCoupon(tagEntity.isCoupon());
+        tagDto.setDiscount(tagEntity.isDiscount());
+        return tagDto;
+    }
+
+    private RoomTypeEditDto mapRoomTypeEntityToDto(RoomTypes roomType) {
+        RoomTypeEditDto roomDto = new RoomTypeEditDto();
+        roomDto.setIdx(roomType.getIdx());
+        roomDto.setTypeName(roomType.getTypeName());
+        roomDto.setDescription(roomType.getDescription());
+        roomDto.setPrice(roomType.getPrice());
+        roomDto.setCapacity(roomType.getCapacity());
+        roomDto.setImageUrl(roomType.getImageUrl());
+        return roomDto;
+    }
+
+    public void updateEntityFromDto(HotelEntity entity, HotelEditDto dto) throws IOException {
+        entity.setHotelName(dto.getHotelName());
+        entity.setHotelAddress(dto.getHotelAddress());
+        entity.setHotelTel(dto.getHotelTel());
+        entity.setHotelCategory(dto.getHotelCategory());
+        entity.setDescription(dto.getDescription());
+
+        MultipartFile mainImageFile = dto.getNewHotelImageFile();
+        if (mainImageFile != null && !mainImageFile.isEmpty()) {
+            String oldImageUrl = entity.getHotelImage();
+            String newImageUrl = fileStorageService.store(mainImageFile, "hotels");
+            entity.setHotelImage(newImageUrl);
+            if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+                fileStorageService.delete(oldImageUrl, "hotels");
+            }
+        }
+
+        updateTagEntityFromDto(entity.getTag(), dto.getTags());
+
+        Map<Long, RoomTypes> existingRoomsMap = entity.getRoomTypes()
+                .stream()
+                .collect(Collectors.toMap(RoomTypes::getIdx, room -> room));
+
+        List<RoomTypes> updatedRooms = new ArrayList<>();
+
+        if (dto.getRoomTypes() != null) {
+            for (RoomTypeEditDto roomDto : dto.getRoomTypes()) {
+                RoomTypes roomType;
+                if (roomDto.getIdx() != null) {
+                    roomType = existingRoomsMap.get(roomDto.getIdx());
+                    if (roomType == null) continue;
+                    existingRoomsMap.remove(roomDto.getIdx());
+                } else {
+                    roomType = new RoomTypes();
+                    roomType.setHotel(entity);
+                }
+
+                roomType.setTypeName(roomDto.getTypeName());
+                roomType.setDescription(roomDto.getDescription());
+                roomType.setPrice(roomDto.getPrice());
+                roomType.setCapacity(roomDto.getCapacity());
+
+                MultipartFile roomImageFile = roomDto.getImageFile();
+                if (roomImageFile != null && !roomImageFile.isEmpty()) {
+                    String oldRoomImageUrl = roomType.getImageUrl();
+
+                    String newRoomImageUrl = fileStorageService.store(roomImageFile, "hotels");
+                    roomType.setImageUrl(newRoomImageUrl);
+
+                    if (oldRoomImageUrl != null && !oldRoomImageUrl.isEmpty()) {
+                        fileStorageService.delete(oldRoomImageUrl, "hotels");
+                    }
+                }
+
+                updatedRooms.add(roomType);
+            }
+        }
+
+        for (RoomTypes roomToDelete : existingRoomsMap.values()) {
+            String imageToDelete = roomToDelete.getImageUrl();
+            if (imageToDelete != null && !imageToDelete.isEmpty()) {
+                fileStorageService.delete(imageToDelete, "hotels");
+            }
+        }
+
+        entity.getRoomTypes().clear();
+        entity.getRoomTypes().addAll(updatedRooms);
+        hotelRepository.save(entity);
+    }
+
+    private void updateTagEntityFromDto(TagEntity tagEntity, TagEditDto tagDto) {
+        if (tagEntity == null || tagDto == null) return;
+
+        tagEntity.setSauna(tagDto.isSauna());
+        tagEntity.setSwimming_pool(tagDto.isSwimming_pool());
+        tagEntity.setRestaurant(tagDto.isRestaurant());
+        tagEntity.setFitness(tagDto.isFitness());
+        tagEntity.setGolf(tagDto.isGolf());
+        tagEntity.setPc(tagDto.isPc());
+        tagEntity.setKitchen(tagDto.isKitchen());
+        tagEntity.setWashing_Machine(tagDto.isWashing_Machine());
+        tagEntity.setParking(tagDto.isParking());
+        tagEntity.setSpa(tagDto.isSpa());
+        tagEntity.setSki(tagDto.isSki());
+        tagEntity.setIn_Room_Eating(tagDto.isIn_Room_Eating());
+        tagEntity.setBreakfast(tagDto.isBreakfast());
+        tagEntity.setSmoking(tagDto.isSmoking());
+        tagEntity.setLuggage(tagDto.isLuggage());
+        tagEntity.setDisabled(tagDto.isDisabled());
+        tagEntity.setPickup(tagDto.isPickup());
+        tagEntity.setFamily(tagDto.isFamily());
+        tagEntity.setWaterpool(tagDto.isWaterpool());
+        tagEntity.setView(tagDto.isView());
+        tagEntity.setBeach(tagDto.isBeach());
+        tagEntity.setNicemeal(tagDto.isNicemeal());
+        tagEntity.setCoupon(tagDto.isCoupon());
+        tagEntity.setDiscount(tagDto.isDiscount());
+    }
+
+    public void deleteHotel(Long id){
+        HotelEntity hotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid hotel Id:" + id));
+        for (RoomTypes room : hotel.getRoomTypes()) {
+            fileStorageService.delete(room.getImageUrl(), "hotels");
+        }
+        fileStorageService.delete(hotel.getHotelImage(), "hotels");
+        hotelRepository.delete(hotel);
+    }
+
 
 }
 

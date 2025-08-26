@@ -8,6 +8,7 @@ import com.inn.data.hotel.HotelEntity;
 import com.inn.data.review.RatingDto;
 import com.inn.data.review.ReviewDto;
 import com.inn.data.rooms.RoomTypeAvailDto;
+import com.inn.service.AccommodationService;
 import com.inn.service.HotelService;
 import com.inn.service.ReviewService;
 import com.inn.service.RoomsService;
@@ -30,19 +31,15 @@ import java.util.Optional;
 
 @Controller
 public class AccommodationController {
-    @Autowired
-    RoomsService roomsService;
-
-    @Autowired
-    HotelService hotelService;
 
     @Value("${kakao.map.javascript-key}")
     private String kakaoApiKey;
 
     @Autowired
-    ChatRepository chatRepository;
-    @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    private AccommodationService accommodationService;
 
     @GetMapping("/domestic-accommodations")
     public String accommodationDetail(
@@ -55,42 +52,16 @@ public class AccommodationController {
             @RequestHeader(value = "Referer", required = false) String referer,
             @AuthenticationPrincipal CustomUserDetails currentUser,
             @RequestParam(defaultValue = "0") int page) {
-        
-        AccommodationDto accommodation = new AccommodationDto();
-        int numberOfPeople = (personal != null) ? personal : 1;
-        // 파라메터에서 정보 가져오기
-        accommodation.setCheckInDate(checkIn);
-        accommodation.setCheckOutDate(checkOut); 
-        accommodation.setPersonal(numberOfPeople);
 
-        // 호텔 db에서 불러오기
-        Optional<HotelEntity> hotel = hotelService.getHotelDataById(id);
-        if (!hotel.isPresent()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "The requested hotel does not exist.");
+        AccommodationDto accommodation = accommodationService.getAccommodationDetails(id, checkIn, checkOut, personal);
+        // 예외처리
+        if (accommodation.getHotel() ==null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "호텔이 존재하지 않습니다");
             String redirectUrl = (referer != null) ? referer : "/";
             return "redirect:" + redirectUrl;
         }
-        else{
-            accommodation.setHotel(hotel.get());
-        }
-        accommodation.setName(hotel.get().getHotelName());
-        accommodation.setAddress(hotel.get().getHotelAddress());
-        List<String> images = new ArrayList<>();
-        images.add(hotel.get().getHotelImage());
-        accommodation.setCheckInTime("15:00");
-        accommodation.setCheckOutTime("11:00");
-
-        // 해당 호텔의 방 정보
-        List <RoomTypeAvailDto> rooms = roomsService.getAllHotelRoomTypesWithAvailability(id,checkIn,checkOut);
-        accommodation.setRoomTypes(rooms);
-
-        for (RoomTypeAvailDto room : rooms) {
-            images.add(room.getImageUrl());
-        }
-        accommodation.setImageGalleries(images);
         model.addAttribute("accommodation", accommodation);
         model.addAttribute("kakaoApiKey", kakaoApiKey);
-        System.out.println(accommodation.getImageGalleries());
         model.addAttribute("currentUser", currentUser);
         RatingDto rating = reviewService.getRatings(id);
         model.addAttribute("rating", rating);
@@ -100,11 +71,10 @@ public class AccommodationController {
         model.addAttribute("hotelId", id);
         model.addAttribute("reviewPage", reviewPage);
 
-        // Add current user's memberIdx to the model
         if (currentUser != null) {
             model.addAttribute("currentMemberIdx", currentUser.getIdx());
         } else {
-            model.addAttribute("currentMemberIdx", null); // Or a default value if not logged in
+            model.addAttribute("currentMemberIdx", null);
         }
 
         return "detail/accommodation-detail";
@@ -115,9 +85,6 @@ public class AccommodationController {
     public String reviewDetail(@RequestParam("id") Long id,@RequestParam(defaultValue = "0") int page, Model model) {
         int size = 5; //한번에 리뷰 5개 로드
         Page<ReviewDto> reviewPage = reviewService.getReviewsByHotels(id, page, size);
-
-
-        System.out.println("Review Page Content: " + reviewPage.getContent());
         model.addAttribute("reviewPage", reviewPage);
         model.addAttribute("hotelId", id);
         return "detail/accommodation-detail :: review-fragment";
