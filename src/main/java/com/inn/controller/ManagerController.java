@@ -469,5 +469,28 @@ public class ManagerController {
         tagEntity.setDiscount(tagDto.isDiscount());
     }
 
+    @DeleteMapping("/edit/{id}")
+    public String deleteHotel(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            HotelEntity hotel = hotelRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid hotel Id:" + id));
+            for (RoomTypes room : hotel.getRoomTypes()) {
+                fileStorageService.delete(room.getImageUrl(), "hotels");
+            }
 
+            fileStorageService.delete(hotel.getHotelImage(), "hotels");
+
+            hotelRepository.delete(hotel);
+
+            redirectAttributes.addFlashAttribute("successMessage", "숙소가 성공적으로 삭제되었습니다.");
+
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", "삭제할 숙소를 찾을 수 없습니다. ID: " + id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "숙소를 삭제하는 중 오류가 발생했습니다.");
+        }
+
+        return "redirect:/manage/hotel";
+    }
 }
