@@ -488,12 +488,12 @@ document.addEventListener("DOMContentLoaded", function() {
 							const personCount = document.getElementById('personCount').value;
 							location.href = `domestic-accommodations?id=${hotelId}&checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}&personCount=${encodeURIComponent(personCount)}`
 						})
-						
+
 						content.addEventListener('mouseleave', () => {
 							if (infoCard) {
-																infoCard.remove();
-																infoCard = null;
-															}
+								infoCard.remove();
+								infoCard = null;
+							}
 						})
 
 
